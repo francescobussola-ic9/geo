@@ -27,6 +27,12 @@ const FAMILIES={
       const small=rand([8,10,12,14]), big=small+2*p, A=(big+small)*h/2;
       const s=Math.min(360/big,160/h), cx=260, yB=265, yT=yB-h*s;
       const xL=cx-big*s/2, xR=cx+big*s/2, xTL=xL+p*s, xTR=xR-p*s, mark=14;
+      // Label positions are derived from geometry, not fixed offsets.
+      const legOffset=30;
+      const leftMidX=(xL+xTL)/2, leftMidY=(yB+yT)/2;
+      const rightMidX=(xTR+xR)/2, rightMidY=(yT+yB)/2;
+      const leftLabelX=leftMidX-(h/l)*legOffset, leftLabelY=leftMidY-(p/l)*legOffset;
+      const rightLabelX=rightMidX+(h/l)*legOffset, rightLabelY=rightMidY-(p/l)*legOffset;
       return {text:`Un trapezio isoscele ha le basi di ${big} cm e ${small} cm e i lati obliqui di ${l} cm. Calcola l’area.`,
       notes:[
         'Osserva la figura e prova a decidere da dove partire.',
@@ -36,7 +42,7 @@ const FAMILIES={
         `Concentrati sul triangolo evidenziato: conosci ${p} cm e ${l} cm, mentre h è incognita.`,
         `L’altezza misura ${h} cm. Ora possiamo tornare all’intero trapezio e calcolare l’area.`
       ],
-      svg:`<svg viewBox="0 0 520 330" aria-label="Trapezio isoscele in proporzione con i dati del problema">
+      svg:`<svg viewBox="0 0 520 360" aria-label="Trapezio isoscele in proporzione con i dati del problema">
         <g class="geo-base">
           <line data-geo="left-leg" x1="${xL}" y1="${yB}" x2="${xTL}" y2="${yT}"/>
           <line data-geo="top-base" x1="${xTL}" y1="${yT}" x2="${xTR}" y2="${yT}"/>
@@ -45,10 +51,10 @@ const FAMILIES={
           <line data-geo="middle-base" x1="${xTL}" y1="${yB}" x2="${xTR}" y2="${yB}"/>
           <line data-geo="right-projection" x1="${xTR}" y1="${yB}" x2="${xR}" y2="${yB}"/>
         </g>
-        <text data-geo="big-label" x="${cx}" y="305" text-anchor="middle">${big} cm</text>
+        <text data-geo="big-label" x="${cx}" y="310" text-anchor="middle">${big} cm</text>
         <text data-geo="small-label" x="${cx}" y="${yT-18}" text-anchor="middle">${small} cm</text>
-        <text data-geo="left-leg-label" x="${xL-4}" y="${(yB+yT)/2}" text-anchor="end">${l} cm</text>
-        <text data-geo="right-leg-label" x="${xR+4}" y="${(yB+yT)/2}" text-anchor="start">${l} cm</text>
+        <text data-geo="left-leg-label" x="${leftLabelX}" y="${leftLabelY}" text-anchor="middle">${l} cm</text>
+        <text data-geo="right-leg-label" x="${rightLabelX}" y="${rightLabelY}" text-anchor="middle">${l} cm</text>
 
         <g data-v="1" opacity="0">
           <line data-geo="left-height" class="aux" x1="${xTL}" y1="${yT}" x2="${xTL}" y2="${yB}" stroke-width="4" stroke-dasharray="8 6"/>
@@ -58,11 +64,11 @@ const FAMILIES={
           <text data-geo="height-label" class="label-aux" x="${xTL+18}" y="${(yB+yT)/2}">h ?</text>
         </g>
         <g data-v="2" opacity="0">
-          <text data-geo="difference-label" class="label-focus" x="${cx}" y="326" text-anchor="middle">${big} − ${small} = ${2*p} cm</text>
+          <text data-geo="difference-label" class="label-focus" x="${cx}" y="344" text-anchor="middle">${big} − ${small} = ${2*p} cm</text>
         </g>
         <g data-v="3" opacity="0">
-          <text data-geo="left-projection-label" class="label-focus" x="${(xL+xTL)/2}" y="${yB-18}" text-anchor="middle">${p} cm</text>
-          <text data-geo="right-projection-label" class="label-focus" x="${(xTR+xR)/2}" y="${yB-18}" text-anchor="middle">${p} cm</text>
+          <text data-geo="left-projection-label" class="label-focus" x="${(xL+xTL)/2}" y="${yB+26}" text-anchor="middle">${p} cm</text>
+          <text data-geo="right-projection-label" class="label-focus" x="${(xTR+xR)/2}" y="${yB+26}" text-anchor="middle">${p} cm</text>
         </g>
         <g data-v="5" opacity="0">
           <text data-geo="height-value" class="label-aux" x="${xTL+18}" y="${(yB+yT)/2}">${h} cm</text>
@@ -102,7 +108,7 @@ function bindProblem(){app.querySelector('#form').onclick=()=>renderFormula('pro
 function applyVisual(){
   const svg=app.querySelector('.diagram svg');
   if(!svg)return;
-  svg.querySelectorAll('.dimmed,.geo-highlight,.geo-aux-highlight').forEach(el=>el.classList.remove('dimmed','geo-highlight','geo-aux-highlight'));
+  svg.querySelectorAll('.dimmed,.focus-hidden,.geo-highlight,.geo-aux-highlight,.geo-label-highlight').forEach(el=>el.classList.remove('dimmed','focus-hidden','geo-highlight','geo-aux-highlight','geo-label-highlight'));
   svg.querySelectorAll('[data-v]').forEach(g=>g.setAttribute('opacity','0'));
   if(state.openHelp===null)return;
   const step=state.instance.helps[state.openHelp][2];
@@ -118,8 +124,15 @@ function applyVisual(){
   }
   if(step===4){
     const keep=new Set(['left-leg','left-projection','left-height','left-right-angle','height-label','left-leg-label','left-projection-label']);
-    svg.querySelectorAll('[data-geo]').forEach(el=>{if(!keep.has(el.dataset.geo))el.classList.add('dimmed')});
+    svg.querySelectorAll('[data-geo]').forEach(el=>{
+      if(keep.has(el.dataset.geo)) return;
+      // During focus, irrelevant labels disappear completely; geometry remains faint
+      // so the student can still see where the triangle comes from.
+      if(el.tagName.toLowerCase()==='text') el.classList.add('focus-hidden');
+      else el.classList.add('dimmed');
+    });
     ['left-leg','left-projection'].forEach(id=>svg.querySelector(`[data-geo="${id}"]`)?.classList.add('geo-highlight'));
+    ['left-leg-label','left-projection-label'].forEach(id=>svg.querySelector(`[data-geo="${id}"]`)?.classList.add('geo-label-highlight'));
     svg.querySelector('[data-geo="left-height"]')?.classList.add('geo-aux-highlight');
   }
   if(step===5){

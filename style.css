@@ -29,3 +29,8 @@ button:disabled {
 /* v0.3.2 — single-geometry focus: no duplicated segments or labels. */
 .diagram svg .geo-highlight{stroke:var(--orange)!important;stroke-width:7!important;opacity:1!important}
 .diagram svg .geo-aux-highlight{stroke:var(--blue)!important;stroke-width:5!important;opacity:1!important}
+
+
+/* v0.3.3 — label layout and selective focus. */
+.diagram svg .focus-hidden{opacity:0!important}
+.diagram svg .geo-label-highlight{fill:var(--orange)!important;font-weight:800;opacity:1!important}

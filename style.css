@@ -25,3 +25,7 @@ button:disabled {
 .diagram svg .focus-right-angle{stroke:var(--blue);stroke-width:3}
 .diagram svg .focus-leg-label{fill:var(--orange);font-weight:800}
 @media (prefers-reduced-motion: reduce){.diagram svg [data-geo]{transition:none}}
+
+/* v0.3.2 — single-geometry focus: no duplicated segments or labels. */
+.diagram svg .geo-highlight{stroke:var(--orange)!important;stroke-width:7!important;opacity:1!important}
+.diagram svg .geo-aux-highlight{stroke:var(--blue)!important;stroke-width:5!important;opacity:1!important}

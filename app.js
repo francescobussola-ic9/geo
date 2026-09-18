@@ -23,43 +23,33 @@ const FAMILIES={
   trapezoid:{
     figures:['trapezio'], strategies:['differenza_basi','proiezione','pitagora','area'],
     generate(){
-      const triple=rand([[3,4,5],[5,12,13],[6,8,10]]);
-      const h=triple[0], p=triple[1], l=triple[2];
+      const [h,p,l]=rand([[3,4,5],[5,12,13],[6,8,10]]);
       const small=rand([8,10,12,14]), big=small+2*p, A=(big+small)*h/2;
-
-      // Un'unica geometria matematica genera figura, costruzioni e triangolo isolato.
-      // La scala e' uniforme: i rapporti tra base, proiezione e altezza restano reali.
-      const s=Math.min(360/big,160/h);
-      const cx=260, yB=265, yT=yB-h*s;
-      const xL=cx-big*s/2, xR=cx+big*s/2;
-      const xTL=xL+p*s, xTR=xR-p*s;
-      const mark=14;
-
-      // Il triangolo isolato puo' essere ingrandito, ma sempre con scala uniforme.
-      const ts=Math.min(190/p,190/h);
-      const txR=310, tyB=270, txL=txR-p*ts, tyT=tyB-h*ts;
-      const rm=18;
-
+      const s=Math.min(360/big,160/h), cx=260, yB=265, yT=yB-h*s;
+      const xL=cx-big*s/2, xR=cx+big*s/2, xTL=xL+p*s, xTR=xR-p*s, mark=14;
       return {text:`Un trapezio isoscele ha le basi di ${big} cm e ${small} cm e i lati obliqui di ${l} cm. Calcola l’area.`,
       notes:[
         'Osserva la figura e prova a decidere da dove partire.',
-        'L’altezza non è data: costruiamola senza cambiare la figura.',
-        `La differenza tra le basi è ${big-small} cm: le due proiezioni misurano ${p} cm ciascuna.`,
-        `Ora isoliamo lo stesso triangolo rettangolo: cateto ${p} cm, ipotenusa ${l} cm, altezza incognita.`
+        'Per calcolare l’area serve l’altezza: costruiamola.',
+        `Confronta le basi: ${big} − ${small} = ${2*p} cm.`,
+        `I due segmenti laterali sono uguali: ciascuno misura ${p} cm.`,
+        `Concentrati sul triangolo evidenziato: conosci ${p} cm e ${l} cm, mentre h è incognita.`,
+        `L’altezza misura ${h} cm. Ora possiamo tornare all’intero trapezio e calcolare l’area.`
       ],
       svg:`<svg viewBox="0 0 520 330" aria-label="Trapezio isoscele in proporzione con i dati del problema">
         <g class="geo-base">
           <line data-geo="left-leg" x1="${xL}" y1="${yB}" x2="${xTL}" y2="${yT}"/>
           <line data-geo="top-base" x1="${xTL}" y1="${yT}" x2="${xTR}" y2="${yT}"/>
           <line data-geo="right-leg" x1="${xTR}" y1="${yT}" x2="${xR}" y2="${yB}"/>
-          <line data-geo="left-projection-base" x1="${xL}" y1="${yB}" x2="${xTL}" y2="${yB}"/>
+          <line data-geo="left-projection" x1="${xL}" y1="${yB}" x2="${xTL}" y2="${yB}"/>
           <line data-geo="middle-base" x1="${xTL}" y1="${yB}" x2="${xTR}" y2="${yB}"/>
-          <line data-geo="right-projection-base" x1="${xTR}" y1="${yB}" x2="${xR}" y2="${yB}"/>
+          <line data-geo="right-projection" x1="${xTR}" y1="${yB}" x2="${xR}" y2="${yB}"/>
         </g>
         <text data-geo="big-label" x="${cx}" y="305" text-anchor="middle">${big} cm</text>
         <text data-geo="small-label" x="${cx}" y="${yT-18}" text-anchor="middle">${small} cm</text>
         <text data-geo="left-leg-label" x="${xL-4}" y="${(yB+yT)/2}" text-anchor="end">${l} cm</text>
         <text data-geo="right-leg-label" x="${xR+4}" y="${(yB+yT)/2}" text-anchor="start">${l} cm</text>
+
         <g data-v="1" opacity="0">
           <line data-geo="left-height" class="aux" x1="${xTL}" y1="${yT}" x2="${xTL}" y2="${yB}" stroke-width="4" stroke-dasharray="8 6"/>
           <line data-geo="right-height" class="aux" x1="${xTR}" y1="${yT}" x2="${xTR}" y2="${yB}" stroke-width="4" stroke-dasharray="8 6"/>
@@ -68,23 +58,23 @@ const FAMILIES={
           <text data-geo="height-label" class="label-aux" x="${xTL+18}" y="${(yB+yT)/2}">h ?</text>
         </g>
         <g data-v="2" opacity="0">
-          <line data-geo="left-projection-highlight" class="focus" x1="${xL}" y1="${yB-12}" x2="${xTL}" y2="${yB-12}" stroke-width="7"/>
-          <line data-geo="right-projection-highlight" class="focus" x1="${xTR}" y1="${yB-12}" x2="${xR}" y2="${yB-12}" stroke-width="7"/>
-          <text data-geo="left-projection-label" class="label-focus" x="${(xL+xTL)/2}" y="${yB-30}" text-anchor="middle">${p}</text>
-          <text data-geo="right-projection-label" class="label-focus" x="${(xTR+xR)/2}" y="${yB-30}" text-anchor="middle">${p}</text>
-          <text data-geo="difference-label" x="${cx}" y="325" text-anchor="middle">${big} − ${small} = ${2*p} → ${p} + ${p}</text>
+          <text data-geo="difference-label" class="label-focus" x="${cx}" y="326" text-anchor="middle">${big} − ${small} = ${2*p} cm</text>
         </g>
-        <g data-v="3" opacity="0" data-focus-layer="triangle-left">
-          <line class="focus-strong" x1="${xL}" y1="${yB}" x2="${xTL}" y2="${yT}"/>
-          <line class="focus-strong" x1="${xL}" y1="${yB}" x2="${xTL}" y2="${yB}"/>
-          <line class="focus-strong aux-strong" x1="${xTL}" y1="${yT}" x2="${xTL}" y2="${yB}"/>
-          <path class="focus-right-angle" d="M${xTL} ${yB-mark} H${xTL-mark} V${yB-mark} V${yB}" fill="none"/>
-          <text class="label-focus" x="${(xL+xTL)/2}" y="${yB-28}" text-anchor="middle">${p} cm</text>
-          <text class="label-aux" x="${xTL+18}" y="${(yB+yT)/2}">h ?</text>
-          <text class="focus-leg-label" x="${xL-4}" y="${(yB+yT)/2}" text-anchor="end">${l} cm</text>
+        <g data-v="3" opacity="0">
+          <text data-geo="left-projection-label" class="label-focus" x="${(xL+xTL)/2}" y="${yB-18}" text-anchor="middle">${p} cm</text>
+          <text data-geo="right-projection-label" class="label-focus" x="${(xTR+xR)/2}" y="${yB-18}" text-anchor="middle">${p} cm</text>
+        </g>
+        <g data-v="5" opacity="0">
+          <text data-geo="height-value" class="label-aux" x="${xTL+18}" y="${(yB+yT)/2}">${h} cm</text>
         </g>
       </svg>`,
-      helps:[['Da dove posso iniziare?','Per calcolare l’area manca l’altezza: prova a costruirla.',1],['Non conosco il cateto del triangolo',`La differenza tra le basi è ${big-small} cm. Nel trapezio isoscele si divide in due proiezioni uguali da ${p} cm.`,2],['Sono ancora bloccato/a',`Dimentica il trapezio: considera soltanto il triangolo rettangolo con ${p}, ${l} e h.`,3],['Mostrami la soluzione',`h = √(${l}² − ${p}²) = ${h} cm; A = (${big} + ${small}) × ${h} : 2 = ${A} cm².`,3]]};
+      helps:[
+        ['Da dove posso iniziare?','Per calcolare l’area manca l’altezza: tracciala.',1],
+        ['Come uso le due basi?',`La parte della base maggiore che resta fuori dalla base minore misura ${big} − ${small} = ${2*p} cm.`,2],
+        ['Come trovo il cateto?',`Essendo il trapezio isoscele, i due segmenti laterali sono uguali: ${2*p} : 2 = ${p} cm.`,3],
+        ['Sono ancora bloccato/a',`Concentrati sul triangolo rettangolo a sinistra: ipotenusa ${l} cm, un cateto ${p} cm e l’altro cateto è h.`,4],
+        ['Mostrami la soluzione',`h = √(${l}² − ${p}²) = ${h} cm; A = (${big} + ${small}) × ${h} : 2 = ${A} cm².`,5]
+      ]};
     }
   }
 };
@@ -112,13 +102,29 @@ function bindProblem(){app.querySelector('#form').onclick=()=>renderFormula('pro
 function applyVisual(){
   const svg=app.querySelector('.diagram svg');
   if(!svg)return;
-  svg.querySelectorAll('.dimmed').forEach(el=>el.classList.remove('dimmed'));
+  svg.querySelectorAll('.dimmed,.geo-highlight,.geo-aux-highlight').forEach(el=>el.classList.remove('dimmed','geo-highlight','geo-aux-highlight'));
+  svg.querySelectorAll('[data-v]').forEach(g=>g.setAttribute('opacity','0'));
   if(state.openHelp===null)return;
   const step=state.instance.helps[state.openHelp][2];
   svg.querySelectorAll('[data-v]').forEach(g=>g.setAttribute('opacity',+g.dataset.v<=step?'1':'0'));
-  if(state.family==='trapezoid' && step>=3){
-    const keep=new Set(['left-leg','left-projection-base','left-height','left-right-angle','height-label','left-projection-highlight','left-projection-label','left-leg-label']);
+  if(state.family!=='trapezoid')return;
+
+  // Ogni segmento geometrico esiste una sola volta. Il focus cambia solo il suo stato visivo.
+  if(step===2){
+    ['left-projection','right-projection'].forEach(id=>svg.querySelector(`[data-geo="${id}"]`)?.classList.add('geo-highlight'));
+  }
+  if(step===3){
+    ['left-projection','right-projection'].forEach(id=>svg.querySelector(`[data-geo="${id}"]`)?.classList.add('geo-highlight'));
+  }
+  if(step===4){
+    const keep=new Set(['left-leg','left-projection','left-height','left-right-angle','height-label','left-leg-label','left-projection-label']);
     svg.querySelectorAll('[data-geo]').forEach(el=>{if(!keep.has(el.dataset.geo))el.classList.add('dimmed')});
+    ['left-leg','left-projection'].forEach(id=>svg.querySelector(`[data-geo="${id}"]`)?.classList.add('geo-highlight'));
+    svg.querySelector('[data-geo="left-height"]')?.classList.add('geo-aux-highlight');
+  }
+  if(step===5){
+    // Alla soluzione torniamo alla figura intera: niente focus, altezza nota.
+    const q=svg.querySelector('[data-geo="height-label"]'); if(q) q.classList.add('dimmed');
   }
 }
 function renderFormula(returnTo){state.view='formula';state.formulaReturn=returnTo;app.innerHTML=shell(`<div class="backline"><button id="back" class="secondary">← ${returnTo==='home'?'Torna alla home':'Torna al problema'}</button><span class="status">Le formule restano nascoste finché non scegli di visualizzarle.</span></div><div class="formula-grid" style="margin-top:16px">${FORMULAS.map((f,i)=>`<article class="formula-card"><h3>${f[0]}</h3><div class="formula-actions"><button data-reveal="d${i}">Mostra formule dirette</button><button data-reveal="i${i}">Mostra formule inverse</button></div><div id="d${i}" class="formula hidden">${f[1]}</div><div id="i${i}" class="formula hidden">${f[2]}</div></article>`).join('')}</div>`);app.querySelector('#back').onclick=()=>returnTo==='home'?renderHome():renderProblem();app.querySelectorAll('[data-reveal]').forEach(b=>b.onclick=()=>{const el=app.querySelector('#'+b.dataset.reveal),hidden=el.classList.toggle('hidden');b.textContent=hidden?b.textContent.replace('Nascondi','Mostra'):b.textContent.replace('Mostra','Nascondi')});}

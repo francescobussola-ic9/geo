@@ -14,3 +14,14 @@ button:disabled {
   cursor: not-allowed;
   filter: grayscale(.25);
 }
+.isolation-bg{fill:#fffdf8;opacity:.96}
+
+/* GEØ visual focus system: the original geometry stays in place. */
+.diagram svg [data-geo]{transition:opacity .18s ease,stroke .18s ease,fill .18s ease}
+.diagram svg .dimmed{opacity:.16}
+.diagram svg .geo-base line{stroke:var(--ink);stroke-width:5;stroke-linecap:round}
+.diagram svg .focus-strong{stroke:var(--orange);stroke-width:7;stroke-linecap:round}
+.diagram svg .aux-strong{stroke:var(--blue);stroke-width:5;stroke-dasharray:8 6}
+.diagram svg .focus-right-angle{stroke:var(--blue);stroke-width:3}
+.diagram svg .focus-leg-label{fill:var(--orange);font-weight:800}
+@media (prefers-reduced-motion: reduce){.diagram svg [data-geo]{transition:none}}

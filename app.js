@@ -8,50 +8,42 @@ const FAMILIES={
       const h=rand([6,7,8,9,10,11,12]), d=rand([3,4,5,6,7]);
       const b=h+d, P=2*(b+h), A=b*h, semi=P/2;
 
-      // Geometria del rettangolo coerente con b:h.
-      const maxW=330, maxH=170;
-      const rectScale=Math.min(maxW/b,maxH/h);
-      const rectW=b*rectScale, rectH=h*rectScale;
-      const rx=260-rectW/2, ry=118, rBottom=ry+rectH;
-
-      // Il semiperimetro è rappresentato davvero come b + h: due segmenti
-      // contigui, con lunghezze proporzionali ai due lati.
-      const semiW=340, semiX=90, semiY=66;
-      const bW=semiW*b/semi, hW=semiW*h/semi;
-
-      // Barre della differenza: h e b=h+d condividono la stessa scala.
-      const barMax=300, unit=barMax/b;
-      const hBar=h*unit, dBar=d*unit, barX=110;
-      const bar1Y=175, bar2Y=230, barH=30;
+      // Una sola figura, nessuna barra ridisegnata: la relazione b = h + d
+      // viene letta direttamente sui lati del rettangolo.
+      const maxW=330, maxH=190;
+      const scale=Math.min(maxW/b,maxH/h);
+      const W=b*scale, H=h*scale, hPart=h*scale, dPart=d*scale;
+      const x=260-W/2, y=78, right=x+W, bottom=y+H;
+      const split=x+hPart;
 
       return {text:`Un rettangolo ha il perimetro di ${P} cm. La base supera l’altezza di ${d} cm. Calcola l’area.`,
       notes:[
         'Osserva i dati e prova a decidere da dove partire.',
-        `Il semiperimetro è ${semi} cm: corrisponde a una base più un’altezza.`,
-        `Rappresentiamo h e b: la base è lunga come h più un tratto di ${d} cm.`,
-        `Tolto il tratto di ${d} cm, restano due parti uguali: ciascuna misura ${h} cm.`
+        `Il semiperimetro è ${semi} cm: una base e un’altezza insieme misurano ${semi} cm.`,
+        `Guarda gli stessi lati: h è il tratto arancione; la base è lo stesso tratto più ${d} cm.`,
+        `Tolti i ${d} cm in più, restano due lunghezze uguali: ciascuna misura ${h} cm.`
       ],
-      svg:`<svg viewBox="0 0 520 350" aria-label="Rettangolo con rappresentazione del semiperimetro e della differenza tra i lati">
-        <rect x="${rx}" y="${ry}" width="${rectW}" height="${rectH}" fill="none" stroke="currentColor" stroke-width="5"/>
-        <text x="260" y="${Math.min(330,rBottom+34)}" text-anchor="middle">b ?</text>
-        <text x="${rx-24}" y="${ry+rectH/2+7}" text-anchor="end">h ?</text>
+      svg:`<svg viewBox="0 0 520 350" aria-label="Rettangolo con relazione tra base e altezza evidenziata direttamente sui lati">
+        <g class="geo-base">
+          <line data-geo="top" x1="${x}" y1="${y}" x2="${right}" y2="${y}"/>
+          <line data-geo="right" x1="${right}" y1="${y}" x2="${right}" y2="${bottom}"/>
+          <line data-geo="height" x1="${x}" y1="${y}" x2="${x}" y2="${bottom}"/>
+          <line data-geo="base-h" x1="${x}" y1="${bottom}" x2="${split}" y2="${bottom}"/>
+          <line data-geo="base-d" x1="${split}" y1="${bottom}" x2="${right}" y2="${bottom}"/>
+        </g>
+
+        <text data-geo="height-label" x="${x-22}" y="${y+H/2+7}" text-anchor="end">h ?</text>
+        <text data-geo="base-label" x="${x+W/2}" y="${Math.min(325,bottom+36)}" text-anchor="middle">b ?</text>
 
         <g data-v="1" opacity="0">
-          <line class="focus" x1="${semiX}" y1="${semiY}" x2="${semiX+bW}" y2="${semiY}" stroke-width="7"/>
-          <line class="aux" x1="${semiX+bW}" y1="${semiY}" x2="${semiX+semiW}" y2="${semiY}" stroke-width="7"/>
-          <line class="unit" x1="${semiX+bW}" y1="${semiY-10}" x2="${semiX+bW}" y2="${semiY+10}" stroke-width="3"/>
-          <text class="label-focus" x="${semiX+bW/2}" y="43" text-anchor="middle">b</text>
-          <text class="label-aux" x="${semiX+bW+hW/2}" y="43" text-anchor="middle">h</text>
-          <text x="260" y="94" text-anchor="middle">b + h = ${semi} cm</text>
+          <text x="260" y="42" text-anchor="middle">b + h = ${semi} cm</text>
         </g>
 
         <g data-v="2" opacity="0">
-          <rect x="${barX}" y="${bar1Y}" width="${hBar}" height="${barH}" fill="var(--paper, #fffdf8)" class="unit" stroke-width="4"/>
-          <text class="label-unit" x="${barX-18}" y="${bar1Y+22}" text-anchor="end">h</text>
-          <rect x="${barX}" y="${bar2Y}" width="${hBar}" height="${barH}" fill="var(--paper, #fffdf8)" class="unit" stroke-width="4"/>
-          <rect x="${barX+hBar}" y="${bar2Y}" width="${dBar}" height="${barH}" fill="var(--paper, #fffdf8)" class="focus" stroke-width="4"/>
-          <text class="label-unit" x="${barX-18}" y="${bar2Y+22}" text-anchor="end">b</text>
-          <text class="label-focus" x="${barX+hBar+dBar/2}" y="${bar2Y+22}" text-anchor="middle">${d}</text>
+          <line data-geo="split-mark" class="unit" x1="${split}" y1="${bottom-10}" x2="${split}" y2="${bottom+10}" stroke-width="3"/>
+          <text data-geo="height-h" class="label-focus" x="${x-18}" y="${y+H/2+7}" text-anchor="end">h</text>
+          <text data-geo="base-h-label" class="label-focus" x="${x+hPart/2}" y="${bottom-14}" text-anchor="middle">h</text>
+          <text data-geo="base-d-label" class="label-unit" x="${split+dPart/2}" y="${bottom-14}" text-anchor="middle">${d}</text>
         </g>
 
         <g data-v="3" opacity="0">
@@ -61,8 +53,8 @@ const FAMILIES={
         </g>
       </svg>`,
       helps:[
-        ['Da dove posso iniziare?',`Il semiperimetro è ${P} : 2 = ${semi} cm. Una base e un’altezza insieme formano proprio il semiperimetro.`,1],
-        ['Come uso la differenza?',`Rappresenta h e b con due barre: la base è h più un tratto di ${d} cm.`,2],
+        ['Da dove posso iniziare?',`Il semiperimetro è ${P} : 2 = ${semi} cm. Una base e un’altezza insieme formano il semiperimetro.`,1],
+        ['Come uso la differenza?',`Osserva direttamente i lati: la base è lunga come l’altezza più un tratto di ${d} cm.`,2],
         ['Come trovo i lati?',`Togli ${d} dal semiperimetro: ${semi} − ${d} = ${2*h}. Restano due parti uguali, quindi h = ${h} cm e b = ${b} cm.`,3],
         ['Mostrami la soluzione',`h = ${h} cm, b = ${b} cm; A = ${b} × ${h} = ${A} cm².`,3]
       ]};
@@ -221,11 +213,33 @@ function bindProblem(){app.querySelector('#form').onclick=()=>renderFormula('pro
 function applyVisual(){
   const svg=app.querySelector('.diagram svg');
   if(!svg)return;
-  svg.querySelectorAll('.dimmed,.focus-hidden,.geo-highlight,.geo-aux-highlight,.geo-label-highlight').forEach(el=>el.classList.remove('dimmed','focus-hidden','geo-highlight','geo-aux-highlight','geo-label-highlight'));
+  svg.querySelectorAll('.dimmed,.focus-hidden,.geo-highlight,.geo-aux-highlight,.geo-label-highlight,.geo-unit-highlight').forEach(el=>el.classList.remove('dimmed','focus-hidden','geo-highlight','geo-aux-highlight','geo-label-highlight','geo-unit-highlight'));
   svg.querySelectorAll('[data-v]').forEach(g=>g.setAttribute('opacity','0'));
   if(state.openHelp===null)return;
   const step=state.instance.helps[state.openHelp][2];
   svg.querySelectorAll('[data-v]').forEach(g=>g.setAttribute('opacity',+g.dataset.v<=step?'1':'0'));
+
+  if(state.family==='perimeterDiff'){
+    const q=id=>svg.querySelector(`[data-geo=\"${id}\"]`);
+    if(step===1){
+      // Mostra il semiperimetro sulla figura stessa: base + altezza.
+      q('height')?.classList.add('geo-aux-highlight');
+      q('base-h')?.classList.add('geo-highlight');
+      q('base-d')?.classList.add('geo-highlight');
+      q('top')?.classList.add('dimmed'); q('right')?.classList.add('dimmed');
+    }
+    if(step>=2){
+      // Focus selettivo: h arancione; b = h arancione + d verde.
+      q('top')?.classList.add('dimmed'); q('right')?.classList.add('dimmed');
+      q('height')?.classList.add('geo-highlight');
+      q('base-h')?.classList.add('geo-highlight');
+      q('base-d')?.classList.add('geo-unit-highlight');
+      q('height-label')?.classList.add('focus-hidden');
+      q('base-label')?.classList.add('focus-hidden');
+    }
+    return;
+  }
+
   if(state.family!=='trapezoid')return;
 
   // Ogni segmento geometrico esiste una sola volta. Il focus cambia solo il suo stato visivo.

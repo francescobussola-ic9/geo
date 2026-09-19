@@ -278,6 +278,125 @@ const FAMILIES={
 
 };
 
+// --- v0.5: tipologie cognitive aggiuntive ---
+// Ogni tipologia cambia il percorso matematico, non soltanto i numeri.
+Object.assign(FAMILIES, {
+  rectDiffKnownSide:{
+    figures:['rettangolo'], strategies:['differenza','perimetro','area'],
+    generate(){
+      const [h,d]=pickVariant('rectDiffKnownSide',cartesian([6,8,10,12],[3,4,5,6])); const b=h+d,P=2*(b+h),A=b*h;
+      const W=280,H=W*h/b,x=120,y=65;
+      return {text:`La base di un rettangolo supera l’altezza di ${d} cm. L’altezza misura ${h} cm. Calcola perimetro e area.`,notes:['Individua sul disegno la differenza tra i lati.',`La base è l’altezza più ${d} cm.`,`Ora conosci entrambe le dimensioni.`],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect data-geo="shape" x="${x}" y="${y}" width="${W}" height="${H}" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="${x-20}" y="${y+H/2}" text-anchor="end">${h} cm</text><text x="260" y="${y+H+35}" text-anchor="middle">b ?</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="${y+H+68}" text-anchor="middle">b = ${h} + ${d} = ${b} cm</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="${y+H+98}" text-anchor="middle">P = ${P} cm · A = ${A} cm²</text></g></svg>`,helps:[['Come uso la differenza?',`La base è ${h}+${d}=${b} cm.`,1],['E adesso?',`Conosci b e h: puoi applicare direttamente perimetro e area.`,2],['Mostrami la soluzione',`P=2×(${b}+${h})=${P} cm; A=${b}×${h}=${A} cm².`,2]]};
+    }
+  },
+  rectDiffFromAreaSide:{
+    figures:['rettangolo'], strategies:['formula_inversa','area','differenza','perimetro'],
+    generate(){
+      const [h,d]=pickVariant('rectDiffFromAreaSide',cartesian([5,6,8,10],[2,3,4,5])); const b=h+d,A=b*h,P=2*(b+h);
+      return {text:`Un rettangolo ha area ${A} cm² e altezza ${h} cm. Di quanti centimetri la base supera l’altezza? Calcola anche il perimetro.`,notes:['Prima ricava la base dall’area.','Confronta poi le due dimensioni.','Infine calcola il perimetro.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect data-geo="shape" x="110" y="70" width="300" height="170" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="90" y="160" text-anchor="end">h=${h}</text><text x="260" y="275" text-anchor="middle">A=${A} cm² · b ?</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b = A : h = ${A} : ${h} = ${b}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="342" text-anchor="middle">b−h=${d} cm · P=${P} cm</text></g></svg>`,helps:[['Quale lato posso ricavare?',`Usa la formula inversa dell’area: b=A:h.`,1],['Come trovo la differenza?',`${b}−${h}=${d} cm.`,2],['Mostrami la soluzione',`b=${b} cm; differenza=${d} cm; P=2×(${b}+${h})=${P} cm.`,2]]};
+    }
+  },
+  rectRatioKnownHeight:{
+    figures:['rettangolo'], strategies:['rapporto','frazione','area'],
+    generate(){
+      const [m,n,h]=pickVariant('rectRatioKnownHeight',[[2,3,12],[3,4,12],[3,5,15],[4,5,20]]); const b=h*m/n,A=b*h,P=2*(b+h);
+      return {text:`In un rettangolo la base è i ${m}/${n} dell’altezza. L’altezza misura ${h} cm. Calcola base, area e perimetro.`,notes:['Qui non serve ricavare il valore di una UF dall’area.','Calcola direttamente la frazione dell’altezza.','Poi usa le formule di area e perimetro.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect x="120" y="60" width="280" height="190" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="95" y="160" text-anchor="end">${h} cm</text><text x="260" y="285" text-anchor="middle">b = ${m}/${n} di h</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="320" text-anchor="middle">b=${h}×${m}:${n}=${b} cm</text></g></svg>`,helps:[['Come uso la frazione?',`Calcola i ${m}/${n} di ${h}.`,1],['Ora cosa conosco?','Hai entrambe le dimensioni: usa le formule dirette.',1],['Mostrami la soluzione',`b=${b} cm; A=${A} cm²; P=${P} cm.`,1]]};
+    }
+  },
+  rectRatioFromDimensions:{
+    figures:['rettangolo'], strategies:['rapporto','riduzione_frazione','area'],
+    generate(){
+      const [m,n,u]=pickVariant('rectRatioFromDimensions',cartesian([[2,3],[3,4],[3,5],[4,5]],[2,3,4]).map(([r,u])=>[...r,u])); const b=m*u,h=n*u,A=b*h,g=gcd(b,h);
+      return {text:`Un rettangolo misura ${b} cm × ${h} cm. Esprimi la base come frazione dell’altezza e calcola l’area.`,notes:['Confronta le due dimensioni.','Scrivi b/h e riduci la frazione ai minimi termini.','Poi calcola l’area.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect x="120" y="60" width="280" height="190" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="260" y="285" text-anchor="middle">b=${b} cm · h=${h} cm</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="320" text-anchor="middle">b/h = ${b}/${h} = ${b/g}/${h/g}</text></g></svg>`,helps:[['Come trovo il rapporto?',`Scrivi ${b}/${h} e semplifica.`,1],['Che cosa significa?',`La base è i ${b/g}/${h/g} dell’altezza.`,1],['Mostrami la soluzione',`b/h=${b/g}/${h/g}; A=${b}×${h}=${A} cm².`,1]]};
+    }
+  },
+  isoTrapBasesHeight:{
+    figures:['trapezio'], strategies:['differenza_basi','proiezione','pitagora','perimetro'],
+    generate(){
+      const [h,p,l,small]=pickVariant('isoTrapBasesHeight',PYTHAGOREAN_VARIANTS.flatMap(t=>[8,10,12].map(s=>[...t,s])).filter(([h,p])=>p<=12)); const big=small+2*p,P=big+small+2*l;
+      return {text:`Un trapezio isoscele ha basi ${big} cm e ${small} cm e altezza ${h} cm. Calcola il perimetro.`,notes:['Per il perimetro manca il lato obliquo.','La differenza delle basi si divide in due proiezioni uguali.','Con altezza e proiezione ottieni un triangolo rettangolo.'],svg:`<svg viewBox="0 0 520 350"><path d="M70 265 L450 265 L380 85 L140 85 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="310" text-anchor="middle">B=${big} · b=${small} · h=${h}</text><g data-v="1" opacity="0"><line class="aux" x1="140" y1="85" x2="140" y2="265" stroke-width="4" stroke-dasharray="8 6"/><text class="label-focus" x="105" y="288" text-anchor="middle">${p}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">l=√(${h}²+${p}²)=${l} → P=${P}</text></g></svg>`,helps:[['Come trovo il lato obliquo?',`Calcola prima (B−b):2 = (${big}−${small}):2 = ${p} cm.`,1],['Quale figura compare?',`Altezza ${h} e proiezione ${p} sono i cateti di un triangolo rettangolo.`,1],['Mostrami la soluzione',`l=√(${h}²+${p}²)=${l} cm; P=${big}+${small}+2×${l}=${P} cm.`,2]]};
+    }
+  },
+  isoTrapAreaBases:{
+    figures:['trapezio'], strategies:['formula_inversa','area','differenza_basi','pitagora','perimetro'],
+    generate(){
+      const [h,p,l,small]=pickVariant('isoTrapAreaBases',PYTHAGOREAN_VARIANTS.flatMap(t=>[8,10,12].map(s=>[...t,s])).filter(([h,p])=>p<=12)); const big=small+2*p,A=(big+small)*h/2,P=big+small+2*l;
+      return {text:`Un trapezio isoscele ha area ${A} cm² e basi ${big} cm e ${small} cm. Calcola altezza e perimetro.`,notes:['Prima ricava l’altezza con la formula inversa dell’area.','Poi trova la proiezione del lato obliquo.','Usa Pitagora per il lato.'],svg:`<svg viewBox="0 0 520 350"><path d="M70 265 L450 265 L380 85 L140 85 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="310" text-anchor="middle">A=${A} · B=${big} · b=${small}</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="338" text-anchor="middle">h=2A:(B+b)=${h} cm</text></g></svg>`,helps:[['Quale formula inversa serve?',`h=2A:(B+b).`,1],['Come trovo il lato?',`La proiezione è (${big}−${small}):2=${p} cm; usa Pitagora con h=${h}.`,1],['Mostrami la soluzione',`h=${h} cm; l=${l} cm; P=${P} cm.`,1]]};
+    }
+  },
+  triangleIsoBaseArea:{
+    figures:['triangolo'], strategies:['formula_inversa','area','pitagora','perimetro'],
+    generate(){
+      const [h,p,l]=pickVariant('triangleIsoBaseArea',PYTHAGOREAN_VARIANTS); const base=2*p,A=base*h/2,P=base+2*l;
+      return {text:`Un triangolo isoscele ha base ${base} cm e area ${A} cm². Calcola il perimetro.`,notes:['Per il perimetro manca il lato obliquo.','Dall’area puoi ricavare l’altezza.','L’altezza dimezza la base e crea un triangolo rettangolo.'],svg:`<svg viewBox="0 0 520 350"><path d="M90 270 L260 65 L430 270 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="310" text-anchor="middle">b=${base} cm · A=${A} cm²</text><g data-v="1" opacity="0"><line class="aux" x1="260" y1="65" x2="260" y2="270" stroke-width="4" stroke-dasharray="8 6"/><text class="label-focus" x="278" y="170">h=${h}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">l=√(${h}²+${p}²)=${l} → P=${P}</text></g></svg>`,helps:[['Come ricavo l’altezza?',`h=2A:b = 2×${A}:${base}=${h} cm.`,1],['Come trovo il lato?',`La semibase è ${p} cm: usa Pitagora con ${h} e ${p}.`,2],['Mostrami la soluzione',`l=${l} cm; P=${base}+2×${l}=${P} cm.`,2]]};
+    }
+  },
+  triangleIsoSideHeight:{
+    figures:['triangolo'], strategies:['pitagora','base','perimetro','area'],
+    generate(){
+      const [h,p,l]=pickVariant('triangleIsoSideHeight',PYTHAGOREAN_VARIANTS); const base=2*p,A=base*h/2,P=base+2*l;
+      return {text:`Un triangolo isoscele ha lati obliqui di ${l} cm e altezza ${h} cm. Calcola base, perimetro e area.`,notes:['L’altezza divide il triangolo in due triangoli rettangoli.','Conosci ipotenusa e un cateto: ricava la semibase.','Raddoppia la semibase.'],svg:`<svg viewBox="0 0 520 350"><path d="M90 270 L260 65 L430 270 Z" fill="none" stroke="currentColor" stroke-width="5"/><line class="aux" x1="260" y1="65" x2="260" y2="270" stroke-width="4" stroke-dasharray="8 6"/><text x="285" y="165">h=${h}</text><text x="150" y="165">l=${l}</text><g data-v="1" opacity="0"><text class="label-focus" x="175" y="295" text-anchor="middle">b/2=√(${l}²−${h}²)=${p}</text></g></svg>`,helps:[['Dove applico Pitagora?',`Su metà triangolo: ipotenusa ${l}, cateto ${h}, semibase incognita.`,1],['Come ottengo la base?',`La semibase è ${p} cm, quindi b=${2*p} cm.`,1],['Mostrami la soluzione',`b=${base} cm; P=${P} cm; A=${A} cm².`,1]]};
+    }
+  },
+  rhombusAreaDiagonal:{
+    figures:['rombo'], strategies:['formula_inversa','diagonali','pitagora','perimetro'],
+    generate(){
+      const [a,b,l]=pickVariant('rhombusAreaDiagonal',PYTHAGOREAN_VARIANTS); const D=2*b,d=2*a,A=D*d/2,P=4*l;
+      return {text:`Un rombo ha area ${A} cm² e diagonale maggiore ${D} cm. Calcola l’altra diagonale e il perimetro.`,notes:['Ricava prima la diagonale mancante dalla formula dell’area.','Dimezza entrambe le diagonali.','Le semidiagonali sono cateti di un triangolo rettangolo.'],svg:`<svg viewBox="0 0 520 350"><path d="M260 45 L440 165 L260 285 L80 165 Z" fill="none" stroke="currentColor" stroke-width="5"/><line class="aux" x1="80" y1="165" x2="440" y2="165" stroke-width="4"/><line class="aux" x1="260" y1="45" x2="260" y2="285" stroke-width="4"/><text x="260" y="325" text-anchor="middle">A=${A} · D=${D}</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="348" text-anchor="middle">d=2A:D=${d} cm</text></g></svg>`,helps:[['Come trovo la diagonale mancante?',`d=2A:D = ${2*A}:${D}=${d} cm.`,1],['Come trovo il lato?',`Usa le semidiagonali ${a} e ${b} come cateti.`,1],['Mostrami la soluzione',`d=${d} cm; l=${l} cm; P=${P} cm.`,1]]};
+    }
+  },
+  rhombusSideDiagonal:{
+    figures:['rombo'], strategies:['pitagora','diagonali','area'],
+    generate(){
+      const [a,b,l]=pickVariant('rhombusSideDiagonal',PYTHAGOREAN_VARIANTS); const D=2*b,d=2*a,A=D*d/2;
+      return {text:`Un rombo ha lato ${l} cm e diagonale maggiore ${D} cm. Calcola l’altra diagonale e l’area.`,notes:['Le diagonali si dimezzano e sono perpendicolari.','Hai l’ipotenusa e una semidiagonale.','Pitagora ti dà l’altra semidiagonale.'],svg:`<svg viewBox="0 0 520 350"><path d="M260 45 L440 165 L260 285 L80 165 Z" fill="none" stroke="currentColor" stroke-width="5"/><line class="aux" x1="80" y1="165" x2="440" y2="165" stroke-width="4"/><line class="aux" x1="260" y1="45" x2="260" y2="285" stroke-width="4"/><text x="260" y="325" text-anchor="middle">l=${l} · D=${D}</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="348" text-anchor="middle">d/2=√(${l}²−${b}²)=${a}</text></g></svg>`,helps:[['Quale triangolo uso?',`Considera lato ${l} come ipotenusa e D/2=${b} come cateto.`,1],['Come ottengo la diagonale?',`L’altra semidiagonale è ${a}, quindi d=${d} cm.`,1],['Mostrami la soluzione',`d=${d} cm; A=${D}×${d}:2=${A} cm².`,1]]};
+    }
+  },
+  rightTrapBasesHeight:{
+    figures:['trapezio'], strategies:['differenza_basi','pitagora','perimetro'],
+    generate(){
+      const [h,p,l,small]=pickVariant('rightTrapBasesHeight',PYTHAGOREAN_VARIANTS.flatMap(t=>[8,10,12].map(s=>[...t,s]))); const big=small+p,P=big+small+h+l;
+      return {text:`Un trapezio rettangolo ha basi ${big} cm e ${small} cm e altezza ${h} cm. Calcola il perimetro.`,notes:['Manca il lato obliquo.','La differenza delle basi è un cateto del triangolo rettangolo laterale.','Usa Pitagora.'],svg:`<svg viewBox="0 0 520 350"><path d="M90 270 L90 80 L360 80 L440 270 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="315" text-anchor="middle">B=${big} · b=${small} · h=${h}</text><g data-v="1" opacity="0"><text class="label-focus" x="400" y="295" text-anchor="middle">B−b=${p}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="345" text-anchor="middle">l=${l} → P=${P}</text></g></svg>`,helps:[['Come trovo la proiezione?',`${big}−${small}=${p} cm.`,1],['Come trovo il lato obliquo?',`l=√(${h}²+${p}²)=${l} cm.`,2],['Mostrami la soluzione',`P=${big}+${small}+${h}+${l}=${P} cm.`,2]]};
+    }
+  },
+  rightTrapAreaBases:{
+    figures:['trapezio'], strategies:['formula_inversa','area','differenza_basi','pitagora','perimetro'],
+    generate(){
+      const [h,p,l,small]=pickVariant('rightTrapAreaBases',PYTHAGOREAN_VARIANTS.flatMap(t=>[8,10,12].map(s=>[...t,s]))); const big=small+p,A=(big+small)*h/2,P=big+small+h+l;
+      return {text:`Un trapezio rettangolo ha area ${A} cm² e basi ${big} cm e ${small} cm. Calcola altezza e perimetro.`,notes:['Ricava l’altezza dalla formula inversa dell’area.','La differenza delle basi dà il cateto orizzontale.','Poi trova il lato obliquo.'],svg:`<svg viewBox="0 0 520 350"><path d="M90 270 L90 80 L360 80 L440 270 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="315" text-anchor="middle">A=${A} · B=${big} · b=${small}</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="345" text-anchor="middle">h=2A:(B+b)=${h}</text></g></svg>`,helps:[['Come trovo h?',`h=2A:(B+b)=${h} cm.`,1],['E il lato obliquo?',`B−b=${p}; l=√(${h}²+${p}²)=${l} cm.`,1],['Mostrami la soluzione',`h=${h} cm; l=${l} cm; P=${P} cm.`,1]]};
+    }
+  },
+  compositeFindCut:{
+    figures:['composta'], strategies:['differenza_aree','formula_inversa'],
+    generate(){
+      const [W,H,w,h]=pickVariant('compositeFindCut',[[14,10,4,3],[16,12,6,4],[18,12,6,5],[20,14,8,5]]); const outer=W*H,remain=outer-w*h;
+      return {text:`Una figura si ottiene togliendo da un rettangolo di ${W} cm × ${H} cm un rettangolo largo ${w} cm. L’area rimasta è ${remain} cm². Quanto è alto il rettangolo tolto?`,notes:['Calcola l’area del rettangolo esterno.','La differenza tra area esterna e area rimasta è l’area del ritaglio.','Con area e base del ritaglio ricava la sua altezza.'],svg:`<svg viewBox="0 0 520 350"><rect x="100" y="55" width="320" height="220" fill="none" stroke="currentColor" stroke-width="5"/><rect x="320" y="55" width="100" height="80" fill="none" class="focus" stroke-width="5"/><text x="260" y="315" text-anchor="middle">esterno ${W}×${H} · rimane ${remain} cm²</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="345" text-anchor="middle">A ritaglio=${outer}−${remain}=${w*h}</text></g></svg>`,helps:[['Quanto vale l’area tolta?',`${W}×${H}−${remain}=${w*h} cm².`,1],['Come trovo l’altezza?',`h=A:b = ${w*h}:${w}=${h} cm.`,1],['Mostrami la soluzione',`Il rettangolo tolto è ${w}×${h} cm.`,1]]};
+    }
+  },
+  compositeFindOuter:{
+    figures:['composta'], strategies:['somma_aree','formula_inversa'],
+    generate(){
+      const [W,H,w,h]=pickVariant('compositeFindOuter',[[14,10,4,3],[16,12,6,4],[18,12,6,5],[20,14,8,5]]); const remain=W*H-w*h;
+      return {text:`Da un rettangolo alto ${H} cm è stato tolto un rettangolo di ${w} cm × ${h} cm. La figura rimasta ha area ${remain} cm². Quanto era larga la figura rettangolare iniziale?`,notes:['Ricostruisci prima l’area del rettangolo intero.','Somma area rimasta e area tolta.','Poi usa A=b×h al contrario.'],svg:`<svg viewBox="0 0 520 350"><rect x="100" y="55" width="320" height="220" fill="none" stroke="currentColor" stroke-width="5" stroke-dasharray="8 6"/><rect x="320" y="55" width="100" height="80" fill="none" class="focus" stroke-width="5"/><text x="260" y="315" text-anchor="middle">h esterna=${H} · area rimasta=${remain}</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="345" text-anchor="middle">A intera=${remain}+${w*h}=${W*H}</text></g></svg>`,helps:[['Come ricostruisco l’area intera?',`Somma ${remain}+${w*h}=${W*H} cm².`,1],['Come trovo la larghezza?',`b=A:h=${W*H}:${H}=${W} cm.`,1],['Mostrami la soluzione',`La larghezza iniziale era ${W} cm.`,1]]};
+    }
+  },
+  rectPerimeterKnownBase:{
+    figures:['rettangolo'], strategies:['perimetro','formula_inversa','rapporto'],
+    generate(){
+      const [b,h]=pickVariant('rectPerimeterKnownBase',[[12,8],[15,10],[16,12],[20,12],[20,16]]); const P=2*(b+h),g=gcd(b,h);
+      return {text:`Un rettangolo ha perimetro ${P} cm e base ${b} cm. Calcola l’altezza ed esprimi il rapporto base : altezza ai minimi termini.`,notes:['Dal perimetro ricava prima il semiperimetro.','Togli la base per ottenere l’altezza.','Solo alla fine confronta i due lati.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect x="110" y="65" width="300" height="180" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="260" y="282" text-anchor="middle">P=${P} cm · b=${b} cm</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b+h=${P/2} → h=${h}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="345" text-anchor="middle">b:h=${b/g}:${h/g}</text></g></svg>`,helps:[['Da dove parto?',`Il semiperimetro è ${P}:2=${P/2} cm.`,1],['Come trovo h?',`${P/2}−${b}=${h} cm.`,1],['Come scrivo il rapporto?',`Riduci ${b}:${h} dividendo per ${g}.`,2],['Mostrami la soluzione',`h=${h} cm; b:h=${b/g}:${h/g}.`,2]]};
+    }
+  },
+  rectPerimeterDiffRatio:{
+    figures:['rettangolo'], strategies:['perimetro','differenza','rapporto'],
+    generate(){
+      const [h,d]=pickVariant('rectPerimeterDiffRatio',[[6,3],[8,4],[9,6],[10,5],[12,6]]); const b=h+d,P=2*(b+h),g=gcd(b,h);
+      return {text:`Un rettangolo ha perimetro ${P} cm e la base supera l’altezza di ${d} cm. Dopo aver trovato i lati, esprimi il rapporto base : altezza ai minimi termini.`,notes:['Risolvi prima la relazione tra somma e differenza.','Poi confronta i due lati ottenuti.','Il rapporto va ridotto ai minimi termini.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect x="110" y="65" width="300" height="180" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="260" y="282" text-anchor="middle">P=${P} · b−h=${d}</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b+h=${P/2}; h=(${P/2}−${d}):2=${h}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="345" text-anchor="middle">b:h=${b/g}:${h/g}</text></g></svg>`,helps:[['Come trovo i lati?',`Dal semiperimetro ${P/2} togli la differenza ${d}, poi dividi per 2.`,1],['E la base?',`b=${h}+${d}=${b} cm.`,1],['Come ottengo il rapporto?',`Riduci ${b}:${h} dividendo per ${g}.`,2],['Mostrami la soluzione',`b=${b}, h=${h}; rapporto=${b/g}:${h/g}.`,2]]};
+    }
+  }
+
+});
+
 const FIGURES=[
  ['triangolo','Triangoli','<path d="M25 82 L75 18 L125 82 Z"/>'],
  ['rettangolo','Rettangoli','<rect x="25" y="27" width="100" height="58"/>'],

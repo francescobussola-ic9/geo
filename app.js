@@ -244,13 +244,14 @@ const FAMILIES={
     figures:['rombo'], strategies:['diagonali','pitagora','perimetro'],
     generate(){
       const [a,b,l]=pickVariant('rhombusDiagonals',PYTHAGOREAN_VARIANTS),D=2*b,d=2*a,A=D*d/2,P=4*l;
-      const sx=12,sy=12,cx=260,cy=165,L=b*sx,S=a*sy;
-      return {text:`Un rombo ha le diagonali di ${D} cm e ${d} cm. Calcola l’area e il perimetro.`,notes:['Osserva il rombo.',`Le diagonali si tagliano a metà e sono perpendicolari.`,`Considera uno dei quattro triangoli rettangoli.`,`Il lato del rombo misura ${l} cm.`],
-      svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><line data-geo="side1" x1="${cx}" y1="${cy-S}" x2="${cx+L}" y2="${cy}"/><line data-geo="side2" x1="${cx+L}" y1="${cy}" x2="${cx}" y2="${cy+S}"/><line data-geo="side3" x1="${cx}" y1="${cy+S}" x2="${cx-L}" y2="${cy}"/><line data-geo="side4" x1="${cx-L}" y1="${cy}" x2="${cx}" y2="${cy-S}"/></g><text x="260" y="330" text-anchor="middle">D = ${D} cm · d = ${d} cm</text>
-      <g data-v="1" opacity="0"><line data-geo="halfD-left" class="aux" x1="${cx-L}" y1="${cy}" x2="${cx}" y2="${cy}"/><line data-geo="halfD-right" class="aux" x1="${cx}" y1="${cy}" x2="${cx+L}" y2="${cy}"/><line data-geo="halfd-top" class="aux" x1="${cx}" y1="${cy-S}" x2="${cx}" y2="${cy}"/><line data-geo="halfd-bottom" class="aux" x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+S}"/><path data-geo="right-angle" class="aux" d="M${cx} ${cy-13} H${cx+13} V${cy}" fill="none" stroke-width="3"/><text class="label-aux" x="${cx+L/2}" y="${cy-12}" text-anchor="middle">${b}</text><text class="label-aux" x="${cx+16}" y="${cy-S/2}" text-anchor="start">${a}</text></g>
-      <g data-v="3" opacity="0"><text class="label-focus" x="260" y="305" text-anchor="middle">l = √(${a}² + ${b}²) = ${l} cm</text></g></svg>`,
-      helps:[['Cosa so sulle diagonali?','Nel rombo le diagonali sono perpendicolari e si dimezzano a vicenda.',1],['Come trovo il lato?',`Usa un triangolo rettangolo con cateti ${a} cm e ${b} cm.`,2],['E poi?',`Con Pitagora il lato misura ${l} cm.`,3],['Mostrami la soluzione',`A=${D}×${d}:2=${A} cm²; P=4×${l}=${P} cm.`,3]],
-      scenes:{2:{keep:['side1','halfD-right','halfd-top','right-angle'],highlight:['side1'],aux:['halfD-right','halfd-top']}}};
+      const cx=260,cy=165,L=150,S=105;
+      return {text:`Un rombo ha diagonale maggiore ${D} cm e diagonale minore ${d} cm. Calcola l’area e il perimetro.`,notes:['Osserva il rombo.','Le diagonali sono perpendicolari e si tagliano a metà.','Concentrati su uno dei quattro triangoli rettangoli.','Usa Pitagora per trovare il lato.'],
+      svg:`<svg viewBox="0 0 520 360"><g class="geo-base"><line data-geo="side1" x1="${cx}" y1="${cy-S}" x2="${cx+L}" y2="${cy}"/><line data-geo="side2" x1="${cx+L}" y1="${cy}" x2="${cx}" y2="${cy+S}"/><line data-geo="side3" x1="${cx}" y1="${cy+S}" x2="${cx-L}" y2="${cy}"/><line data-geo="side4" x1="${cx-L}" y1="${cy}" x2="${cx}" y2="${cy-S}"/></g>
+      <text x="260" y="315" text-anchor="middle">D = ${D} cm</text><text x="260" y="342" text-anchor="middle">d = ${d} cm</text>
+      <g data-v="1" opacity="0"><line data-geo="halfD-left" class="aux" x1="${cx-L}" y1="${cy}" x2="${cx}" y2="${cy}"/><line data-geo="halfD-right" class="aux" x1="${cx}" y1="${cy}" x2="${cx+L}" y2="${cy}"/><line data-geo="halfd-top" class="aux" x1="${cx}" y1="${cy-S}" x2="${cx}" y2="${cy}"/><line data-geo="halfd-bottom" class="aux" x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+S}"/><path data-geo="right-angle" class="aux" d="M${cx} ${cy-13} H${cx+13} V${cy}" fill="none" stroke-width="3"/><text data-geo="b-label" class="label-aux" x="${cx+L/2}" y="${cy-12}" text-anchor="middle">D/2 = ${b}</text><text data-geo="a-label" class="label-aux" x="${cx+16}" y="${cy-S/2}" text-anchor="start">d/2 = ${a}</text></g>
+      <g data-v="3" opacity="0"><text class="label-focus" x="260" y="358" text-anchor="middle">l = √(${a}² + ${b}²) = ${l} cm</text></g></svg>`,
+      helps:[['Cosa fanno le diagonali?','Osserva il loro incrocio: sono perpendicolari e ciascuna viene divisa in due parti uguali.',1],['Dove posso usare Pitagora?',`Concentrati su un solo quarto del rombo: i cateti misurano ${a} cm e ${b} cm.`,2],['Come trovo il lato?',`Ora applica Pitagora al triangolo evidenziato.`,3],['Mostrami la soluzione',`l=√(${a}²+${b}²)=${l} cm; A=${D}×${d}:2=${A} cm²; P=4×${l}=${P} cm.`,3]],
+      scenes:{2:{keep:['side1','halfD-right','halfd-top','right-angle','b-label','a-label'],highlight:['side1'],aux:['halfD-right','halfd-top','right-angle']}}};
     }
   },
   rightTrapezoid:{
@@ -341,15 +342,25 @@ Object.assign(FAMILIES, {
   rhombusAreaDiagonal:{
     figures:['rombo'], strategies:['formula_inversa','diagonali','pitagora','perimetro'],
     generate(){
-      const [a,b,l]=pickVariant('rhombusAreaDiagonal',PYTHAGOREAN_VARIANTS); const D=2*b,d=2*a,A=D*d/2,P=4*l;
-      return {text:`Un rombo ha area ${A} cm² e diagonale maggiore ${D} cm. Calcola l’altra diagonale e il perimetro.`,notes:['Ricava prima la diagonale mancante dalla formula dell’area.','Dimezza entrambe le diagonali.','Le semidiagonali sono cateti di un triangolo rettangolo.'],svg:`<svg viewBox="0 0 520 350"><path d="M260 45 L440 165 L260 285 L80 165 Z" fill="none" stroke="currentColor" stroke-width="5"/><line class="aux" x1="80" y1="165" x2="440" y2="165" stroke-width="4"/><line class="aux" x1="260" y1="45" x2="260" y2="285" stroke-width="4"/><text x="260" y="325" text-anchor="middle">A=${A} · D=${D}</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="348" text-anchor="middle">d=2A:D=${d} cm</text></g></svg>`,helps:[['Come trovo la diagonale mancante?',`d=2A:D = ${2*A}:${D}=${d} cm.`,1],['Come trovo il lato?',`Usa le semidiagonali ${a} e ${b} come cateti.`,1],['Mostrami la soluzione',`d=${d} cm; l=${l} cm; P=${P} cm.`,1]]};
+      const [a,b,l]=pickVariant('rhombusAreaDiagonal',PYTHAGOREAN_VARIANTS),D=2*b,d=2*a,A=D*d/2,P=4*l;
+      return {text:`Un rombo ha area ${A} cm² e diagonale maggiore ${D} cm. Calcola l’altra diagonale e il perimetro.`,notes:['Ricava prima la diagonale mancante.','Poi osserva che le diagonali si dimezzano e sono perpendicolari.','Infine isola un triangolo rettangolo.'],
+      svg:`<svg viewBox="0 0 520 360"><g class="geo-base"><line data-geo="side1" x1="260" y1="55" x2="440" y2="165"/><line data-geo="side2" x1="440" y1="165" x2="260" y2="275"/><line data-geo="side3" x1="260" y1="275" x2="80" y2="165"/><line data-geo="side4" x1="80" y1="165" x2="260" y2="55"/></g><text x="260" y="315" text-anchor="middle">A = ${A} cm²</text><text x="260" y="342" text-anchor="middle">D = ${D} cm</text>
+      <g data-v="2" opacity="0"><line data-geo="D-left" class="aux" x1="80" y1="165" x2="260" y2="165"/><line data-geo="D-right" class="aux" x1="260" y1="165" x2="440" y2="165"/><line data-geo="d-top" class="aux" x1="260" y1="55" x2="260" y2="165"/><line data-geo="d-bottom" class="aux" x1="260" y1="165" x2="260" y2="275"/><path data-geo="right-angle" class="aux" d="M260 152 H273 V165" fill="none" stroke-width="3"/><text data-geo="halfD-label" class="label-aux" x="350" y="150" text-anchor="middle">D/2 = ${b}</text><text data-geo="halfd-label" class="label-aux" x="276" y="110">d/2 = ${a}</text></g>
+      <g data-v="1" opacity="0"><text class="label-focus" x="260" y="358" text-anchor="middle">d = 2A : D = ${d} cm</text></g></svg>`,
+      helps:[['Come trovo la diagonale mancante?','Parti dalla formula dell’area del rombo e isolane la diagonale incognita.',1],['E adesso?','Le diagonali si dimezzano e sono perpendicolari: osserva un solo triangolo rettangolo.',2],['Come trovo il lato?',`Nel triangolo evidenziato i cateti sono D/2=${b} cm e d/2=${a} cm.`,3],['Mostrami la soluzione',`d=2×${A}:${D}=${d} cm; l=√(${a}²+${b}²)=${l} cm; P=4×${l}=${P} cm.`,3]],
+      scenes:{3:{keep:['side1','D-right','d-top','right-angle','halfD-label','halfd-label'],highlight:['side1'],aux:['D-right','d-top','right-angle']}}};
     }
   },
   rhombusSideDiagonal:{
     figures:['rombo'], strategies:['pitagora','diagonali','area'],
     generate(){
-      const [a,b,l]=pickVariant('rhombusSideDiagonal',PYTHAGOREAN_VARIANTS); const D=2*b,d=2*a,A=D*d/2;
-      return {text:`Un rombo ha lato ${l} cm e diagonale maggiore ${D} cm. Calcola l’altra diagonale e l’area.`,notes:['Le diagonali si dimezzano e sono perpendicolari.','Hai l’ipotenusa e una semidiagonale.','Pitagora ti dà l’altra semidiagonale.'],svg:`<svg viewBox="0 0 520 350"><path d="M260 45 L440 165 L260 285 L80 165 Z" fill="none" stroke="currentColor" stroke-width="5"/><line class="aux" x1="80" y1="165" x2="440" y2="165" stroke-width="4"/><line class="aux" x1="260" y1="45" x2="260" y2="285" stroke-width="4"/><text x="260" y="325" text-anchor="middle">l=${l} · D=${D}</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="348" text-anchor="middle">d/2=√(${l}²−${b}²)=${a}</text></g></svg>`,helps:[['Quale triangolo uso?',`Considera lato ${l} come ipotenusa e D/2=${b} come cateto.`,1],['Come ottengo la diagonale?',`L’altra semidiagonale è ${a}, quindi d=${d} cm.`,1],['Mostrami la soluzione',`d=${d} cm; A=${D}×${d}:2=${A} cm².`,1]]};
+      const [a,b,l]=pickVariant('rhombusSideDiagonal',PYTHAGOREAN_VARIANTS),D=2*b,d=2*a,A=D*d/2;
+      return {text:`Un rombo ha lato ${l} cm e diagonale maggiore ${D} cm. Calcola l’altra diagonale e l’area.`,notes:['Le diagonali si dimezzano e sono perpendicolari.','Isola un triangolo rettangolo.','Pitagora dà una semidiagonale: ricordati poi di raddoppiarla.'],
+      svg:`<svg viewBox="0 0 520 360"><g class="geo-base"><line data-geo="side1" x1="260" y1="55" x2="440" y2="165"/><line data-geo="side2" x1="440" y1="165" x2="260" y2="275"/><line data-geo="side3" x1="260" y1="275" x2="80" y2="165"/><line data-geo="side4" x1="80" y1="165" x2="260" y2="55"/></g><text x="260" y="315" text-anchor="middle">l = ${l} cm</text><text x="260" y="342" text-anchor="middle">D = ${D} cm</text>
+      <g data-v="1" opacity="0"><line data-geo="D-right" class="aux" x1="260" y1="165" x2="440" y2="165"/><line data-geo="d-top" class="aux" x1="260" y1="55" x2="260" y2="165"/><path data-geo="right-angle" class="aux" d="M260 152 H273 V165" fill="none" stroke-width="3"/><text data-geo="halfD-label" class="label-aux" x="350" y="150" text-anchor="middle">D/2 = ${b}</text><text data-geo="unknown-half" class="label-aux" x="276" y="110">d/2 ?</text></g>
+      <g data-v="2" opacity="0"><text class="label-focus" x="260" y="358" text-anchor="middle">d/2 = ${a} cm → d = ${d} cm</text></g></svg>`,
+      helps:[['Quale triangolo posso usare?','Le diagonali sono perpendicolari e si dimezzano: concentra l’attenzione su un quarto del rombo.',1],['Come trovo la semidiagonale?',`Hai ipotenusa ${l} cm e un cateto D/2=${b} cm: usa Pitagora inverso.`,2],['Che cosa manca ancora?','Il valore trovato è solo metà della diagonale: raddoppialo.',2],['Mostrami la soluzione',`d/2=√(${l}²−${b}²)=${a} cm; d=${d} cm; A=${D}×${d}:2=${A} cm².`,2]],
+      scenes:{1:{keep:['side1','D-right','d-top','right-angle','halfD-label','unknown-half'],highlight:['side1'],aux:['D-right','d-top','right-angle']}}};
     }
   },
   rightTrapBasesHeight:{
@@ -416,41 +427,41 @@ const COMPOSITE_VARIANTS={
 };
 const fmt=n=>Number.isInteger(n)?String(n):String(Math.round(n*100)/100).replace('.',',');
 
-function compSvg(kind,d,stepText=''){
+function compSvg(kind,d,task='area',stepText=''){
   let shapes='', shared='', labels='';
+  const unknown = task==='inverse';
   if(kind==='rectRect'){
-    const [w1,h1,w2,h2]=d, sh=Math.min(h1,h2);
+    const [w1,h1,w2,h2]=d;
     shapes='<path data-geo="partA" d="M95 270 V105 H270 V270 Z"/><path data-geo="partB" d="M270 270 V165 H425 V270 Z"/>';
-    shared='<line data-geo="shared" x1="270" y1="270" x2="270" y2="165"/>';
-    labels=`<text x="180" y="292">${w1} cm</text><text x="102" y="190">${h1} cm</text><text x="345" y="292">${w2} cm</text><text x="390" y="220">${h2} cm</text>`;
+    shared='<line data-geo="shared" class="focus-strong" x1="270" y1="270" x2="270" y2="165"/>';
+    labels=`<text x="180" y="300" text-anchor="middle">${w1} cm</text><text x="78" y="190" text-anchor="end">${h1} cm</text><text x="348" y="300" text-anchor="middle">${w2} cm</text><text x="438" y="220">${unknown?'h ?':h2+' cm'}</text>`;
   }
   if(kind==='squareTri'||kind==='rectTri'){
     const b=d[0], hr=kind==='squareTri'?b:d[1], ht=kind==='squareTri'?d[1]:d[2], l=Math.hypot(b/2,ht);
     shapes='<rect data-geo="partA" x="145" y="150" width="230" height="145"/><path data-geo="partB" d="M145 150 L260 55 L375 150 Z"/>';
-    shared='<line data-geo="shared" x1="145" y1="150" x2="375" y2="150"/>';
-    labels=`<text x="260" y="318">${b} cm</text><text x="153" y="225">${hr} cm</text><text x="270" y="95">h ${ht} cm</text><text x="330" y="100">${fmt(l)} cm</text>`;
+    shared='<line data-geo="shared" class="focus-strong" x1="145" y1="150" x2="375" y2="150"/>';
+    labels=`<text x="260" y="320" text-anchor="middle">${b} cm</text><text x="125" y="225" text-anchor="end">${hr} cm</text><text x="225" y="105" text-anchor="end">h ${unknown?'?':ht+' cm'}</text><text x="315" y="103">${fmt(l)} cm</text>`;
   }
   if(kind==='squareTrap'||kind==='rectTrap'){
     const B=d[0], hr=kind==='squareTrap'?B:d[1], b=kind==='squareTrap'?d[1]:d[2], ht=kind==='squareTrap'?d[2]:d[3], l=Math.hypot((B-b)/2,ht);
     shapes='<rect data-geo="partA" x="125" y="175" width="270" height="120"/><path data-geo="partB" d="M125 175 L175 70 H345 L395 175 Z"/>';
-    shared='<line data-geo="shared" x1="125" y1="175" x2="395" y2="175"/>';
-    labels=`<text x="260" y="318">${B} cm</text><text x="132" y="238">${hr} cm</text><text x="260" y="58">${b} cm</text><text x="275" y="125">h ${ht} cm</text><text x="360" y="125">${fmt(l)} cm</text>`;
+    shared='<line data-geo="shared" class="focus-strong" x1="125" y1="175" x2="395" y2="175"/>';
+    labels=`<text x="260" y="320" text-anchor="middle">${B} cm</text><text x="105" y="238" text-anchor="end">${hr} cm</text><text x="260" y="55" text-anchor="middle">${b} cm</text><text x="260" y="125" text-anchor="middle">h ${unknown?'?':ht+' cm'}</text><text x="370" y="120">${fmt(l)} cm</text>`;
   }
   if(kind==='triTrap'){
     const [bT,hT,B,hR]=d, lT=Math.hypot(bT/2,hT), lR=Math.hypot((B-bT)/2,hR);
     shapes='<path data-geo="partA" d="M175 115 L260 45 L345 115 Z"/><path data-geo="partB" d="M175 115 L120 285 H400 L345 115 Z"/>';
-    shared='<line data-geo="shared" x1="175" y1="115" x2="345" y2="115"/>';
-    labels=`<text x="260" y="105">${bT} cm</text><text x="270" y="70">h ${hT} cm</text><text x="310" y="72">${fmt(lT)} cm</text><text x="260" y="310">${B} cm</text><text x="275" y="215">h ${hR} cm</text><text x="375" y="205">${fmt(lR)} cm</text>`;
+    shared='<line data-geo="shared" class="focus-strong" x1="175" y1="115" x2="345" y2="115"/>';
+    labels=`<text x="260" y="140" text-anchor="middle">${bT} cm</text><text x="220" y="77" text-anchor="end">h ${hT} cm</text><text x="305" y="70">${fmt(lT)} cm</text><text x="260" y="315" text-anchor="middle">${B} cm</text><text x="260" y="215" text-anchor="middle">h ${unknown?'?':hR+' cm'}</text><text x="385" y="205">${fmt(lR)} cm</text>`;
   }
   if(kind==='rectRhomb'){
-    const [s,hr,hR]=d, dx=Math.sqrt(s*s-hR*hR);
+    const [s,hr,hR]=d;
     shapes='<rect data-geo="partA" x="145" y="175" width="230" height="120"/><path data-geo="partB" d="M145 175 L205 70 H435 L375 175 Z"/>';
-    shared='<line data-geo="shared" x1="145" y1="175" x2="375" y2="175"/>';
-    labels=`<text x="260" y="318">${s} cm</text><text x="153" y="238">${hr} cm</text><text x="320" y="58">lato ${s} cm</text><text x="275" y="125">h ${hR} cm</text>`;
+    shared='<line data-geo="shared" class="focus-strong" x1="145" y1="175" x2="375" y2="175"/>';
+    labels=`<text x="260" y="320" text-anchor="middle">${s} cm</text><text x="125" y="238" text-anchor="end">${hr} cm</text><text x="320" y="55" text-anchor="middle">lato ${s} cm</text><text x="270" y="125">h ${unknown?'?':hR+' cm'}</text>`;
   }
-  return `<svg viewBox="0 0 520 350" aria-label="Figura composta da due figure geometriche"><g class="geo-base" fill="none" stroke="currentColor" stroke-width="5">${shapes}</g><g class="geo-labels" fill="currentColor" stroke="none" font-size="18">${labels}</g><g data-v="1" opacity="0"><g class="geo-base" fill="none" stroke="currentColor"><g class="focus">${shared}</g></g><text class="label-focus" x="260" y="340" text-anchor="middle">${stepText}</text></g></svg>`;
+  return `<svg viewBox="0 0 520 365" aria-label="Figura composta da due figure geometriche"><g class="geo-base" fill="none" stroke="currentColor" stroke-width="5">${shapes}</g><g class="geo-labels" fill="currentColor" stroke="none" font-size="18">${labels}</g><g data-v="1" opacity="0">${shared}<text class="label-focus" x="260" y="352" text-anchor="middle">${stepText}</text></g></svg>`;
 }
-
 function compositeProblem(kind,task){
   const key=`comp_${kind}_${task}`, v=pickVariant(key,COMPOSITE_VARIANTS[kind]);
   let names='',A1=0,A2=0,P=0,text='',inverse='',invAnswer='',labels='';
@@ -481,7 +492,7 @@ function compositeProblem(kind,task){
   const help1=task==='perimeter'?'Il segmento evidenziato è comune alle due figure ed è interno: non appartiene al perimetro.':'Individua le due figure semplici: il segmento evidenziato è quello che condividono.';
   const help2=task==='area'?`Calcola separatamente le aree: A₁=${fmt(A1)} cm² e A₂=${fmt(A2)} cm².`:task==='perimeter'?'Segui soltanto il contorno esterno: il segmento evidenziato non va contato.':`Sottrai dall’area totale l’area della parte di cui conosci già tutte le misure.`;
   const solution=task==='area'?`A=${fmt(A1)}+${fmt(A2)}=${fmt(total)} cm².`:task==='perimeter'?`Il perimetro esterno misura ${fmt(P)} cm.`:invAnswer;
-  return {text,notes:['Osserva la sagoma come un’unica figura.',help1,help2,solution],svg:compSvg(kind,v,task==='perimeter'?'Questo è il lato comune':task==='inverse'?'Separa qui le due aree':'Qui si incontrano le due figure'),helps:[['Come posso scomporla?',help1,1],['Qual è il passo successivo?',help2,1],['Mostrami la soluzione',solution,1]],scenes:{}};
+  return {text,notes:['Osserva la sagoma come un’unica figura.',help1,help2,solution],svg:compSvg(kind,v,task,task==='perimeter'?'Questo è il lato comune':task==='inverse'?'Separa qui le due aree':'Qui si incontrano le due figure'),helps:[['Come posso scomporla?',help1,1],['Qual è il passo successivo?',help2,1],['Mostrami la soluzione',solution,1]],scenes:{}};
 }
 
 const COMPOSITE_STRUCTURES=[

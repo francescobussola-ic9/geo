@@ -5,19 +5,132 @@ const FAMILIES={
   perimeterDiff:{
     figures:['rettangolo'], strategies:['perimetro','differenza','area'],
     generate(){
-      const h=rand([6,7,8,9,10,11,12]), d=rand([3,4,5,6,7]); const b=h+d, P=2*(b+h), A=b*h;
+      const h=rand([6,7,8,9,10,11,12]), d=rand([3,4,5,6,7]);
+      const b=h+d, P=2*(b+h), A=b*h, semi=P/2;
+
+      // Geometria del rettangolo coerente con b:h.
+      const maxW=330, maxH=170;
+      const rectScale=Math.min(maxW/b,maxH/h);
+      const rectW=b*rectScale, rectH=h*rectScale;
+      const rx=260-rectW/2, ry=118, rBottom=ry+rectH;
+
+      // Il semiperimetro è rappresentato davvero come b + h: due segmenti
+      // contigui, con lunghezze proporzionali ai due lati.
+      const semiW=340, semiX=90, semiY=66;
+      const bW=semiW*b/semi, hW=semiW*h/semi;
+
+      // Barre della differenza: h e b=h+d condividono la stessa scala.
+      const barMax=300, unit=barMax/b;
+      const hBar=h*unit, dBar=d*unit, barX=110;
+      const bar1Y=175, bar2Y=230, barH=30;
+
       return {text:`Un rettangolo ha il perimetro di ${P} cm. La base supera l’altezza di ${d} cm. Calcola l’area.`,
-      svg:`<svg viewBox="0 0 520 330" aria-label="Rettangolo"><rect x="90" y="80" width="340" height="190" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="305" text-anchor="middle">b ?</text><text x="48" y="180">h ?</text><g data-v="1" opacity="0"><path class="aux" d="M90 55 H430" fill="none" stroke-width="5"/><text class="label-aux" x="260" y="40" text-anchor="middle">b + h = ${P/2} cm</text></g><g data-v="2" opacity="0"><rect x="95" y="125" width="290" height="34" fill="none" class="unit" stroke-width="4"/><rect x="95" y="192" width="205" height="34" fill="none" class="unit" stroke-width="4"/><rect x="300" y="192" width="85" height="34" fill="none" class="focus" stroke-width="4"/><text class="label-focus" x="342" y="216" text-anchor="middle">${d}</text></g><g data-v="3" opacity="0"><text class="label-aux" x="260" y="42" text-anchor="middle">${P/2} − ${d} = ${2*h} → ${2*h} : 2 = ${h}</text><text class="label-focus" x="260" y="67" text-anchor="middle">b = ${b} cm · h = ${h} cm</text></g></svg>`,
-      helps:[['Da dove posso iniziare?','Una base e un’altezza insieme formano il semiperimetro.',1],['Come uso la differenza? ',`La base ha un pezzo in più di ${d} cm. Rappresenta i due lati con due barre.`,2],['Come trovo i lati?',`Togli ${d} dal semiperimetro e dividi ciò che resta in due parti uguali.`,3],['Mostrami la soluzione',`h = ${h} cm, b = ${b} cm; A = ${b} × ${h} = ${A} cm².`,3]]};
+      notes:[
+        'Osserva i dati e prova a decidere da dove partire.',
+        `Il semiperimetro è ${semi} cm: corrisponde a una base più un’altezza.`,
+        `Rappresentiamo h e b: la base è lunga come h più un tratto di ${d} cm.`,
+        `Tolto il tratto di ${d} cm, restano due parti uguali: ciascuna misura ${h} cm.`
+      ],
+      svg:`<svg viewBox="0 0 520 350" aria-label="Rettangolo con rappresentazione del semiperimetro e della differenza tra i lati">
+        <rect x="${rx}" y="${ry}" width="${rectW}" height="${rectH}" fill="none" stroke="currentColor" stroke-width="5"/>
+        <text x="260" y="${Math.min(330,rBottom+34)}" text-anchor="middle">b ?</text>
+        <text x="${rx-24}" y="${ry+rectH/2+7}" text-anchor="end">h ?</text>
+
+        <g data-v="1" opacity="0">
+          <line class="focus" x1="${semiX}" y1="${semiY}" x2="${semiX+bW}" y2="${semiY}" stroke-width="7"/>
+          <line class="aux" x1="${semiX+bW}" y1="${semiY}" x2="${semiX+semiW}" y2="${semiY}" stroke-width="7"/>
+          <line class="unit" x1="${semiX+bW}" y1="${semiY-10}" x2="${semiX+bW}" y2="${semiY+10}" stroke-width="3"/>
+          <text class="label-focus" x="${semiX+bW/2}" y="43" text-anchor="middle">b</text>
+          <text class="label-aux" x="${semiX+bW+hW/2}" y="43" text-anchor="middle">h</text>
+          <text x="260" y="94" text-anchor="middle">b + h = ${semi} cm</text>
+        </g>
+
+        <g data-v="2" opacity="0">
+          <rect x="${barX}" y="${bar1Y}" width="${hBar}" height="${barH}" fill="var(--paper, #fffdf8)" class="unit" stroke-width="4"/>
+          <text class="label-unit" x="${barX-18}" y="${bar1Y+22}" text-anchor="end">h</text>
+          <rect x="${barX}" y="${bar2Y}" width="${hBar}" height="${barH}" fill="var(--paper, #fffdf8)" class="unit" stroke-width="4"/>
+          <rect x="${barX+hBar}" y="${bar2Y}" width="${dBar}" height="${barH}" fill="var(--paper, #fffdf8)" class="focus" stroke-width="4"/>
+          <text class="label-unit" x="${barX-18}" y="${bar2Y+22}" text-anchor="end">b</text>
+          <text class="label-focus" x="${barX+hBar+dBar/2}" y="${bar2Y+22}" text-anchor="middle">${d}</text>
+        </g>
+
+        <g data-v="3" opacity="0">
+          <rect x="92" y="292" width="336" height="46" rx="18" fill="var(--paper, #fffdf8)" opacity="0.96"/>
+          <text class="label-aux" x="260" y="312" text-anchor="middle">${semi} − ${d} = ${2*h}</text>
+          <text class="label-focus" x="260" y="334" text-anchor="middle">${2*h} : 2 = ${h} cm → h = ${h} cm, b = ${b} cm</text>
+        </g>
+      </svg>`,
+      helps:[
+        ['Da dove posso iniziare?',`Il semiperimetro è ${P} : 2 = ${semi} cm. Una base e un’altezza insieme formano proprio il semiperimetro.`,1],
+        ['Come uso la differenza?',`Rappresenta h e b con due barre: la base è h più un tratto di ${d} cm.`,2],
+        ['Come trovo i lati?',`Togli ${d} dal semiperimetro: ${semi} − ${d} = ${2*h}. Restano due parti uguali, quindi h = ${h} cm e b = ${b} cm.`,3],
+        ['Mostrami la soluzione',`h = ${h} cm, b = ${b} cm; A = ${b} × ${h} = ${A} cm².`,3]
+      ]};
     }
   },
   areaRatio:{
     figures:['rettangolo'], strategies:['area','rapporto','UF','UQ'],
     generate(){
-      const [m,n]=rand([[2,3],[3,4],[3,5],[4,5]]), u=rand([2,3,4,5]); const b=m*u,h=n*u,A=b*h,UQ=m*n,uqa=u*u;
+      const [m,n]=rand([[2,3],[3,4],[3,5],[4,5]]), u=rand([2,3,4,5]);
+      const b=m*u,h=n*u,A=b*h,UQ=m*n,uqa=u*u;
+
+      // Una UF ha SEMPRE la stessa lunghezza grafica in orizzontale e verticale.
+      // Di conseguenza ogni UQ è un vero quadrato di lato 1 UF.
+      const cell=Math.min(64,260/n,250/m);
+      const W=m*cell,H=n*cell,cx=225,x0=cx-W/2,y0=35,y1=y0+H;
+      const vLines=Array.from({length:m-1},(_,i)=>{
+        const x=x0+cell*(i+1); return `<line class="unit" x1="${x}" y1="${y0}" x2="${x}" y2="${y1}" stroke-width="3"/>`;
+      }).join('');
+      const hLines=Array.from({length:n-1},(_,i)=>{
+        const y=y0+cell*(i+1); return `<line class="unit" x1="${x0}" y1="${y}" x2="${x0+W}" y2="${y}" stroke-width="3"/>`;
+      }).join('');
+      const bottomTicks=Array.from({length:m},(_,i)=>{
+        const xa=x0+i*cell, xb=xa+cell, mid=(xa+xb)/2;
+        return `<line class="unit" x1="${xa}" y1="${y1+8}" x2="${xb}" y2="${y1+8}" stroke-width="4"/><line class="unit" x1="${xa}" y1="${y1+3}" x2="${xa}" y2="${y1+13}" stroke-width="3"/>${i===m-1?`<line class="unit" x1="${xb}" y1="${y1+3}" x2="${xb}" y2="${y1+13}" stroke-width="3"/>`:''}<text class="label-unit uf-small" x="${mid}" y="${y1+31}" text-anchor="middle">UF</text>`;
+      }).join('');
+      const leftTicks=Array.from({length:n},(_,i)=>{
+        const ya=y0+i*cell, yb=ya+cell, mid=(ya+yb)/2;
+        return `<line class="unit" x1="${x0-8}" y1="${ya}" x2="${x0-8}" y2="${yb}" stroke-width="4"/><line class="unit" x1="${x0-13}" y1="${ya}" x2="${x0-3}" y2="${ya}" stroke-width="3"/>${i===n-1?`<line class="unit" x1="${x0-13}" y1="${yb}" x2="${x0-3}" y2="${yb}" stroke-width="3"/>`:''}`;
+      }).join('');
+      const sampleX=x0+cell/2,sampleY=y0+cell/2;
+
       return {text:`Un rettangolo ha area ${A} cm². La base è i ${m}/${n} dell’altezza. Calcola le dimensioni.`,
-      svg:`<svg viewBox="0 0 520 330" aria-label="Rettangolo suddiviso in unità frazionarie"><rect x="135" y="45" width="220" height="240" fill="none" stroke="currentColor" stroke-width="5"/><g data-v="1" opacity="0"><text class="label-unit" x="245" y="315" text-anchor="middle">${m} UF</text><text class="label-unit" x="78" y="165">${n} UF</text></g><g data-v="2" opacity="0">${Array.from({length:m-1},(_,i)=>`<line class="unit" x1="${135+220*(i+1)/m}" y1="45" x2="${135+220*(i+1)/m}" y2="285" stroke-width="3"/>`).join('')}${Array.from({length:n-1},(_,i)=>`<line class="unit" x1="135" y1="${45+240*(i+1)/n}" x2="355" y2="${45+240*(i+1)/n}" stroke-width="3"/>`).join('')}<text class="label-unit" x="425" y="155" text-anchor="middle">${UQ} UQ</text><text x="425" y="182" text-anchor="middle">= ${A} cm²</text></g><g data-v="3" opacity="0"><text class="label-focus" x="260" y="24" text-anchor="middle">1 UQ = ${uqa} cm² → 1 UF = √${uqa} = ${u} cm</text></g></svg>`,
-      helps:[['Come rappresento il rapporto?',`La base vale ${m} UF e l’altezza ${n} UF.`,1],['Come uso l’area?',`Dividi il rettangolo secondo le UF: ottieni ${UQ} UQ.`,2],['Come torno alle lunghezze?',`1 UQ vale ${A} : ${UQ} = ${uqa} cm². Il lato di una UQ misura √${uqa} = ${u} cm.`,3],['Mostrami la soluzione',`1 UF = ${u} cm; base = ${b} cm, altezza = ${h} cm.`,3]]};
+      notes:[
+        'Osserva il rapporto tra base e altezza.',
+        `Rappresentiamo la base con ${m} UF e l’altezza con ${n} UF: ogni UF ha la stessa lunghezza.`,
+        `Le UF costruiscono una griglia di ${m} × ${n} = ${UQ} UQ, tutte quadrate.`,
+        `Se ${UQ} UQ valgono ${A} cm², una UQ vale ${uqa} cm². Il suo lato, cioè 1 UF, misura ${u} cm.`,
+        `Quindi la base misura ${b} cm e l’altezza ${h} cm.`
+      ],
+      svg:`<svg viewBox="0 0 520 350" aria-label="Rettangolo costruito con unità frazionarie uguali e unità quadrate">
+        <rect x="${x0}" y="${y0}" width="${W}" height="${H}" fill="none" stroke="currentColor" stroke-width="5"/>
+        <g data-v="1" opacity="0">
+          ${bottomTicks}${leftTicks}
+          <text class="label-unit" x="${x0-28}" y="${y0+H/2}" text-anchor="end">${n} UF</text>
+          <text class="label-unit" x="${cx}" y="${Math.min(342,y1+55)}" text-anchor="middle">base = ${m} UF</text>
+        </g>
+        <g data-v="2" opacity="0">
+          ${vLines}${hLines}
+          <text class="label-unit" x="405" y="125" text-anchor="middle">${m} × ${n} = ${UQ} UQ</text>
+          <text x="405" y="153" text-anchor="middle">${UQ} UQ = ${A} cm²</text>
+        </g>
+        <g data-v="3" opacity="0">
+          <rect class="uq-focus" x="${x0}" y="${y0}" width="${cell}" height="${cell}" fill="none" stroke-width="6"/>
+          <text class="label-focus" x="405" y="205" text-anchor="middle">1 UQ = ${uqa} cm²</text>
+          <text class="label-focus" x="405" y="235" text-anchor="middle">1 UF = √${uqa} = ${u} cm</text>
+          <text class="uq-one" x="${sampleX}" y="${sampleY+7}" text-anchor="middle">1 UQ</text>
+        </g>
+        <g data-v="4" opacity="0">
+          <text class="label-aux" x="405" y="285" text-anchor="middle">b = ${m} × ${u} = ${b} cm</text>
+          <text class="label-aux" x="405" y="315" text-anchor="middle">h = ${n} × ${u} = ${h} cm</text>
+        </g>
+      </svg>`,
+      helps:[
+        ['Come rappresento il rapporto?',`Usa la stessa unità di lunghezza: base = ${m} UF, altezza = ${n} UF.`,1],
+        ['Come uso l’area?',`Prolunga le divisioni: ottieni ${m} × ${n} = ${UQ} UQ. Ogni UQ è un quadrato di lato 1 UF.`,2],
+        ['Quanto vale una UF?',`1 UQ vale ${A} : ${UQ} = ${uqa} cm². Poiché è un quadrato, 1 UF = √${uqa} = ${u} cm.`,3],
+        ['Mostrami la soluzione',`1 UF = ${u} cm; base = ${m} × ${u} = ${b} cm; altezza = ${n} × ${u} = ${h} cm.`,4]
+      ]};
     }
   },
   trapezoid:{

@@ -187,7 +187,74 @@ const FAMILIES={
         ['Mostrami la soluzione',`h = √(${l}² − ${p}²) = ${h} cm; A = (${big} + ${small}) × ${h} : 2 = ${A} cm².`,5]
       ]};
     }
+  },
+  perimeterRatio:{
+    figures:['rettangolo'], strategies:['perimetro','rapporto','UF'],
+    generate(){
+      const [m,n]=rand([[2,3],[3,4],[3,5]]), u=rand([2,3,4]);
+      const b=n*u,h=m*u,P=2*(b+h),semi=P/2,total=m+n;
+      const W=300,H=W*m/n,x=110,y=65,bottom=y+H,cell=W/n;
+      return {text:`Un rettangolo ha il perimetro di ${P} cm. La base è i ${n}/${m} dell’altezza. Calcola l’area.`,
+      notes:['Osserva il rapporto tra i lati.',`Il semiperimetro misura ${semi} cm.`,`Base e altezza possono essere viste come ${n} UF e ${m} UF.`,`In tutto sono ${total} UF: una UF misura ${u} cm.`,`Quindi b = ${b} cm e h = ${h} cm.`],
+      svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect data-geo="shape" x="${x}" y="${y}" width="${W}" height="${H}" fill="none" stroke="currentColor" stroke-width="5"/></g>
+      <text data-geo="b-label" x="260" y="${bottom+34}" text-anchor="middle">b ?</text><text data-geo="h-label" x="${x-24}" y="${y+H/2}" text-anchor="end">h ?</text>
+      <g data-v="1" opacity="0"><text class="label-aux" x="260" y="35" text-anchor="middle">b + h = ${semi} cm</text></g>
+      <g data-v="2" opacity="0">${Array.from({length:n},(_,i)=>`<line class="unit" x1="${x+i*cell}" y1="${bottom+8}" x2="${x+(i+1)*cell}" y2="${bottom+8}" stroke-width="5"/>`).join('')}<text class="label-unit" x="260" y="${bottom+58}" text-anchor="middle">b = ${n} UF · h = ${m} UF</text></g>
+      <g data-v="3" opacity="0"><text class="label-focus" x="260" y="${bottom+88}" text-anchor="middle">${semi} : ${total} = ${u} cm = 1 UF</text></g></svg>`,
+      helps:[['Da dove parto?',`Calcola il semiperimetro: ${P} : 2 = ${semi} cm.`,1],['Come uso il rapporto?',`Rappresenta b con ${n} UF e h con ${m} UF.`,2],['Quanto vale una UF?',`${semi} : ${total} = ${u} cm.`,3],['Mostrami la soluzione',`b=${b} cm, h=${h} cm; A=${b*h} cm².`,3]]};
+    }
+  },
+  triangleIsoPythagoras:{
+    figures:['triangolo'], strategies:['altezza','pitagora','area'],
+    generate(){
+      const [h,p,l]=rand([[3,4,5],[4,3,5],[5,12,13]]), base=2*p,A=base*h/2;
+      const s=Math.min(280/base,190/h),cx=260,yB=270,yT=yB-h*s,xL=cx-p*s,xR=cx+p*s;
+      return {text:`Un triangolo isoscele ha la base di ${base} cm e i lati obliqui di ${l} cm. Calcola l’area.`,
+      notes:['Osserva la figura.',`Per l’area serve l’altezza.`,`L’altezza divide la base in due parti uguali di ${p} cm.`,`Concentrati sul triangolo rettangolo evidenziato.`,`Ora conosci l’altezza: ${h} cm.`],
+      svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><line data-geo="left-leg" x1="${xL}" y1="${yB}" x2="260" y2="${yT}"/><line data-geo="right-leg" x1="260" y1="${yT}" x2="${xR}" y2="${yB}"/><line data-geo="base-left" x1="${xL}" y1="${yB}" x2="260" y2="${yB}"/><line data-geo="base-right" x1="260" y1="${yB}" x2="${xR}" y2="${yB}"/></g><text data-geo="base-label" x="260" y="310" text-anchor="middle">${base} cm</text><text data-geo="left-label" x="${(xL+260)/2-25}" y="${(yB+yT)/2}">${l} cm</text><text data-geo="right-label" x="${(xR+260)/2+12}" y="${(yB+yT)/2}">${l} cm</text>
+      <g data-v="1" opacity="0"><line data-geo="height" class="aux" x1="260" y1="${yT}" x2="260" y2="${yB}" stroke-width="4" stroke-dasharray="8 6"/><path data-geo="right-angle" class="aux" d="M260 ${yB-14} H274 V${yB}" fill="none" stroke-width="3"/><text data-geo="h-label" class="label-aux" x="278" y="${(yT+yB)/2}">h ?</text></g>
+      <g data-v="2" opacity="0"><text data-geo="half-label" class="label-focus" x="${(xL+260)/2}" y="${yB+28}" text-anchor="middle">${p} cm</text></g>
+      <g data-v="4" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">h = ${h} cm → A = ${A} cm²</text></g></svg>`,
+      helps:[['Cosa mi manca?',`Per calcolare l’area traccia l’altezza.`,1],['Cosa succede alla base?',`Nel triangolo isoscele l’altezza la divide a metà: ${base}:2=${p} cm.`,2],['Sono ancora bloccato/a',`Osserva il triangolo rettangolo: ipotenusa ${l}, cateto ${p}, h incognita.`,3],['Mostrami la soluzione',`h=√(${l}²−${p}²)=${h} cm; A=${base}×${h}:2=${A} cm².`,4]],
+      scenes:{3:{keep:['left-leg','base-left','height','right-angle','h-label','left-label','half-label'],highlight:['left-leg','base-left'],aux:['height']}}};
+    }
+  },
+  rhombusDiagonals:{
+    figures:['rombo'], strategies:['diagonali','pitagora','perimetro'],
+    generate(){
+      const [a,b,l]=rand([[3,4,5],[5,12,13],[6,8,10]]),D=2*b,d=2*a,A=D*d/2,P=4*l;
+      const sx=12,sy=12,cx=260,cy=165,L=b*sx,S=a*sy;
+      return {text:`Un rombo ha le diagonali di ${D} cm e ${d} cm. Calcola l’area e il perimetro.`,notes:['Osserva il rombo.',`Le diagonali si tagliano a metà e sono perpendicolari.`,`Considera uno dei quattro triangoli rettangoli.`,`Il lato del rombo misura ${l} cm.`],
+      svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><line data-geo="side1" x1="${cx}" y1="${cy-S}" x2="${cx+L}" y2="${cy}"/><line data-geo="side2" x1="${cx+L}" y1="${cy}" x2="${cx}" y2="${cy+S}"/><line data-geo="side3" x1="${cx}" y1="${cy+S}" x2="${cx-L}" y2="${cy}"/><line data-geo="side4" x1="${cx-L}" y1="${cy}" x2="${cx}" y2="${cy-S}"/></g><text x="260" y="330" text-anchor="middle">D = ${D} cm · d = ${d} cm</text>
+      <g data-v="1" opacity="0"><line data-geo="halfD-left" class="aux" x1="${cx-L}" y1="${cy}" x2="${cx}" y2="${cy}"/><line data-geo="halfD-right" class="aux" x1="${cx}" y1="${cy}" x2="${cx+L}" y2="${cy}"/><line data-geo="halfd-top" class="aux" x1="${cx}" y1="${cy-S}" x2="${cx}" y2="${cy}"/><line data-geo="halfd-bottom" class="aux" x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+S}"/><path data-geo="right-angle" class="aux" d="M${cx} ${cy-13} H${cx+13} V${cy}" fill="none" stroke-width="3"/><text class="label-aux" x="${cx+L/2}" y="${cy-12}" text-anchor="middle">${b}</text><text class="label-aux" x="${cx+16}" y="${cy-S/2}" text-anchor="start">${a}</text></g>
+      <g data-v="3" opacity="0"><text class="label-focus" x="260" y="305" text-anchor="middle">l = √(${a}² + ${b}²) = ${l} cm</text></g></svg>`,
+      helps:[['Cosa so sulle diagonali?','Nel rombo le diagonali sono perpendicolari e si dimezzano a vicenda.',1],['Come trovo il lato?',`Usa un triangolo rettangolo con cateti ${a} cm e ${b} cm.`,2],['E poi?',`Con Pitagora il lato misura ${l} cm.`,3],['Mostrami la soluzione',`A=${D}×${d}:2=${A} cm²; P=4×${l}=${P} cm.`,3]],
+      scenes:{2:{keep:['side1','halfD-right','halfd-top','right-angle'],highlight:['side1'],aux:['halfD-right','halfd-top']}}};
+    }
+  },
+  rightTrapezoid:{
+    figures:['trapezio'], strategies:['differenza_basi','proiezione','pitagora','area'],
+    generate(){
+      const [h,p,l]=rand([[3,4,5],[5,12,13],[6,8,10]]),small=rand([8,10,12]),big=small+p,A=(big+small)*h/2;
+      const s=Math.min(350/big,160/h),x=85,yB=265,yT=yB-h*s,xTR=x+small*s,xR=x+big*s;
+      return {text:`Un trapezio rettangolo ha le basi di ${big} cm e ${small} cm e il lato obliquo di ${l} cm. Calcola l’area.`,notes:['Osserva il trapezio rettangolo.',`La differenza tra le basi è la proiezione del lato obliquo.`,`Concentrati sul triangolo rettangolo a destra.`,`L’altezza misura ${h} cm.`],
+      svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><line data-geo="left" x1="${x}" y1="${yB}" x2="${x}" y2="${yT}"/><line data-geo="top" x1="${x}" y1="${yT}" x2="${xTR}" y2="${yT}"/><line data-geo="leg" x1="${xTR}" y1="${yT}" x2="${xR}" y2="${yB}"/><line data-geo="base-main" x1="${x}" y1="${yB}" x2="${xTR}" y2="${yB}"/><line data-geo="projection" x1="${xTR}" y1="${yB}" x2="${xR}" y2="${yB}"/></g><text x="${(x+xTR)/2}" y="${yT-18}" text-anchor="middle">${small} cm</text><text x="${(x+xR)/2}" y="310" text-anchor="middle">${big} cm</text><text data-geo="leg-label" x="${(xTR+xR)/2+25}" y="${(yT+yB)/2}">${l} cm</text>
+      <g data-v="1" opacity="0"><line data-geo="height" class="aux" x1="${xTR}" y1="${yT}" x2="${xTR}" y2="${yB}" stroke-width="4" stroke-dasharray="8 6"/><text data-geo="p-label" class="label-focus" x="${(xTR+xR)/2}" y="${yB+27}" text-anchor="middle">${p} cm</text><text data-geo="h-label" class="label-aux" x="${xTR-16}" y="${(yT+yB)/2}" text-anchor="end">h ?</text></g><g data-v="3" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">h = ${h} cm → A = ${A} cm²</text></g></svg>`,
+      helps:[['Come uso le basi?',`La loro differenza è ${big}−${small}=${p} cm.`,1],['Dove guardo ora?',`Osserva il triangolo rettangolo formato da proiezione, altezza e lato obliquo.`,2],['Come trovo h?',`h=√(${l}²−${p}²)=${h} cm.`,3],['Mostrami la soluzione',`A=(${big}+${small})×${h}:2=${A} cm².`,3]],
+      scenes:{2:{keep:['leg','projection','height','leg-label','p-label','h-label'],highlight:['leg','projection'],aux:['height']}}};
+    }
+  },
+  compositeDifference:{
+    figures:['composta'], strategies:['scomposizione','differenza_aree'],
+    generate(){
+      const W=rand([12,14,16]),H=rand([9,10,12]),w=rand([4,5,6]),h=rand([3,4]),A=W*H-w*h;
+      const s=Math.min(300/W,210/H),x=105,y=55,cutX=x+(W-w)*s,cutY=y+h*s;
+      return {text:`Da un rettangolo di ${W} cm × ${H} cm è stato tolto, nell’angolo in alto a destra, un rettangolo di ${w} cm × ${h} cm. Calcola l’area della figura rimasta.`,notes:['Osserva la figura composta.','Puoi partire da una figura più semplice: il rettangolo esterno.','La parte mancante va sottratta.','Ora confronta le due aree.'],
+      svg:`<svg viewBox="0 0 520 350"><path data-geo="shape" d="M${x} ${y} H${cutX} V${cutY} H${x+W*s} V${y+H*s} H${x} Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><text x="260" y="315" text-anchor="middle">rettangolo esterno: ${W} × ${H} cm</text><g data-v="1" opacity="0"><rect data-geo="outer" x="${x}" y="${y}" width="${W*s}" height="${H*s}" fill="none" class="aux" stroke-width="4" stroke-dasharray="8 6"/></g><g data-v="2" opacity="0"><rect data-geo="cut" x="${cutX}" y="${y}" width="${w*s}" height="${h*s}" fill="rgba(255,104,75,.10)" class="focus" stroke-width="5"/><text class="label-focus" x="${cutX+w*s/2}" y="${y+h*s/2}" text-anchor="middle">${w}×${h}</text></g><g data-v="3" opacity="0"><text class="label-aux" x="260" y="342" text-anchor="middle">${W*H} − ${w*h} = ${A} cm²</text></g></svg>`,
+      helps:[['Da quale figura parto?',`Immagina il rettangolo esterno completo: area ${W}×${H}.`,1],['Che cosa devo togliere?',`Il rettangolo mancante misura ${w}×${h} cm.`,2],['Come combino le aree?',`Sottrai l’area mancante dall’area esterna.`,3],['Mostrami la soluzione',`${W*H}−${w*h}=${A} cm².`,3]]};
+    }
   }
+
 };
 
 const FIGURES=[
@@ -218,6 +285,26 @@ function applyVisual(){
   if(state.openHelp===null)return;
   const step=state.instance.helps[state.openHelp][2];
   svg.querySelectorAll('[data-v]').forEach(g=>g.setAttribute('opacity',+g.dataset.v<=step?'1':'0'));
+
+  // Scene engine: new families declare only visual states for named SVG objects.
+  const scene=state.instance.scenes?.[step];
+  if(scene){
+    const q=id=>svg.querySelector(`[data-geo="${id}"]`);
+    if(scene.keep){
+      const keep=new Set(scene.keep);
+      svg.querySelectorAll('[data-geo]').forEach(el=>{
+        if(keep.has(el.dataset.geo)) return;
+        if(el.tagName.toLowerCase()==='text') el.classList.add('focus-hidden');
+        else el.classList.add('dimmed');
+      });
+    }
+    (scene.dim||[]).forEach(id=>q(id)?.classList.add('dimmed'));
+    (scene.hide||[]).forEach(id=>q(id)?.classList.add('focus-hidden'));
+    (scene.highlight||[]).forEach(id=>q(id)?.classList.add('geo-highlight'));
+    (scene.aux||[]).forEach(id=>q(id)?.classList.add('geo-aux-highlight'));
+    (scene.unit||[]).forEach(id=>q(id)?.classList.add('geo-unit-highlight'));
+    (scene.labels||[]).forEach(id=>q(id)?.classList.add('geo-label-highlight'));
+  }
 
   if(state.family==='perimeterDiff'){
     const q=id=>svg.querySelector(`[data-geo=\"${id}\"]`);

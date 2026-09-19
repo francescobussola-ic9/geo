@@ -398,77 +398,90 @@ Object.assign(FAMILIES, {
 });
 
 
-// --- Figure composte v0.6 -------------------------------------------------
-// La probabilità dipende dal TIPO di problema, non dal numero di istanze numeriche.
-// “Provane uno simile” richiama generate() sulla stessa chiave-famiglia: cambia quindi
-// soltanto i dati, non la coppia di figure né la competenza richiesta.
+// --- Figure composte v0.6.1 -----------------------------------------------
+// Ogni struttura possiede un vero segmento condiviso. Gli aiuti evidenziano
+// quell'oggetto SVG: nessuna linea ausiliaria disegnata a coordinate arbitrarie.
 delete FAMILIES.compositeDifference;
 delete FAMILIES.compositeFindCut;
 delete FAMILIES.compositeFindOuter;
 
 const COMPOSITE_VARIANTS={
   rectRect:[[10,6,4,4],[12,7,5,5],[14,8,6,4],[15,9,5,6],[16,10,6,5],[18,10,8,6]],
-  squareTri:[[6,4,5],[8,3,5],[8,6,5],[10,12,13],[12,5,13],[16,6,10]], // [lato quadrato, altezza triangolo, lato obliquo]
-  rectTri:[[6,8,4,5],[8,10,3,5],[8,12,6,5],[10,14,12,13],[12,16,5,13],[16,18,6,10]], // [base, h rett, h tri, lato]
-  squareTrap:[[10,6,4,5],[12,6,4,5],[14,8,3,5],[16,10,4,5],[18,8,4,6.403124237],[20,12,4,5]],
-  rectTrap:[[10,7,6,4,5],[12,8,6,4,5],[14,9,8,3,5],[16,10,10,4,5],[18,11,12,4,5],[20,12,14,4,5]], // [B condivisa,hR,b,hT,l]
-  triTrap:[[6,4,5,10,4,5],[8,3,5,14,3,5],[8,6,5,14,4,5],[10,12,13,20,12,5],[12,5,13,22,4,5],[16,6,10,22,3,5]], // [b tri,h tri,l tri,B trap,h trap,l trap]
-  rectRhomb:[[10,7,6,8,10],[10,8,8,6,10],[13,8,5,12,13],[13,9,12,5,13],[15,10,9,12,15],[17,10,8,15,17]] // [lato condiviso,h rett,h rombo,offset,lato]
+  squareTri:[[6,4],[8,3],[8,6],[10,12],[12,5],[16,6]],                 // [base condivisa, h triangolo]
+  rectTri:[[6,8,4],[8,10,3],[8,12,6],[10,14,12],[12,16,5],[16,18,6]], // [base, h rett, h tri]
+  squareTrap:[[10,6,4],[12,6,4],[14,8,3],[16,10,4],[18,8,4],[20,12,4]], // [B condivisa,b,h]
+  rectTrap:[[10,7,6,4],[12,8,6,4],[14,9,8,3],[16,10,10,4],[18,11,12,4],[20,12,14,4]],
+  triTrap:[[6,4,10,4],[8,3,14,3],[8,6,14,4],[10,12,20,12],[12,5,22,4],[16,6,22,3]], // [b tri,h tri,B trap,h trap]
+  rectRhomb:[[10,7,6],[10,8,8],[13,8,5],[13,9,12],[15,10,9],[17,10,8]] // [lato condiviso,h rett,h rombo]
 };
+const fmt=n=>Number.isInteger(n)?String(n):String(Math.round(n*100)/100).replace('.',',');
 
 function compSvg(kind,d,stepText=''){
-  const line='<line data-geo="divider" class="aux" x1="120" y1="205" x2="400" y2="205" stroke-width="4" stroke-dasharray="8 6"/>';
-  let shapes='';
-  if(kind==='rectRect') shapes='<path data-geo="partA" d="M95 270 V115 H270 V270 Z"/><path data-geo="partB" d="M270 270 V165 H425 V270 Z"/>';
-  if(kind==='squareTri') shapes='<rect data-geo="partA" x="150" y="145" width="220" height="150"/><path data-geo="partB" d="M150 145 L260 55 L370 145 Z"/>';
-  if(kind==='rectTri') shapes='<rect data-geo="partA" x="125" y="150" width="270" height="145"/><path data-geo="partB" d="M125 150 L260 55 L395 150 Z"/>';
-  if(kind==='squareTrap') shapes='<rect data-geo="partA" x="150" y="165" width="220" height="130"/><path data-geo="partB" d="M150 165 L190 70 H330 L370 165 Z"/>';
-  if(kind==='rectTrap') shapes='<rect data-geo="partA" x="125" y="175" width="270" height="120"/><path data-geo="partB" d="M125 175 L175 70 H345 L395 175 Z"/>';
-  if(kind==='triTrap') shapes='<path data-geo="partA" d="M175 115 L260 45 L345 115 Z"/><path data-geo="partB" d="M175 115 L120 285 H400 L345 115 Z"/>';
-  if(kind==='rectRhomb') shapes='<rect data-geo="partA" x="145" y="175" width="230" height="120"/><path data-geo="partB" d="M145 175 L205 70 L435 70 L375 175 Z"/>';
-  return `<svg viewBox="0 0 520 350" aria-label="Figura composta da due figure geometriche"><g class="geo-base" fill="none" stroke="currentColor" stroke-width="5">${shapes}</g><g data-v="1" opacity="0">${line}<text class="label-focus" x="260" y="330" text-anchor="middle">${stepText}</text></g></svg>`;
+  let shapes='', shared='', labels='';
+  if(kind==='rectRect'){
+    const [w1,h1,w2,h2]=d, sh=Math.min(h1,h2);
+    shapes='<path data-geo="partA" d="M95 270 V105 H270 V270 Z"/><path data-geo="partB" d="M270 270 V165 H425 V270 Z"/>';
+    shared='<line data-geo="shared" x1="270" y1="270" x2="270" y2="165"/>';
+    labels=`<text x="180" y="292">${w1} cm</text><text x="102" y="190">${h1} cm</text><text x="345" y="292">${w2} cm</text><text x="390" y="220">${h2} cm</text>`;
+  }
+  if(kind==='squareTri'||kind==='rectTri'){
+    const b=d[0], hr=kind==='squareTri'?b:d[1], ht=kind==='squareTri'?d[1]:d[2], l=Math.hypot(b/2,ht);
+    shapes='<rect data-geo="partA" x="145" y="150" width="230" height="145"/><path data-geo="partB" d="M145 150 L260 55 L375 150 Z"/>';
+    shared='<line data-geo="shared" x1="145" y1="150" x2="375" y2="150"/>';
+    labels=`<text x="260" y="318">${b} cm</text><text x="153" y="225">${hr} cm</text><text x="270" y="95">h ${ht} cm</text><text x="330" y="100">${fmt(l)} cm</text>`;
+  }
+  if(kind==='squareTrap'||kind==='rectTrap'){
+    const B=d[0], hr=kind==='squareTrap'?B:d[1], b=kind==='squareTrap'?d[1]:d[2], ht=kind==='squareTrap'?d[2]:d[3], l=Math.hypot((B-b)/2,ht);
+    shapes='<rect data-geo="partA" x="125" y="175" width="270" height="120"/><path data-geo="partB" d="M125 175 L175 70 H345 L395 175 Z"/>';
+    shared='<line data-geo="shared" x1="125" y1="175" x2="395" y2="175"/>';
+    labels=`<text x="260" y="318">${B} cm</text><text x="132" y="238">${hr} cm</text><text x="260" y="58">${b} cm</text><text x="275" y="125">h ${ht} cm</text><text x="360" y="125">${fmt(l)} cm</text>`;
+  }
+  if(kind==='triTrap'){
+    const [bT,hT,B,hR]=d, lT=Math.hypot(bT/2,hT), lR=Math.hypot((B-bT)/2,hR);
+    shapes='<path data-geo="partA" d="M175 115 L260 45 L345 115 Z"/><path data-geo="partB" d="M175 115 L120 285 H400 L345 115 Z"/>';
+    shared='<line data-geo="shared" x1="175" y1="115" x2="345" y2="115"/>';
+    labels=`<text x="260" y="105">${bT} cm</text><text x="270" y="70">h ${hT} cm</text><text x="310" y="72">${fmt(lT)} cm</text><text x="260" y="310">${B} cm</text><text x="275" y="215">h ${hR} cm</text><text x="375" y="205">${fmt(lR)} cm</text>`;
+  }
+  if(kind==='rectRhomb'){
+    const [s,hr,hR]=d, dx=Math.sqrt(s*s-hR*hR);
+    shapes='<rect data-geo="partA" x="145" y="175" width="230" height="120"/><path data-geo="partB" d="M145 175 L205 70 H435 L375 175 Z"/>';
+    shared='<line data-geo="shared" x1="145" y1="175" x2="375" y2="175"/>';
+    labels=`<text x="260" y="318">${s} cm</text><text x="153" y="238">${hr} cm</text><text x="320" y="58">lato ${s} cm</text><text x="275" y="125">h ${hR} cm</text>`;
+  }
+  return `<svg viewBox="0 0 520 350" aria-label="Figura composta da due figure geometriche"><g class="geo-base" fill="none" stroke="currentColor" stroke-width="5">${shapes}</g><g class="geo-labels" fill="currentColor" stroke="none" font-size="18">${labels}</g><g data-v="1" opacity="0"><g class="geo-base" fill="none" stroke="currentColor"><g class="focus">${shared}</g></g><text class="label-focus" x="260" y="340" text-anchor="middle">${stepText}</text></g></svg>`;
 }
 
 function compositeProblem(kind,task){
-  const key=`comp_${kind}_${task}`;
-  const v=pickVariant(key,COMPOSITE_VARIANTS[kind]);
-  let names='', A1=0,A2=0,P=0, text='', inverse='', invAnswer='', labels='';
+  const key=`comp_${kind}_${task}`, v=pickVariant(key,COMPOSITE_VARIANTS[kind]);
+  let names='',A1=0,A2=0,P=0,text='',inverse='',invAnswer='',labels='';
   if(kind==='rectRect'){
-    const [w1,h1,w2,h2]=v; names='rettangolo + rettangolo'; A1=w1*h1;A2=w2*h2;P=2*(w1+h1)+2*(w2+h2)-2*Math.min(h1,h2); labels=`${w1}×${h1} e ${w2}×${h2}`;
-    inverse=`L’area totale è ${A1+A2} cm². Il primo rettangolo misura ${w1}×${h1} cm e il secondo ha base ${w2} cm. Trova l’altezza del secondo rettangolo.`; invAnswer=`A₂=${A2} cm²; h₂=${A2}:${w2}=${h2} cm.`;
+    const [w1,h1,w2,h2]=v,shared=Math.min(h1,h2); names='rettangolo + rettangolo';A1=w1*h1;A2=w2*h2;P=2*(w1+h1)+2*(w2+h2)-2*shared;labels=`${w1}×${h1} e ${w2}×${h2}`;
+    inverse=`L’area totale è ${A1+A2} cm². Il primo rettangolo misura ${w1}×${h1} cm e il secondo ha base ${w2} cm. Trova l’altezza del secondo rettangolo.`;invAnswer=`A₂=${A2} cm²; h₂=${A2}:${w2}=${h2} cm.`;
   }
-  if(kind==='squareTri'){
-    const [s,ht,l]=v; names='quadrato + triangolo isoscele';A1=s*s;A2=s*ht/2;P=3*s+2*l;labels=`quadrato lato ${s}; triangolo h ${ht}, lati ${l}`;
-    inverse=`L’area totale della figura è ${A1+A2} cm². La parte quadrata ha lato ${s} cm. Trova l’altezza del triangolo isoscele sovrastante.`;invAnswer=`A△=${A2}; h=2A:b=${2*A2}:${s}=${ht} cm.`;
+  if(kind==='squareTri'||kind==='rectTri'){
+    const b=v[0],hr=kind==='squareTri'?b:v[1],ht=kind==='squareTri'?v[1]:v[2],l=Math.hypot(b/2,ht);names=kind==='squareTri'?'quadrato + triangolo isoscele':'rettangolo + triangolo isoscele';A1=b*hr;A2=b*ht/2;P=b+2*hr+2*l;labels=`${kind==='squareTri'?`quadrato lato ${b}`:`rettangolo ${b}×${hr}`}; triangolo altezza ${ht}, lati ${fmt(l)}`;
+    inverse=`L’area totale è ${A1+A2} cm². ${kind==='squareTri'?`Il quadrato ha lato ${b}`:`Il rettangolo misura ${b}×${hr}`} cm. Trova l’altezza del triangolo isoscele sovrastante.`;invAnswer=`A△=${A2} cm²; h=2A:b=${ht} cm.`;
   }
-  if(kind==='rectTri'){
-    const [b,hr,ht,l]=v;names='rettangolo + triangolo isoscele';A1=b*hr;A2=b*ht/2;P=b+2*hr+2*l;labels=`rettangolo ${b}×${hr}; triangolo h ${ht}, lati ${l}`;
-    inverse=`L’area totale è ${A1+A2} cm². Il rettangolo misura ${b}×${hr} cm. Trova l’altezza del triangolo.`;invAnswer=`A△=${A2}; h=2A:b=${ht} cm.`;
-  }
-  if(kind==='squareTrap'){
-    const [B,b,ht,l]=v;names='quadrato + trapezio isoscele';A1=B*B;A2=(B+b)*ht/2;P=3*B+b+2*l;labels=`quadrato lato ${B}; trapezio basi ${B}, ${b}, h ${ht}`;
-    inverse=`L’area totale è ${A1+A2} cm². Il quadrato ha lato ${B} cm e il trapezio ha basi ${B} cm e ${b} cm. Trova l’altezza del trapezio.`;invAnswer=`Atr=${A2}; h=2A:(B+b)=${ht} cm.`;
-  }
-  if(kind==='rectTrap'){
-    const [B,hr,b,ht,l]=v;names='rettangolo + trapezio isoscele';A1=B*hr;A2=(B+b)*ht/2;P=B+2*hr+b+2*l;labels=`rettangolo ${B}×${hr}; trapezio basi ${B},${b}, h ${ht}`;
-    inverse=`L’area totale è ${A1+A2} cm². Il rettangolo misura ${B}×${hr} cm e il trapezio ha basi ${B} cm e ${b} cm. Trova l’altezza del trapezio.`;invAnswer=`Atr=${A2}; h=2A:(B+b)=${ht} cm.`;
+  if(kind==='squareTrap'||kind==='rectTrap'){
+    const B=v[0],hr=kind==='squareTrap'?B:v[1],b=kind==='squareTrap'?v[1]:v[2],ht=kind==='squareTrap'?v[2]:v[3],l=Math.hypot((B-b)/2,ht);names=kind==='squareTrap'?'quadrato + trapezio isoscele':'rettangolo + trapezio isoscele';A1=B*hr;A2=(B+b)*ht/2;P=B+2*hr+b+2*l;labels=`${kind==='squareTrap'?`quadrato lato ${B}`:`rettangolo ${B}×${hr}`}; trapezio basi ${B} e ${b}, altezza ${ht}, lati obliqui ${fmt(l)}`;
+    inverse=`L’area totale è ${A1+A2} cm². ${kind==='squareTrap'?`Il quadrato ha lato ${B}`:`Il rettangolo misura ${B}×${hr}`} cm e il trapezio ha basi ${B} cm e ${b} cm. Trova l’altezza del trapezio.`;invAnswer=`A trapezio=${A2} cm²; h=2A:(B+b)=${ht} cm.`;
   }
   if(kind==='triTrap'){
-    const [bT,hT,lT,B,hR,lR]=v;names='triangolo isoscele + trapezio isoscele';A1=bT*hT/2;A2=(B+bT)*hR/2;P=B+2*lR+2*lT;labels=`triangolo b ${bT}, h ${hT}; trapezio basi ${B},${bT}, h ${hR}`;
-    inverse=`L’area totale è ${A1+A2} cm². Il triangolo ha base ${bT} cm e altezza ${hT} cm; il trapezio ha basi ${B} cm e ${bT} cm. Trova l’altezza del trapezio.`;invAnswer=`Atr=${A2}; h=2A:(B+b)=${hR} cm.`;
+    const [bT,hT,B,hR]=v,lT=Math.hypot(bT/2,hT),lR=Math.hypot((B-bT)/2,hR);names='triangolo isoscele + trapezio isoscele';A1=bT*hT/2;A2=(B+bT)*hR/2;P=B+2*lR+2*lT;labels=`triangolo base ${bT}, altezza ${hT}, lati ${fmt(lT)}; trapezio basi ${B} e ${bT}, altezza ${hR}, lati ${fmt(lR)}`;
+    inverse=`L’area totale è ${A1+A2} cm². Il triangolo ha base ${bT} cm e altezza ${hT} cm; il trapezio ha basi ${B} cm e ${bT} cm. Trova l’altezza del trapezio.`;invAnswer=`A trapezio=${A2} cm²; h=2A:(B+b)=${hR} cm.`;
   }
   if(kind==='rectRhomb'){
-    const [s,hr,hR,dx,l]=v;names='rettangolo + rombo';A1=s*hr;A2=s*hR;P=s+2*hr+3*l;labels=`rettangolo ${s}×${hr}; rombo lato ${l}, h ${hR}`;
-    inverse=`L’area totale è ${A1+A2} cm². Il rettangolo misura ${s}×${hr} cm. Il rombo condivide con esso un lato di ${s} cm. Trova l’altezza del rombo.`;invAnswer=`Arombo=${A2}; h=A:b=${hR} cm.`;
+    const [s,hr,hR]=v;names='rettangolo + rombo';A1=s*hr;A2=s*hR;P=4*s+2*hr;labels=`rettangolo ${s}×${hr}; rombo lato ${s}, altezza ${hR}`;
+    inverse=`L’area totale è ${A1+A2} cm². Il rettangolo misura ${s}×${hr} cm. Il rombo condivide con esso un lato di ${s} cm. Trova l’altezza del rombo.`;invAnswer=`A rombo=${A2} cm²; h=A:b=${hR} cm.`;
   }
   const total=A1+A2;
   if(task==='area') text=`Una figura composta è formata da ${names}. Le misure sono: ${labels}. Calcola l’area totale.`;
   if(task==='perimeter') text=`Una figura composta è formata da ${names}. Le misure sono: ${labels}. Calcola il perimetro esterno della figura.`;
   if(task==='inverse') text=inverse;
-  const help1=task==='perimeter'?'La linea comune alle due figure è interna: non appartiene al perimetro.':'Individua le due figure semplici: la linea di unione compare come aiuto.';
-  const help2=task==='area'?`Calcola separatamente le aree: A₁=${A1} cm² e A₂=${A2} cm².`:task==='perimeter'?`Segui soltanto il contorno esterno, senza contare due volte il lato condiviso.`:`Sottrai dall’area totale l’area della parte di cui conosci già tutte le misure.`;
-  const solution=task==='area'?`A=${A1}+${A2}=${total} cm².`:task==='perimeter'?`Il perimetro esterno misura ${P} cm.`:invAnswer;
-  return {text,notes:['Osserva la sagoma come un’unica figura.',help1,help2,solution],svg:compSvg(kind,v,task==='perimeter'?'Il lato comune è interno':task==='inverse'?'Prima separa le due aree':'Due figure, due aree'),helps:[['Come posso scomporla?',help1,1],['Qual è il passo successivo?',help2,1],['Mostrami la soluzione',solution,1]],scenes:{1:{highlight:['divider']}}};
+  const help1=task==='perimeter'?'Il segmento evidenziato è comune alle due figure ed è interno: non appartiene al perimetro.':'Individua le due figure semplici: il segmento evidenziato è quello che condividono.';
+  const help2=task==='area'?`Calcola separatamente le aree: A₁=${fmt(A1)} cm² e A₂=${fmt(A2)} cm².`:task==='perimeter'?'Segui soltanto il contorno esterno: il segmento evidenziato non va contato.':`Sottrai dall’area totale l’area della parte di cui conosci già tutte le misure.`;
+  const solution=task==='area'?`A=${fmt(A1)}+${fmt(A2)}=${fmt(total)} cm².`:task==='perimeter'?`Il perimetro esterno misura ${fmt(P)} cm.`:invAnswer;
+  return {text,notes:['Osserva la sagoma come un’unica figura.',help1,help2,solution],svg:compSvg(kind,v,task==='perimeter'?'Questo è il lato comune':task==='inverse'?'Separa qui le due aree':'Qui si incontrano le due figure'),helps:[['Come posso scomporla?',help1,1],['Qual è il passo successivo?',help2,1],['Mostrami la soluzione',solution,1]],scenes:{}};
 }
 
 const COMPOSITE_STRUCTURES=[
@@ -476,9 +489,7 @@ const COMPOSITE_STRUCTURES=[
  ['squareTrap','Quadrato + trapezio isoscele'],['rectTrap','Rettangolo + trapezio'],['triTrap','Triangolo + trapezio'],['rectRhomb','Rettangolo + rombo']
 ];
 for(const [kind] of COMPOSITE_STRUCTURES){
-  for(const task of ['area','perimeter','inverse']){
-    FAMILIES[`composite_${kind}_${task}`]={figures:['composta'],strategies:['figure_composte',task],generate:()=>compositeProblem(kind,task)};
-  }
+  for(const task of ['area','perimeter','inverse']) FAMILIES[`composite_${kind}_${task}`]={figures:['composta'],strategies:['figure_composte',task],generate:()=>compositeProblem(kind,task)};
 }
 
 const FIGURES=[

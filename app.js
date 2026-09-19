@@ -501,19 +501,19 @@ function compositeProblem(kind,task){
 // --- v0.7: prima libreria Parallelogrammi ---
 Object.assign(FAMILIES, {
   parallelogramArea:{
-    figures:['parallelogramma'], strategies:['area','altezza'],
-    generate(){
-      const [b,h,offset]=pickVariant('parallelogramArea',[[12,7,4],[15,8,5],[16,9,5],[18,10,6],[20,12,7],[14,9,4]]); const A=b*h;
-      const scale=Math.min(300/b,170/h),W=b*scale,H=h*scale,O=offset*scale,x=90,y=70;
-      return {text:`Un parallelogramma ha base ${b} cm e altezza ${h} cm. Calcola l’area.`,notes:['Osserva quali misure servono davvero per l’area.','L’altezza è perpendicolare alla base: non coincide con il lato obliquo.','Ora usa base e altezza.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><line data-geo="base" x1="${x}" y1="${y+H}" x2="${x+W}" y2="${y+H}"/><line data-geo="right-side" x1="${x+W}" y1="${y+H}" x2="${x+W+O}" y2="${y}"/><line data-geo="top" x1="${x+W+O}" y1="${y}" x2="${x+O}" y2="${y}"/><line data-geo="left-side" x1="${x+O}" y1="${y}" x2="${x}" y2="${y+H}"/></g><text x="${x+W/2}" y="${y+H+35}" text-anchor="middle">b = ${b} cm</text><g data-v="1" opacity="0"><line data-geo="height" class="aux" x1="${x+O}" y1="${y}" x2="${x+O}" y2="${y+H}" stroke-width="4" stroke-dasharray="8 6"/><path data-geo="right-angle" class="aux" d="M${x+O} ${y+H-14} H${x+O+14} V${y+H}" fill="none" stroke-width="3"/><text data-geo="h-label" class="label-aux" x="${x+O+18}" y="${y+H/2}">h = ${h} cm</text></g><g data-v="2" opacity="0"><text class="label-focus" x="260" y="335" text-anchor="middle">A = ${b} × ${h} = ${A} cm²</text></g></svg>`,helps:[['Qual è l’altezza?','Osserva il segmento perpendicolare alla base: è questa la misura da usare, non il lato obliquo.',1],['Quali misure servono per l’area?',`Base ${b} cm e altezza ${h} cm.`,1],['Mostrami la soluzione',`A=${b}×${h}=${A} cm².`,2]],scenes:{1:{dim:['left-side','right-side'],highlight:['base'],aux:['height','right-angle']}}};
+    figures:['parallelogramma'], strategies:['perimetro','relazioni','area'],
+    make(){
+      const [b,l,k]=pickVariant('parallelogramArea',[[12,8,2],[15,9,3],[16,10,2],[18,11,3],[20,13,2],[14,8,2]]); const h=b/k,P=2*(b+l),A=b*h;
+      const x=85,y=85,W=300,H=170,O=75;
+      return {text:`Un parallelogramma ha perimetro ${P} cm e lato obliquo ${l} cm. La base è ${k} volte l’altezza relativa ad essa. Calcola l’area.`,notes:['Dal perimetro ricava prima la base.','La relazione tra base e altezza permette di trovare l’altezza.','Solo alla fine usa A = b × h.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><line data-geo="base" x1="${x}" y1="${y+H}" x2="${x+W}" y2="${y+H}"/><line data-geo="right-side" x1="${x+W}" y1="${y+H}" x2="${x+W+O}" y2="${y}"/><line data-geo="top" x1="${x+W+O}" y1="${y}" x2="${x+O}" y2="${y}"/><line data-geo="left-side" x1="${x+O}" y1="${y}" x2="${x}" y2="${y+H}"/></g><text x="260" y="38" text-anchor="middle">P = ${P} cm</text><text x="${x+W+O+14}" y="${y+H/2}" text-anchor="start">l = ${l} cm</text><text x="${x+W/2}" y="${y+H+35}" text-anchor="middle">b ?</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b + l = ${P}:2 = ${P/2} cm</text></g><g data-v="2" opacity="0"><text class="label-focus" x="260" y="340" text-anchor="middle">b = ${b} cm; h = b:${k} = ${h} cm</text><line data-geo="height" class="aux" x1="${x+O}" y1="${y}" x2="${x+O}" y2="${y+H}" stroke-width="4" stroke-dasharray="8 6"/></g></svg>`,helps:[['Che cosa ricavo dal perimetro?',`Il semiperimetro è ${P}:2=${P/2} cm e corrisponde a b+l.`,1],['Ora puoi trovare la base',`b=${P/2}−${l}=${b} cm. Poiché b=${k}h, l’altezza vale ${b}:${k}=${h} cm.`,2],['Mostrami la soluzione',`A=${b}×${h}=${A} cm².`,2]],scenes:{1:{highlight:['base']},2:{dim:['left-side','right-side'],highlight:['base'],aux:['height']}}};
     }
   },
   parallelogramHeightFromArea:{
-    figures:['parallelogramma'], strategies:['formula_inversa','area','altezza'],
-    generate(){
-      const [b,h,offset]=pickVariant('parallelogramHeightFromArea',[[12,7,4],[15,8,5],[16,9,5],[18,10,6],[20,12,7],[14,9,4]]); const A=b*h;
-      const scale=Math.min(300/b,170/h),W=b*scale,H=h*scale,O=offset*scale,x=90,y=70;
-      return {text:`Un parallelogramma ha area ${A} cm² e base ${b} cm. Calcola l’altezza.`,notes:['L’altezza è la distanza perpendicolare tra le due basi.','Dalla formula A=b×h puoi ricavare h.','Controlla il risultato sulla figura.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><line data-geo="base" x1="${x}" y1="${y+H}" x2="${x+W}" y2="${y+H}"/><line data-geo="right-side" x1="${x+W}" y1="${y+H}" x2="${x+W+O}" y2="${y}"/><line data-geo="top" x1="${x+W+O}" y1="${y}" x2="${x+O}" y2="${y}"/><line data-geo="left-side" x1="${x+O}" y1="${y}" x2="${x}" y2="${y+H}"/></g><text x="${x+W/2}" y="${y+H+35}" text-anchor="middle">b = ${b} cm</text><text x="260" y="38" text-anchor="middle">A = ${A} cm²</text><g data-v="1" opacity="0"><line data-geo="height" class="aux" x1="${x+O}" y1="${y}" x2="${x+O}" y2="${y+H}" stroke-width="4" stroke-dasharray="8 6"/><path data-geo="right-angle" class="aux" d="M${x+O} ${y+H-14} H${x+O+14} V${y+H}" fill="none" stroke-width="3"/><text data-geo="h-label" class="label-aux" x="${x+O+18}" y="${y+H/2}">h ?</text></g><g data-v="2" opacity="0"><text class="label-focus" x="260" y="335" text-anchor="middle">h = A : b = ${A} : ${b} = ${h} cm</text></g></svg>`,helps:[['Quale misura manca?','Per l’area serve l’altezza, cioè la distanza perpendicolare tra le basi.',1],['Come posso ricavarla?','Dalla formula A = b × h, isola h: h = A : b.',2],['Mostrami la soluzione',`h=${A}:${b}=${h} cm.`,2]],scenes:{1:{dim:['left-side','right-side'],highlight:['base'],aux:['height','right-angle']}}};
+    figures:['parallelogramma'], strategies:['perimetro','formula_inversa','area','altezza'],
+    make(){
+      const [b,l,h]=pickVariant('parallelogramHeightFromArea',[[12,8,7],[15,9,8],[16,10,9],[18,11,10],[20,13,12],[14,8,9]]); const A=b*h,P=2*(b+l);
+      const x=85,y=85,W=300,H=170,O=75;
+      return {text:`Un parallelogramma ha perimetro ${P} cm, lato obliquo ${l} cm e area ${A} cm². Calcola la base e l’altezza relativa alla base.`,notes:['Il perimetro permette di ricavare la base.','Poi l’area permette di ricavare l’altezza con una formula inversa.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><line data-geo="base" x1="${x}" y1="${y+H}" x2="${x+W}" y2="${y+H}"/><line data-geo="right-side" x1="${x+W}" y1="${y+H}" x2="${x+W+O}" y2="${y}"/><line data-geo="top" x1="${x+W+O}" y1="${y}" x2="${x+O}" y2="${y}"/><line data-geo="left-side" x1="${x+O}" y1="${y}" x2="${x}" y2="${y+H}"/></g><text x="260" y="38" text-anchor="middle">P = ${P} cm; A = ${A} cm²</text><text x="${x+W+O+14}" y="${y+H/2}">l = ${l} cm</text><text x="${x+W/2}" y="${y+H+35}" text-anchor="middle">b ?</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b + l = ${P}:2 = ${P/2} cm → b = ${b} cm</text></g><g data-v="2" opacity="0"><line data-geo="height" class="aux" x1="${x+O}" y1="${y}" x2="${x+O}" y2="${y+H}" stroke-width="4" stroke-dasharray="8 6"/><text class="label-aux" x="${x+O+18}" y="${y+H/2}">h ?</text><text class="label-focus" x="260" y="340" text-anchor="middle">h = A:b = ${A}:${b} = ${h} cm</text></g></svg>`,helps:[['Prima: come trovi la base?',`Dal semiperimetro: b+l=${P}:2=${P/2}. Quindi b=${P/2}−${l}=${b} cm.`,1],['Ora osserva l’altezza','È la distanza perpendicolare fra le basi, non il lato obliquo.',2],['Quale formula inversa serve?',`Da A=b×h ottieni h=A:b=${A}:${b}=${h} cm.`,2],['Mostrami la soluzione',`b=${b} cm; h=${h} cm.`,2]],scenes:{1:{highlight:['base']},2:{dim:['left-side','right-side'],highlight:['base'],aux:['height']}}};
     }
   },
   parallelogramPerimeterRelation:{
@@ -523,6 +523,78 @@ Object.assign(FAMILIES, {
       const scale=Math.min(300/b,165/h),W=b*scale,H=h*scale,O=Math.min(70,side*4),x=90,y=72;
       return {text:`Un parallelogramma ha perimetro ${P} cm. La base supera il lato obliquo di ${d} cm. L’altezza relativa alla base misura ${h} cm. Calcola l’area.`,notes:['Dal perimetro ricava prima la somma di base e lato.','Usa poi la differenza tra base e lato.','L’altezza è già nota: dopo aver trovato la base puoi calcolare l’area.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><line data-geo="base" x1="${x}" y1="${y+H}" x2="${x+W}" y2="${y+H}"/><line data-geo="right-side" x1="${x+W}" y1="${y+H}" x2="${x+W+O}" y2="${y}"/><line data-geo="top" x1="${x+W+O}" y1="${y}" x2="${x+O}" y2="${y}"/><line data-geo="left-side" x1="${x+O}" y1="${y}" x2="${x}" y2="${y+H}"/></g><text x="260" y="38" text-anchor="middle">P = ${P} cm</text><text x="${x+W/2}" y="${y+H+35}" text-anchor="middle">b ?</text><text x="${x+W+O+15}" y="${y+H/2}" text-anchor="start">l ?</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b + l = P : 2 = ${P/2} cm</text></g><g data-v="2" opacity="0"><text class="label-focus" x="260" y="340" text-anchor="middle">l = ${side} cm → b = ${b} cm</text></g><g data-v="3" opacity="0"><line data-geo="height" class="aux" x1="${x+O}" y1="${y}" x2="${x+O}" y2="${y+H}" stroke-width="4" stroke-dasharray="8 6"/><text class="label-aux" x="${x+O+18}" y="${y+H/2}">h = ${h} cm</text></g></svg>`,helps:[['Da dove parto con il perimetro?',`Il semiperimetro è ${P}:2=${P/2} cm, quindi b+l=${P/2}.`,1],['Come uso la differenza?',`La base è ${d} cm più lunga del lato. Togli ${d} dal semiperimetro e dividi ciò che resta in due parti uguali.`,2],['Ora quale misura serve per l’area?',`Hai b=${b} cm e l’altezza relativa alla base è ${h} cm.`,3],['Mostrami la soluzione',`l=${side} cm; b=${b} cm; A=${b}×${h}=${A} cm².`,3]]};
     }
+  }
+});
+
+
+// --- v0.8: espansione Parallelogrammi + sezione Segmenti ---
+function parallelogramSvg({b,h,side=null,topText='',bottomText='',heightText='',showHeightAt=1,finalText=''}){
+  const scale=Math.min(300/b,165/h), W=b*scale, H=h*scale, O=Math.min(72,Math.max(38,(side||6)*4));
+  const x=82,y=70;
+  return `<svg viewBox="0 0 520 350" aria-label="Parallelogramma">
+    <g class="geo-base">
+      <line data-geo="base" x1="${x}" y1="${y+H}" x2="${x+W}" y2="${y+H}"/>
+      <line data-geo="right-side" x1="${x+W}" y1="${y+H}" x2="${x+W+O}" y2="${y}"/>
+      <line data-geo="top" x1="${x+W+O}" y1="${y}" x2="${x+O}" y2="${y}"/>
+      <line data-geo="left-side" x1="${x+O}" y1="${y}" x2="${x}" y2="${y+H}"/>
+    </g>
+    ${topText?`<text x="260" y="38" text-anchor="middle">${topText}</text>`:''}
+    ${bottomText?`<text data-geo="base-label" x="${x+W/2}" y="${Math.min(315,y+H+34)}" text-anchor="middle">${bottomText}</text>`:''}
+    ${side?`<text data-geo="side-label" x="${x+W+O+15}" y="${y+H/2}" text-anchor="start">l = ${side} cm</text>`:''}
+    <g data-v="${showHeightAt}" opacity="0">
+      <line data-geo="height" class="aux" x1="${x+O}" y1="${y}" x2="${x+O}" y2="${y+H}" stroke-width="4" stroke-dasharray="8 6"/>
+      <path data-geo="right-angle" class="aux" d="M${x+O} ${y+H-14} H${x+O+14} V${y+H}" fill="none" stroke-width="3"/>
+      ${heightText?`<text data-geo="h-label" class="label-aux" x="${x+O+18}" y="${y+H/2}">${heightText}</text>`:''}
+    </g>
+    ${finalText?`<g data-v="3" opacity="0"><text class="label-focus" x="260" y="338" text-anchor="middle">${finalText}</text></g>`:''}
+  </svg>`;
+}
+
+Object.assign(FAMILIES,{
+  parallelogramBaseFromAreaPerimeter:{
+    figures:['parallelogramma'],strategies:['formula_inversa','area','perimetro'],
+    generate(){
+      const [b,h,l]=pickVariant('parallelogramBaseFromAreaPerimeter',[[12,7,8],[15,8,9],[16,9,10],[18,10,11],[20,12,13],[14,9,8]]),A=b*h,P=2*(b+l);
+      return {text:`Un parallelogramma ha area ${A} cm², altezza ${h} cm e lato obliquo ${l} cm. Calcola il perimetro.`,notes:['Per il perimetro manca la base.','Ricava la base dalla formula dell’area.','Ora base e lato obliquo sono noti.'],svg:parallelogramSvg({b,h,side:l,topText:`A = ${A} cm²`,bottomText:'b ?',heightText:`h = ${h} cm`,showHeightAt:1,finalText:`b = ${b} cm → P = ${P} cm`}),helps:[['Quale misura manca?','Per calcolare il perimetro servono base e lato obliquo. Il lato è noto: manca la base.',1],['Come trovo la base?',`Usa A = b × h: b = A : h = ${A} : ${h} = ${b} cm.`,2],['Mostrami la soluzione',`P = 2 × (${b} + ${l}) = ${P} cm.`,3]],scenes:{1:{highlight:['base'],aux:['height','right-angle']}}};
+    }
+  },
+  parallelogramRatioPerimeter:{
+    figures:['parallelogramma'],strategies:['perimetro','rapporto','UF','area'],
+    generate(){
+      const [m,n,u,h]=pickVariant('parallelogramRatioPerimeter',[[3,2,4,7],[4,3,3,8],[5,3,3,9],[5,4,4,10],[3,2,6,11],[4,3,5,12]]),b=m*u,l=n*u,P=2*(b+l),A=b*h;
+      return {text:`Un parallelogramma ha perimetro ${P} cm. La base e il lato obliquo sono nel rapporto ${m}:${n}. L’altezza relativa alla base misura ${h} cm. Calcola l’area.`,notes:['Il semiperimetro è la somma di base e lato.','Rappresenta base e lato con unità frazionarie.','Trovata la base, usa l’altezza per l’area.'],svg:parallelogramSvg({b,h,topText:`P = ${P} cm`,bottomText:'b ?',heightText:`h = ${h} cm`,showHeightAt:2,finalText:`b = ${b} cm → A = ${A} cm²`}),helps:[['Come uso il perimetro?',`Il semiperimetro è ${P}:2=${P/2} cm: quindi b + l = ${P/2} cm.`,1],['Come uso il rapporto?',`Pensa a ${m}+${n}=${m+n} UF. Una UF vale ${P/2}:${m+n}=${u} cm, quindi b=${m}×${u}=${b} cm.`,2],['Ora cosa serve?','L’altezza relativa alla base è già nota: puoi calcolare l’area.',2],['Mostrami la soluzione',`A=${b}×${h}=${A} cm².`,3]],scenes:{2:{highlight:['base'],aux:['height','right-angle']}}};
+    }
+  },
+  parallelogramSideFromPerimeter:{
+    figures:['parallelogramma'],strategies:['perimetro','formula_inversa','area'],
+    generate(){
+      const [b,l,h]=pickVariant('parallelogramSideFromPerimeter',[[12,7,6],[14,8,7],[15,9,8],[16,10,9],[18,11,10],[20,12,11]]),P=2*(b+l),A=b*h;
+      return {text:`Un parallelogramma ha perimetro ${P} cm, base ${b} cm e altezza relativa alla base ${h} cm. Calcola il lato obliquo e l’area.`,notes:['Dal perimetro puoi ricavare il semiperimetro.','Il semiperimetro è base + lato obliquo.','Per l’area, invece, servono base e altezza.'],svg:parallelogramSvg({b,h,topText:`P = ${P} cm`,bottomText:`b = ${b} cm`,heightText:`h = ${h} cm`,showHeightAt:2,finalText:`l = ${l} cm; A = ${A} cm²`}),helps:[['Come trovo il lato obliquo?',`Il semiperimetro è ${P}:2=${P/2} cm e vale b+l.`,1],['Quanto misura il lato?',`l=${P/2}−${b}=${l} cm.`,2],['E per l’area?','Il lato obliquo non serve: usa base e altezza perpendicolare.',2],['Mostrami la soluzione',`l=${l} cm; A=${b}×${h}=${A} cm².`,3]],scenes:{2:{dim:['left-side','right-side'],highlight:['base'],aux:['height','right-angle']}}};
+    }
+  }
+});
+
+function segmentSvg(mode,a,b,sum,diff,context){
+  if(context==='rectangle'){
+    const W=300,H=150,x=110,y=82;
+    return `<svg viewBox="0 0 520 350" aria-label="Rettangolo usato per ragionare su due segmenti"><g class="geo-base"><rect x="${x}" y="${y}" width="${W}" height="${H}" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="260" y="${y+H+34}" text-anchor="middle">base ${mode==='sumdiff'?'?':a+' cm'}</text><text x="${x-20}" y="${y+H/2}" text-anchor="end">altezza ${mode==='sumdiff'?'?':b+' cm'}</text><g data-v="1" opacity="0"><line class="focus" x1="${x}" y1="${y+H+18}" x2="${x+W}" y2="${y+H+18}" stroke-width="6"/><text class="label-focus" x="260" y="315" text-anchor="middle">${mode==='sum'?`${a} + ${b} = ${sum} cm`:mode==='diff'?`${a} − ${b} = ${diff} cm`:`somma ${sum} cm · differenza ${diff} cm`}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">${mode==='sumdiff'?`segmenti: ${a} cm e ${b} cm`:''}</text></g></svg>`;
+  }
+  const scale=280/Math.max(a,b,sum),x=90,y1=120,y2=225,A=a*scale,B=b*scale,S=sum*scale;
+  return `<svg viewBox="0 0 520 350" aria-label="Confronto tra segmenti"><g class="geo-base"><line data-geo="seg-a" x1="${x}" y1="${y1}" x2="${x+A}" y2="${y1}"/><line data-geo="seg-b" x1="${x}" y1="${y2}" x2="${x+B}" y2="${y2}"/></g><text x="${x-18}" y="${y1+6}" text-anchor="end">a</text><text x="${x-18}" y="${y2+6}" text-anchor="end">b</text><text x="${x+A+18}" y="${y1+6}">${mode==='sumdiff'?'?':a+' cm'}</text><text x="${x+B+18}" y="${y2+6}">${mode==='sumdiff'?'?':b+' cm'}</text><g data-v="1" opacity="0">${mode==='sumdiff'?`<line class="unit" x1="${x+B}" y1="${y2-14}" x2="${x+A}" y2="${y2-14}" stroke-width="5"/><text class="label-unit" x="${x+(A+B)/2}" y="${y2-26}" text-anchor="middle">d = ${diff}</text><text class="label-focus" x="260" y="300" text-anchor="middle">a + b = ${sum} cm</text>`:`<text class="label-focus" x="260" y="300" text-anchor="middle">${mode==='sum'?`somma = ${sum} cm`:`differenza = ${diff} cm`}</text>`}</g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="332" text-anchor="middle">${mode==='sumdiff'?`${sum} − ${diff} = ${2*b}; ${2*b} : 2 = ${b} cm`:''}</text></g></svg>`;
+}
+
+Object.assign(FAMILIES,{
+  segmentsSum:{
+    figures:['segmenti'],strategies:['segmenti','somma'],
+    generate(){const [a,b]=pickVariant('segmentsSum',[[7,12],[9,15],[11,18],[13,16],[14,21],[17,24],[19,26],[23,28]]),sum=a+b;return {text:`Due segmenti misurano ${a} cm e ${b} cm. Quanto misura il segmento ottenuto mettendoli uno di seguito all’altro?`,notes:['Rappresenta i due segmenti.','Metterli uno di seguito all’altro significa sommare le loro lunghezze.'],svg:segmentSvg('sum',a,b,sum,Math.abs(a-b),'segments'),helps:[['Che operazione rappresenta la figura?','Il segmento totale è formato dal primo segmento seguito dal secondo.',1],['Mostrami la soluzione',`${a}+${b}=${sum} cm.`,1]]};}
+  },
+  segmentsDifference:{
+    figures:['segmenti'],strategies:['segmenti','differenza'],
+    generate(){const [short,d]=pickVariant('segmentsDifference',[[7,5],[9,6],[11,7],[12,9],[14,8],[16,11],[18,13],[21,14]]),long=short+d;return {text:`Un segmento misura ${long} cm e un altro ${short} cm. Di quanti centimetri il primo supera il secondo?`,notes:['Confronta le due lunghezze.','La parte che avanza rappresenta la differenza.'],svg:segmentSvg('diff',long,short,long+short,d,'segments'),helps:[['Cosa devo confrontare?','Sovrapponi idealmente l’inizio dei due segmenti: osserva la parte del più lungo che avanza.',1],['Mostrami la soluzione',`${long}−${short}=${d} cm.`,1]]};}
+  },
+  segmentsSumDifference:{
+    figures:['segmenti'],strategies:['segmenti','somma_e_differenza'],
+    generate(){const [short,d]=pickVariant('segmentsSumDifference',[[7,4],[8,6],[9,8],[11,6],[12,10],[14,8],[15,12],[18,10]]),long=short+d,sum=long+short;return {text:`La somma di due segmenti è ${sum} cm e la loro differenza è ${d} cm. Calcola la lunghezza dei due segmenti.`,notes:['Disegna due segmenti incogniti, uno più lungo dell’altro.','Togli dalla somma la parte in più: restano due segmenti uguali.','Dividi ciò che resta in due parti uguali.'],svg:segmentSvg('sumdiff',long,short,sum,d,'segments'),helps:[['Come rappresento la differenza?',`Il segmento più lungo contiene tutto il più corto più un tratto di ${d} cm.`,1],['Come uso anche la somma?',`Togli la differenza dalla somma: ${sum}−${d}=${2*short} cm. Restano due parti uguali.`,2],['Come trovo i due segmenti?',`Il più corto misura ${2*short}:2=${short} cm; il più lungo ${short}+${d}=${long} cm.`,2],['Mostrami la soluzione',`I segmenti misurano ${short} cm e ${long} cm.`,2]]};}
   }
 });
 
@@ -540,7 +612,8 @@ const FIGURES=[
  ['trapezio','Trapezi','<path d="M22 84 L128 84 L105 25 L45 25 Z"/>'],
  ['rombo','Rombi','<path d="M75 14 L130 55 L75 96 L20 55 Z"/>'],
  ['parallelogramma','Parallelogrammi','<path d="M38 25 L130 25 L112 85 L20 85 Z"/>'],
- ['composta','Figure composte','<path d="M20 24 H92 V48 H130 V92 H58 V68 H20 Z"/>']
+ ['composta','Figure composte','<path d="M20 24 H92 V48 H130 V92 H58 V68 H20 Z"/>'],
+ ['segmenti','Segmenti','<path d="M22 38 H128 M22 76 H94"/>']
 ];
 const FORMULAS=[['Triangolo','A = b × h : 2; P = a + b + c','b = 2A : h; h = 2A : b'],['Rettangolo','A = b × h; P = 2(b + h)','b = A : h; h = A : b'],['Parallelogramma','A = b × h','b = A : h; h = A : b'],['Trapezio','A = (B + b) × h : 2','h = 2A : (B + b); B = 2A : h − b; b = 2A : h − B'],['Rombo','A = D × d : 2; P = 4l','D = 2A : d; d = 2A : D; l = P : 4'],['Quadrato','A = l²; P = 4l','l = √A; l = P : 4'],['Pitagora','i² = c₁² + c₂²','i = √(c₁² + c₂²); c₁ = √(i² − c₂²); c₂ = √(i² − c₁²)']];
 

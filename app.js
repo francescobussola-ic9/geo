@@ -574,27 +574,61 @@ Object.assign(FAMILIES,{
   }
 });
 
-function segmentSvg(mode,a,b,sum,diff,context){
+function segmentRelationSvg(kind,m,u,total,short,long,context){
+  // 1 UF ha sempre la stessa lunghezza fisica all'interno della scena.
+  const unit=58, x=92, y1=105, y2=205;
+  const shortW=unit, longW=m*unit;
+  const relationLabel=`${m} volte`;
+  const bars=`<g class="geo-base">
+    <line data-geo="short" x1="${x}" y1="${y1}" x2="${x+shortW}" y2="${y1}"/>
+    <line data-geo="long" x1="${x}" y1="${y2}" x2="${x+longW}" y2="${y2}"/>
+  </g>
+  <text x="${x-18}" y="${y1+6}" text-anchor="end">a</text><text x="${x-18}" y="${y2+6}" text-anchor="end">b</text>
+  <text x="${x+shortW/2}" y="${y1-20}" text-anchor="middle">1 UF</text>
+  <g data-v="1" opacity="0">${Array.from({length:m},(_,i)=>`<line class="unit" x1="${x+i*unit}" y1="${y2-13}" x2="${x+(i+1)*unit}" y2="${y2-13}" stroke-width="4"/>`).join('')}<text class="label-unit" x="${x+longW/2}" y="${y2-28}" text-anchor="middle">${m} UF</text></g>`;
+  const equation=kind==='sum'?`${1+m} UF = ${total} cm`: `${m-1} UF = ${total} cm`;
+  const final=`1 UF = ${u} cm → segmenti ${short} cm e ${long} cm`;
   if(context==='rectangle'){
-    const W=300,H=150,x=110,y=82;
-    return `<svg viewBox="0 0 520 350" aria-label="Rettangolo usato per ragionare su due segmenti"><g class="geo-base"><rect x="${x}" y="${y}" width="${W}" height="${H}" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="260" y="${y+H+34}" text-anchor="middle">base ${mode==='sumdiff'?'?':a+' cm'}</text><text x="${x-20}" y="${y+H/2}" text-anchor="end">altezza ${mode==='sumdiff'?'?':b+' cm'}</text><g data-v="1" opacity="0"><line class="focus" x1="${x}" y1="${y+H+18}" x2="${x+W}" y2="${y+H+18}" stroke-width="6"/><text class="label-focus" x="260" y="315" text-anchor="middle">${mode==='sum'?`${a} + ${b} = ${sum} cm`:mode==='diff'?`${a} − ${b} = ${diff} cm`:`somma ${sum} cm · differenza ${diff} cm`}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">${mode==='sumdiff'?`segmenti: ${a} cm e ${b} cm`:''}</text></g></svg>`;
+    const rw=Math.min(300,m*72), rh=72, rx=110, ry=68;
+    return `<svg viewBox="0 0 520 350" aria-label="Rettangolo con lati legati da un rapporto"><g class="geo-base"><rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="${rx+rw/2}" y="${ry-18}" text-anchor="middle">base = ${relationLabel} l’altezza</text><text x="${rx+rw/2}" y="${ry+rh+28}" text-anchor="middle">base ?</text><text x="${rx-16}" y="${ry+rh/2+5}" text-anchor="end">h ?</text><g transform="translate(0,70)">${bars}</g><g data-v="2" opacity="0"><text class="label-focus" x="260" y="312" text-anchor="middle">${equation}</text></g><g data-v="3" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">${final}</text></g></svg>`;
   }
-  const scale=280/Math.max(a,b,sum),x=90,y1=120,y2=225,A=a*scale,B=b*scale,S=sum*scale;
-  return `<svg viewBox="0 0 520 350" aria-label="Confronto tra segmenti"><g class="geo-base"><line data-geo="seg-a" x1="${x}" y1="${y1}" x2="${x+A}" y2="${y1}"/><line data-geo="seg-b" x1="${x}" y1="${y2}" x2="${x+B}" y2="${y2}"/></g><text x="${x-18}" y="${y1+6}" text-anchor="end">a</text><text x="${x-18}" y="${y2+6}" text-anchor="end">b</text><text x="${x+A+18}" y="${y1+6}">${mode==='sumdiff'?'?':a+' cm'}</text><text x="${x+B+18}" y="${y2+6}">${mode==='sumdiff'?'?':b+' cm'}</text><g data-v="1" opacity="0">${mode==='sumdiff'?`<line class="unit" x1="${x+B}" y1="${y2-14}" x2="${x+A}" y2="${y2-14}" stroke-width="5"/><text class="label-unit" x="${x+(A+B)/2}" y="${y2-26}" text-anchor="middle">d = ${diff}</text><text class="label-focus" x="260" y="300" text-anchor="middle">a + b = ${sum} cm</text>`:`<text class="label-focus" x="260" y="300" text-anchor="middle">${mode==='sum'?`somma = ${sum} cm`:`differenza = ${diff} cm`}</text>`}</g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="332" text-anchor="middle">${mode==='sumdiff'?`${sum} − ${diff} = ${2*b}; ${2*b} : 2 = ${b} cm`:''}</text></g></svg>`;
+  return `<svg viewBox="0 0 520 350" aria-label="Rappresentazione in unità frazionarie di due segmenti">${bars}<g data-v="2" opacity="0"><text class="label-focus" x="260" y="292" text-anchor="middle">${equation}</text></g><g data-v="3" opacity="0"><text class="label-aux" x="260" y="330" text-anchor="middle">${final}</text></g></svg>`;
+}
+
+function segmentSumDiffSvg(short,long,sum,diff,context){
+  const x=90,y1=112,y2=220,scale=260/long,A=long*scale,B=short*scale;
+  const rect=context==='rectangle'?`<rect x="105" y="52" width="310" height="120" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="38" text-anchor="middle">base + altezza = ${sum} cm · base − altezza = ${diff} cm</text>`:'';
+  const shift=context==='rectangle'?70:0;
+  return `<svg viewBox="0 0 520 350" aria-label="Problema di somma e differenza">${rect}<g transform="translate(0,${shift})"><g class="geo-base"><line data-geo="long" x1="${x}" y1="${y1}" x2="${x+A}" y2="${y1}"/><line data-geo="short" x1="${x}" y1="${y2}" x2="${x+B}" y2="${y2}"/></g><text x="${x-18}" y="${y1+6}" text-anchor="end">maggiore</text><text x="${x-18}" y="${y2+6}" text-anchor="end">minore</text><g data-v="1" opacity="0"><line class="unit" x1="${x+B}" y1="${y1-14}" x2="${x+A}" y2="${y1-14}" stroke-width="5"/><text class="label-unit" x="${x+(A+B)/2}" y="${y1-27}" text-anchor="middle">differenza = ${diff}</text></g></g><g data-v="2" opacity="0"><text class="label-focus" x="260" y="312" text-anchor="middle">${sum} − ${diff} = ${2*short} cm → due parti uguali</text></g><g data-v="3" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">${short} cm e ${long} cm</text></g></svg>`;
 }
 
 Object.assign(FAMILIES,{
   segmentsSum:{
-    figures:['segmenti'],strategies:['segmenti','somma'],
-    generate(){const [a,b]=pickVariant('segmentsSum',[[7,12],[9,15],[11,18],[13,16],[14,21],[17,24],[19,26],[23,28]]),sum=a+b;return {text:`Due segmenti misurano ${a} cm e ${b} cm. Quanto misura il segmento ottenuto mettendoli uno di seguito all’altro?`,notes:['Rappresenta i due segmenti.','Metterli uno di seguito all’altro significa sommare le loro lunghezze.'],svg:segmentSvg('sum',a,b,sum,Math.abs(a-b),'segments'),helps:[['Che operazione rappresenta la figura?','Il segmento totale è formato dal primo segmento seguito dal secondo.',1],['Mostrami la soluzione',`${a}+${b}=${sum} cm.`,1]]};}
+    figures:['segmenti'],strategies:['segmenti','somma','multiplo','UF'],
+    generate(){
+      const [m,u,context]=pickVariant('segmentsSum',[[2,9,'segments'],[3,8,'segments'],[4,6,'rectangle'],[5,5,'segments'],[2,13,'rectangle'],[3,11,'segments'],[4,8,'rectangle'],[5,7,'segments']]);
+      const short=u,long=m*u,sum=short+long;
+      const text=context==='rectangle'?`La somma della base e dell’altezza di un rettangolo è ${sum} cm. La base è ${m===2?'il doppio':m===3?'il triplo':m===4?'il quadruplo':m+' volte'} dell’altezza. Calcola le due dimensioni.`:`La somma di due segmenti è ${sum} cm e il maggiore è ${m===2?'il doppio':m===3?'il triplo':m===4?'il quadruplo':m+' volte'} del minore. Trova la lunghezza dei due segmenti.`;
+      return {text,notes:['Rappresenta il segmento minore con 1 UF.','Il maggiore contiene più UF uguali.','La somma corrisponde alla somma di tutte le UF.'],svg:segmentRelationSvg('sum',m,u,sum,short,long,context),helps:[['Come rappresento la relazione?',`Se il minore vale 1 UF, il maggiore vale ${m} UF.`,1],['Quante UF formano la somma?',`In tutto ci sono 1+${m}=${m+1} UF, che corrispondono a ${sum} cm.`,2],['Quanto vale una UF?',`${sum}:${m+1}=${u} cm. Ora puoi ricavare entrambi i segmenti.`,3],['Mostrami la soluzione',`Minore = ${u} cm; maggiore = ${m}×${u}=${long} cm.`,3]]};
+    }
   },
   segmentsDifference:{
-    figures:['segmenti'],strategies:['segmenti','differenza'],
-    generate(){const [short,d]=pickVariant('segmentsDifference',[[7,5],[9,6],[11,7],[12,9],[14,8],[16,11],[18,13],[21,14]]),long=short+d;return {text:`Un segmento misura ${long} cm e un altro ${short} cm. Di quanti centimetri il primo supera il secondo?`,notes:['Confronta le due lunghezze.','La parte che avanza rappresenta la differenza.'],svg:segmentSvg('diff',long,short,long+short,d,'segments'),helps:[['Cosa devo confrontare?','Sovrapponi idealmente l’inizio dei due segmenti: osserva la parte del più lungo che avanza.',1],['Mostrami la soluzione',`${long}−${short}=${d} cm.`,1]]};}
+    figures:['segmenti'],strategies:['segmenti','differenza','multiplo','UF'],
+    generate(){
+      const [m,u,context]=pickVariant('segmentsDifference',[[2,11,'segments'],[3,7,'rectangle'],[4,6,'segments'],[5,5,'rectangle'],[2,14,'rectangle'],[3,9,'segments'],[4,8,'rectangle'],[5,6,'segments']]);
+      const short=u,long=m*u,diff=long-short;
+      const text=context==='rectangle'?`La base di un rettangolo è ${m===2?'il doppio':m===3?'il triplo':m===4?'il quadruplo':m+' volte'} dell’altezza e la supera di ${diff} cm. Calcola le due dimensioni.`:`La differenza tra due segmenti è ${diff} cm e il maggiore è ${m===2?'il doppio':m===3?'il triplo':m===4?'il quadruplo':m+' volte'} del minore. Trova la lunghezza dei due segmenti.`;
+      return {text,notes:['Rappresenta il minore con 1 UF e il maggiore con più UF.','La differenza non corrisponde a tutte le UF del maggiore.','Conta soltanto le UF che avanzano.'],svg:segmentRelationSvg('diff',m,u,diff,short,long,context),helps:[['Come rappresento i due segmenti?',`Minore = 1 UF; maggiore = ${m} UF.`,1],['A quante UF corrisponde la differenza?',`Togliendo 1 UF del minore dalle ${m} UF del maggiore, avanzano ${m-1} UF.`,2],['Quanto vale una UF?',`${diff}:${m-1}=${u} cm.`,3],['Mostrami la soluzione',`Minore = ${u} cm; maggiore = ${m}×${u}=${long} cm.`,3]]};
+    }
   },
   segmentsSumDifference:{
     figures:['segmenti'],strategies:['segmenti','somma_e_differenza'],
-    generate(){const [short,d]=pickVariant('segmentsSumDifference',[[7,4],[8,6],[9,8],[11,6],[12,10],[14,8],[15,12],[18,10]]),long=short+d,sum=long+short;return {text:`La somma di due segmenti è ${sum} cm e la loro differenza è ${d} cm. Calcola la lunghezza dei due segmenti.`,notes:['Disegna due segmenti incogniti, uno più lungo dell’altro.','Togli dalla somma la parte in più: restano due segmenti uguali.','Dividi ciò che resta in due parti uguali.'],svg:segmentSvg('sumdiff',long,short,sum,d,'segments'),helps:[['Come rappresento la differenza?',`Il segmento più lungo contiene tutto il più corto più un tratto di ${d} cm.`,1],['Come uso anche la somma?',`Togli la differenza dalla somma: ${sum}−${d}=${2*short} cm. Restano due parti uguali.`,2],['Come trovo i due segmenti?',`Il più corto misura ${2*short}:2=${short} cm; il più lungo ${short}+${d}=${long} cm.`,2],['Mostrami la soluzione',`I segmenti misurano ${short} cm e ${long} cm.`,2]]};}
+    generate(){
+      const [short,d,context]=pickVariant('segmentsSumDifference',[[7,4,'segments'],[8,6,'rectangle'],[9,8,'segments'],[11,6,'rectangle'],[12,10,'segments'],[14,8,'rectangle'],[15,12,'segments'],[18,10,'rectangle']]);
+      const long=short+d,sum=long+short;
+      const text=context==='rectangle'?`La somma della base e dell’altezza di un rettangolo è ${sum} cm e la loro differenza è ${d} cm. Calcola le due dimensioni.`:`La somma di due segmenti è ${sum} cm e la loro differenza è ${d} cm. Calcola la lunghezza dei due segmenti.`;
+      return {text,notes:['Rappresenta due segmenti incogniti, uno più lungo dell’altro.','La parte in più è la differenza.','Togliendo la differenza dalla somma restano due parti uguali.'],svg:segmentSumDiffSvg(short,long,sum,d,context),helps:[['Dove si trova la differenza?',`È soltanto la parte di ${d} cm che il segmento maggiore ha in più.`,1],['Come posso rendere uguali i due segmenti?',`Togli la differenza dalla somma: ${sum}−${d}=${2*short} cm.`,2],['E adesso?',`I ${2*short} cm rimasti sono due parti uguali: ${2*short}:2=${short} cm.`,3],['Mostrami la soluzione',`Minore = ${short} cm; maggiore = ${short}+${d}=${long} cm.`,3]]};
+    }
   }
 });
 

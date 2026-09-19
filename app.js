@@ -1,11 +1,32 @@
 const rand = a => a[Math.floor(Math.random()*a.length)];
 const gcd=(a,b)=>b?gcd(b,a%b):a;
 
+// Banche numeriche condivise: mantengono i problemi vari ma didatticamente controllati.
+// pickVariant evita, quando possibile, di riproporre subito la stessa istanza con “Provane uno simile”.
+const lastVariantByFamily={};
+function pickVariant(family, variants){
+  if(!variants.length) throw new Error(`Nessuna variante disponibile per ${family}`);
+  const last=lastVariantByFamily[family];
+  const pool=variants.length>1 ? variants.filter(v=>JSON.stringify(v)!==last) : variants;
+  const chosen=rand(pool.length?pool:variants);
+  lastVariantByFamily[family]=JSON.stringify(chosen);
+  return chosen;
+}
+const cartesian=(...lists)=>lists.reduce((acc,list)=>acc.flatMap(a=>list.map(v=>[...a,v])),[[]]);
+
+// [altezza/cateto verticale, proiezione/cateto orizzontale, ipotenusa]
+// Tutte producono risultati interi e rapporti grafici adatti allo schermo.
+const PYTHAGOREAN_VARIANTS=[
+  [3,4,5],[4,3,5],[6,8,10],[8,6,10],
+  [5,12,13],[12,5,13],[8,15,17],[15,8,17],
+  [9,12,15],[12,9,15]
+];
+
 const FAMILIES={
   perimeterDiff:{
     figures:['rettangolo'], strategies:['perimetro','differenza','area'],
     generate(){
-      const h=rand([6,7,8,9,10,11,12]), d=rand([3,4,5,6,7]);
+      const [h,d]=pickVariant('perimeterDiff',cartesian([6,7,8,9,10,11,12],[3,4,5,6,7]));
       const b=h+d, P=2*(b+h), A=b*h, semi=P/2;
 
       // Una sola figura, nessuna barra ridisegnata: la relazione b = h + d
@@ -63,7 +84,7 @@ const FAMILIES={
   areaRatio:{
     figures:['rettangolo'], strategies:['area','rapporto','UF','UQ'],
     generate(){
-      const [m,n]=rand([[2,3],[3,4],[3,5],[4,5]]), u=rand([2,3,4,5]);
+      const [m,n,u]=pickVariant('areaRatio',cartesian([[2,3],[3,4],[3,5],[4,5]],[2,3,4,5]).map(([ratio,u])=>[...ratio,u]));
       const b=m*u,h=n*u,A=b*h,UQ=m*n,uqa=u*u;
 
       // Una UF ha SEMPRE la stessa lunghezza grafica in orizzontale e verticale.
@@ -128,8 +149,8 @@ const FAMILIES={
   trapezoid:{
     figures:['trapezio'], strategies:['differenza_basi','proiezione','pitagora','area'],
     generate(){
-      const [h,p,l]=rand([[3,4,5],[5,12,13],[6,8,10]]);
-      const small=rand([8,10,12,14]), big=small+2*p, A=(big+small)*h/2;
+      const [h,p,l,small]=pickVariant('trapezoid',PYTHAGOREAN_VARIANTS.flatMap(t=>[8,10,12,14].map(s=>[...t,s])).filter(([h,p,l,s])=>p<=12));
+      const big=small+2*p, A=(big+small)*h/2;
       const s=Math.min(360/big,160/h), cx=260, yB=265, yT=yB-h*s;
       const xL=cx-big*s/2, xR=cx+big*s/2, xTL=xL+p*s, xTR=xR-p*s, mark=14;
       // Label positions are derived from geometry, not fixed offsets.
@@ -191,7 +212,7 @@ const FAMILIES={
   perimeterRatio:{
     figures:['rettangolo'], strategies:['perimetro','rapporto','UF'],
     generate(){
-      const [m,n]=rand([[2,3],[3,4],[3,5]]), u=rand([2,3,4]);
+      const [m,n,u]=pickVariant('perimeterRatio',cartesian([[2,3],[3,4],[3,5],[4,5]],[2,3,4,5]).map(([ratio,u])=>[...ratio,u]));
       const b=n*u,h=m*u,P=2*(b+h),semi=P/2,total=m+n;
       const W=300,H=W*m/n,x=110,y=65,bottom=y+H,cell=W/n;
       return {text:`Un rettangolo ha il perimetro di ${P} cm. La base è i ${n}/${m} dell’altezza. Calcola l’area.`,
@@ -207,7 +228,7 @@ const FAMILIES={
   triangleIsoPythagoras:{
     figures:['triangolo'], strategies:['altezza','pitagora','area'],
     generate(){
-      const [h,p,l]=rand([[3,4,5],[4,3,5],[5,12,13]]), base=2*p,A=base*h/2;
+      const [h,p,l]=pickVariant('triangleIsoPythagoras',PYTHAGOREAN_VARIANTS), base=2*p,A=base*h/2;
       const s=Math.min(280/base,190/h),cx=260,yB=270,yT=yB-h*s,xL=cx-p*s,xR=cx+p*s;
       return {text:`Un triangolo isoscele ha la base di ${base} cm e i lati obliqui di ${l} cm. Calcola l’area.`,
       notes:['Osserva la figura.',`Per l’area serve l’altezza.`,`L’altezza divide la base in due parti uguali di ${p} cm.`,`Concentrati sul triangolo rettangolo evidenziato.`,`Ora conosci l’altezza: ${h} cm.`],
@@ -222,7 +243,7 @@ const FAMILIES={
   rhombusDiagonals:{
     figures:['rombo'], strategies:['diagonali','pitagora','perimetro'],
     generate(){
-      const [a,b,l]=rand([[3,4,5],[5,12,13],[6,8,10]]),D=2*b,d=2*a,A=D*d/2,P=4*l;
+      const [a,b,l]=pickVariant('rhombusDiagonals',PYTHAGOREAN_VARIANTS),D=2*b,d=2*a,A=D*d/2,P=4*l;
       const sx=12,sy=12,cx=260,cy=165,L=b*sx,S=a*sy;
       return {text:`Un rombo ha le diagonali di ${D} cm e ${d} cm. Calcola l’area e il perimetro.`,notes:['Osserva il rombo.',`Le diagonali si tagliano a metà e sono perpendicolari.`,`Considera uno dei quattro triangoli rettangoli.`,`Il lato del rombo misura ${l} cm.`],
       svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><line data-geo="side1" x1="${cx}" y1="${cy-S}" x2="${cx+L}" y2="${cy}"/><line data-geo="side2" x1="${cx+L}" y1="${cy}" x2="${cx}" y2="${cy+S}"/><line data-geo="side3" x1="${cx}" y1="${cy+S}" x2="${cx-L}" y2="${cy}"/><line data-geo="side4" x1="${cx-L}" y1="${cy}" x2="${cx}" y2="${cy-S}"/></g><text x="260" y="330" text-anchor="middle">D = ${D} cm · d = ${d} cm</text>
@@ -235,7 +256,7 @@ const FAMILIES={
   rightTrapezoid:{
     figures:['trapezio'], strategies:['differenza_basi','proiezione','pitagora','area'],
     generate(){
-      const [h,p,l]=rand([[3,4,5],[5,12,13],[6,8,10]]),small=rand([8,10,12]),big=small+p,A=(big+small)*h/2;
+      const [h,p,l,small]=pickVariant('rightTrapezoid',PYTHAGOREAN_VARIANTS.flatMap(t=>[8,10,12,14].map(s=>[...t,s])).filter(([h,p])=>p<=15)),big=small+p,A=(big+small)*h/2;
       const s=Math.min(350/big,160/h),x=85,yB=265,yT=yB-h*s,xTR=x+small*s,xR=x+big*s;
       return {text:`Un trapezio rettangolo ha le basi di ${big} cm e ${small} cm e il lato obliquo di ${l} cm. Calcola l’area.`,notes:['Osserva il trapezio rettangolo.',`La differenza tra le basi è la proiezione del lato obliquo.`,`Concentrati sul triangolo rettangolo a destra.`,`L’altezza misura ${h} cm.`],
       svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><line data-geo="left" x1="${x}" y1="${yB}" x2="${x}" y2="${yT}"/><line data-geo="top" x1="${x}" y1="${yT}" x2="${xTR}" y2="${yT}"/><line data-geo="leg" x1="${xTR}" y1="${yT}" x2="${xR}" y2="${yB}"/><line data-geo="base-main" x1="${x}" y1="${yB}" x2="${xTR}" y2="${yB}"/><line data-geo="projection" x1="${xTR}" y1="${yB}" x2="${xR}" y2="${yB}"/></g><text x="${(x+xTR)/2}" y="${yT-18}" text-anchor="middle">${small} cm</text><text x="${(x+xR)/2}" y="310" text-anchor="middle">${big} cm</text><text data-geo="leg-label" x="${(xTR+xR)/2+25}" y="${(yT+yB)/2}">${l} cm</text>
@@ -247,7 +268,7 @@ const FAMILIES={
   compositeDifference:{
     figures:['composta'], strategies:['scomposizione','differenza_aree'],
     generate(){
-      const W=rand([12,14,16]),H=rand([9,10,12]),w=rand([4,5,6]),h=rand([3,4]),A=W*H-w*h;
+      const [W,H,w,h]=pickVariant('compositeDifference',cartesian([12,14,16,18],[9,10,12,14],[4,5,6,7],[3,4,5]).filter(([W,H,w,h])=>w<=W/2 && h<=H/2)),A=W*H-w*h;
       const s=Math.min(300/W,210/H),x=105,y=55,cutX=x+(W-w)*s,cutY=y+h*s;
       return {text:`Da un rettangolo di ${W} cm × ${H} cm è stato tolto, nell’angolo in alto a destra, un rettangolo di ${w} cm × ${h} cm. Calcola l’area della figura rimasta.`,notes:['Osserva la figura composta.','Puoi partire da una figura più semplice: il rettangolo esterno.','La parte mancante va sottratta.','Ora confronta le due aree.'],
       svg:`<svg viewBox="0 0 520 350"><path data-geo="shape" d="M${x} ${y} H${cutX} V${cutY} H${x+W*s} V${y+H*s} H${x} Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><text x="260" y="315" text-anchor="middle">rettangolo esterno: ${W} × ${H} cm</text><g data-v="1" opacity="0"><rect data-geo="outer" x="${x}" y="${y}" width="${W*s}" height="${H*s}" fill="none" class="aux" stroke-width="4" stroke-dasharray="8 6"/></g><g data-v="2" opacity="0"><rect data-geo="cut" x="${cutX}" y="${y}" width="${w*s}" height="${h*s}" fill="rgba(255,104,75,.10)" class="focus" stroke-width="5"/><text class="label-focus" x="${cutX+w*s/2}" y="${y+h*s/2}" text-anchor="middle">${w}×${h}</text></g><g data-v="3" opacity="0"><text class="label-aux" x="260" y="342" text-anchor="middle">${W*H} − ${w*h} = ${A} cm²</text></g></svg>`,

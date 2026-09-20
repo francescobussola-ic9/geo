@@ -220,7 +220,7 @@ const FAMILIES={
       svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect data-geo="shape" x="${x}" y="${y}" width="${W}" height="${H}" fill="none" stroke="currentColor" stroke-width="5"/></g>
       <text data-geo="b-label" x="260" y="${bottom+34}" text-anchor="middle">b ?</text><text data-geo="h-label" x="${x-24}" y="${y+H/2}" text-anchor="end">h ?</text>
       <g data-v="1" opacity="0"><text class="label-aux" x="260" y="35" text-anchor="middle">b + h = ${semi} cm</text></g>
-      <g data-v="2" opacity="0">${Array.from({length:n},(_,i)=>`<line class="unit" x1="${x+i*cell}" y1="${bottom+8}" x2="${x+(i+1)*cell}" y2="${bottom+8}" stroke-width="5"/>`).join('')}<text class="label-unit" x="260" y="${bottom+58}" text-anchor="middle">b = ${n} UF · h = ${m} UF</text></g>
+      <g data-v="2" opacity="0">${Array.from({length:n},(_,i)=>`<line class="unit" x1="${x+i*cell}" y1="${bottom+8}" x2="${x+(i+1)*cell}" y2="${bottom+8}" stroke-width="5"/>`).join('')}<text class="label-unit" x="260" y="${bottom+58}" text-anchor="middle">b = ${n} UF; h = ${m} UF</text></g>
       <g data-v="3" opacity="0"><text class="label-focus" x="260" y="${bottom+88}" text-anchor="middle">${semi} : ${total} = ${u} cm = 1 UF</text></g></svg>`,
       helps:[['Da dove parto?',`Calcola il semiperimetro: ${P} : 2 = ${semi} cm.`,1],['Come uso il rapporto?',`Rappresenta b con ${n} UF e h con ${m} UF.`,2],['Quanto vale una UF?',`${semi} : ${total} = ${u} cm.`,3],['Mostrami la soluzione',`b=${b} cm, h=${h} cm; A=${b*h} cm².`,3]]};
     }
@@ -289,14 +289,14 @@ Object.assign(FAMILIES, {
     generate(){
       const [h,d]=pickVariant('rectDiffKnownSide',cartesian([6,8,10,12],[3,4,5,6])); const b=h+d,P=2*(b+h),A=b*h;
       const W=280,H=W*h/b,x=120,y=65;
-      return {text:`La base di un rettangolo supera l’altezza di ${d} cm. L’altezza misura ${h} cm. Calcola perimetro e area.`,notes:['Individua sul disegno la differenza tra i lati.',`La base è l’altezza più ${d} cm.`,`Ora conosci entrambe le dimensioni.`],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect data-geo="shape" x="${x}" y="${y}" width="${W}" height="${H}" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="${x-20}" y="${y+H/2}" text-anchor="end">${h} cm</text><text x="260" y="${y+H+35}" text-anchor="middle">b ?</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="${y+H+68}" text-anchor="middle">b = ${h} + ${d} = ${b} cm</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="${y+H+98}" text-anchor="middle">P = ${P} cm · A = ${A} cm²</text></g></svg>`,helps:[['Come uso la differenza?',`La base è ${h}+${d}=${b} cm.`,1],['E adesso?',`Conosci b e h: puoi applicare direttamente perimetro e area.`,2],['Mostrami la soluzione',`P=2×(${b}+${h})=${P} cm; A=${b}×${h}=${A} cm².`,2]]};
+      return {text:`La base di un rettangolo supera l’altezza di ${d} cm. L’altezza misura ${h} cm. Calcola perimetro e area.`,notes:['Individua sul disegno la differenza tra i lati.',`La base è l’altezza più ${d} cm.`,`Ora conosci entrambe le dimensioni.`],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect data-geo="shape" x="${x}" y="${y}" width="${W}" height="${H}" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="${x-20}" y="${y+H/2}" text-anchor="end">${h} cm</text><text x="260" y="${y+H+35}" text-anchor="middle">b ?</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="${y+H+68}" text-anchor="middle">b = ${h} + ${d} = ${b} cm</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="${y+H+98}" text-anchor="middle">P = ${P} cm; A = ${A} cm²</text></g></svg>`,helps:[['Come uso la differenza?',`La base è ${h}+${d}=${b} cm.`,1],['E adesso?',`Conosci b e h: puoi applicare direttamente perimetro e area.`,2],['Mostrami la soluzione',`P=2×(${b}+${h})=${P} cm; A=${b}×${h}=${A} cm².`,2]]};
     }
   },
   rectDiffFromAreaSide:{
     figures:['rettangolo'], strategies:['formula_inversa','area','differenza','perimetro'],
     generate(){
       const [h,d]=pickVariant('rectDiffFromAreaSide',cartesian([5,6,8,10],[2,3,4,5])); const b=h+d,A=b*h,P=2*(b+h);
-      return {text:`Un rettangolo ha area ${A} cm² e altezza ${h} cm. Di quanti centimetri la base supera l’altezza? Calcola anche il perimetro.`,notes:['Prima ricava la base dall’area.','Confronta poi le due dimensioni.','Infine calcola il perimetro.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect data-geo="shape" x="110" y="70" width="300" height="170" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="90" y="160" text-anchor="end">h=${h}</text><text x="260" y="275" text-anchor="middle">A=${A} cm² · b ?</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b = A : h = ${A} : ${h} = ${b}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="342" text-anchor="middle">b−h=${d} cm · P=${P} cm</text></g></svg>`,helps:[['Quale lato posso ricavare?',`Usa la formula inversa dell’area: b=A:h.`,1],['Come trovo la differenza?',`${b}−${h}=${d} cm.`,2],['Mostrami la soluzione',`b=${b} cm; differenza=${d} cm; P=2×(${b}+${h})=${P} cm.`,2]]};
+      return {text:`Un rettangolo ha area ${A} cm² e altezza ${h} cm. Di quanti centimetri la base supera l’altezza? Calcola anche il perimetro.`,notes:['Prima ricava la base dall’area.','Confronta poi le due dimensioni.','Infine calcola il perimetro.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect data-geo="shape" x="110" y="70" width="300" height="170" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="90" y="160" text-anchor="end">h=${h}</text><text x="260" y="275" text-anchor="middle">A=${A} cm²; b ?</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b = A : h = ${A} : ${h} = ${b}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="342" text-anchor="middle">b−h=${d} cm · P=${P} cm</text></g></svg>`,helps:[['Quale lato posso ricavare?',`Usa la formula inversa dell’area: b=A:h.`,1],['Come trovo la differenza?',`${b}−${h}=${d} cm.`,2],['Mostrami la soluzione',`b=${b} cm; differenza=${d} cm; P=2×(${b}+${h})=${P} cm.`,2]]};
     }
   },
   rectRatioKnownHeight:{
@@ -317,7 +317,7 @@ Object.assign(FAMILIES, {
     figures:['trapezio'], strategies:['differenza_basi','proiezione','pitagora','perimetro'],
     generate(){
       const [h,p,l,small]=pickVariant('isoTrapBasesHeight',PYTHAGOREAN_VARIANTS.flatMap(t=>[8,10,12].map(s=>[...t,s])).filter(([h,p])=>p<=12)); const big=small+2*p,P=big+small+2*l;
-      return {text:`Un trapezio isoscele ha basi ${big} cm e ${small} cm e altezza ${h} cm. Calcola il perimetro.`,notes:['Per il perimetro manca il lato obliquo.','La differenza delle basi si divide in due proiezioni uguali.','Con altezza e proiezione ottieni un triangolo rettangolo.'],svg:`<svg viewBox="0 0 520 350"><path d="M70 265 L450 265 L380 85 L140 85 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="310" text-anchor="middle">B=${big} · b=${small} · h=${h}</text><g data-v="1" opacity="0"><line class="aux" x1="140" y1="85" x2="140" y2="265" stroke-width="4" stroke-dasharray="8 6"/><text class="label-focus" x="105" y="288" text-anchor="middle">${p}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">l=√(${h}²+${p}²)=${l} → P=${P}</text></g></svg>`,helps:[['Come trovo il lato obliquo?',`Calcola prima (B−b):2 = (${big}−${small}):2 = ${p} cm.`,1],['Quale figura compare?',`Altezza ${h} e proiezione ${p} sono i cateti di un triangolo rettangolo.`,1],['Mostrami la soluzione',`l=√(${h}²+${p}²)=${l} cm; P=${big}+${small}+2×${l}=${P} cm.`,2]]};
+      return {text:`Un trapezio isoscele ha basi ${big} cm e ${small} cm e altezza ${h} cm. Calcola il perimetro.`,notes:['Per il perimetro manca il lato obliquo.','La differenza delle basi si divide in due proiezioni uguali.','Con altezza e proiezione ottieni un triangolo rettangolo.'],svg:`<svg viewBox="0 0 520 350"><path d="M70 265 L450 265 L380 85 L140 85 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="310" text-anchor="middle">B=${big}; b=${small}; h=${h}</text><g data-v="1" opacity="0"><line class="aux" x1="140" y1="85" x2="140" y2="265" stroke-width="4" stroke-dasharray="8 6"/><text class="label-focus" x="105" y="288" text-anchor="middle">${p}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">l=√(${h}²+${p}²)=${l} → P=${P}</text></g></svg>`,helps:[['Come trovo il lato obliquo?',`Calcola prima (B−b):2 = (${big}−${small}):2 = ${p} cm.`,1],['Quale figura compare?',`Altezza ${h} e proiezione ${p} sono i cateti di un triangolo rettangolo.`,1],['Mostrami la soluzione',`l=√(${h}²+${p}²)=${l} cm; P=${big}+${small}+2×${l}=${P} cm.`,2]]};
     }
   },
   isoTrapAreaBases:{
@@ -370,7 +370,7 @@ Object.assign(FAMILIES, {
     figures:['trapezio'], strategies:['differenza_basi','pitagora','perimetro'],
     generate(){
       const [h,p,l,small]=pickVariant('rightTrapBasesHeight',PYTHAGOREAN_VARIANTS.flatMap(t=>[8,10,12].map(s=>[...t,s]))); const big=small+p,P=big+small+h+l;
-      return {text:`Un trapezio rettangolo ha basi ${big} cm e ${small} cm e altezza ${h} cm. Calcola il perimetro.`,notes:['Manca il lato obliquo.','La differenza delle basi è un cateto del triangolo rettangolo laterale.','Usa Pitagora.'],svg:`<svg viewBox="0 0 520 350"><path d="M90 270 L90 80 L360 80 L440 270 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="315" text-anchor="middle">B=${big} · b=${small} · h=${h}</text><g data-v="1" opacity="0"><text class="label-focus" x="400" y="295" text-anchor="middle">B−b=${p}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="345" text-anchor="middle">l=${l} → P=${P}</text></g></svg>`,helps:[['Come trovo la proiezione?',`${big}−${small}=${p} cm.`,1],['Come trovo il lato obliquo?',`l=√(${h}²+${p}²)=${l} cm.`,2],['Mostrami la soluzione',`P=${big}+${small}+${h}+${l}=${P} cm.`,2]]};
+      return {text:`Un trapezio rettangolo ha basi ${big} cm e ${small} cm e altezza ${h} cm. Calcola il perimetro.`,notes:['Manca il lato obliquo.','La differenza delle basi è un cateto del triangolo rettangolo laterale.','Usa Pitagora.'],svg:`<svg viewBox="0 0 520 350"><path d="M90 270 L90 80 L360 80 L440 270 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="315" text-anchor="middle">B=${big}; b=${small}; h=${h}</text><g data-v="1" opacity="0"><text class="label-focus" x="400" y="295" text-anchor="middle">B−b=${p}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="345" text-anchor="middle">l=${l} → P=${P}</text></g></svg>`,helps:[['Come trovo la proiezione?',`${big}−${small}=${p} cm.`,1],['Come trovo il lato obliquo?',`l=√(${h}²+${p}²)=${l} cm.`,2],['Mostrami la soluzione',`P=${big}+${small}+${h}+${l}=${P} cm.`,2]]};
     }
   },
   rightTrapAreaBases:{
@@ -398,14 +398,14 @@ Object.assign(FAMILIES, {
     figures:['rettangolo'], strategies:['perimetro','formula_inversa','rapporto'],
     generate(){
       const [b,h]=pickVariant('rectPerimeterKnownBase',[[12,8],[15,10],[16,12],[20,12],[20,16]]); const P=2*(b+h),g=gcd(b,h);
-      return {text:`Un rettangolo ha perimetro ${P} cm e base ${b} cm. Calcola l’altezza ed esprimi il rapporto base : altezza ai minimi termini.`,notes:['Dal perimetro ricava prima il semiperimetro.','Togli la base per ottenere l’altezza.','Solo alla fine confronta i due lati.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect x="110" y="65" width="300" height="180" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="260" y="282" text-anchor="middle">P=${P} cm · b=${b} cm</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b+h=${P/2} → h=${h}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="345" text-anchor="middle">b:h=${b/g}:${h/g}</text></g></svg>`,helps:[['Da dove parto?',`Il semiperimetro è ${P}:2=${P/2} cm.`,1],['Come trovo h?',`${P/2}−${b}=${h} cm.`,1],['Come scrivo il rapporto?',`Riduci ${b}:${h} dividendo per ${g}.`,2],['Mostrami la soluzione',`h=${h} cm; b:h=${b/g}:${h/g}.`,2]]};
+      return {text:`Un rettangolo ha perimetro ${P} cm e base ${b} cm. Calcola l’altezza ed esprimi il rapporto base : altezza ai minimi termini.`,notes:['Dal perimetro ricava prima il semiperimetro.','Togli la base per ottenere l’altezza.','Solo alla fine confronta i due lati.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect x="110" y="65" width="300" height="180" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="260" y="282" text-anchor="middle">P=${P} cm; b=${b} cm</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b+h=${P/2} → h=${h}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="345" text-anchor="middle">b:h=${b/g}:${h/g}</text></g></svg>`,helps:[['Da dove parto?',`Il semiperimetro è ${P}:2=${P/2} cm.`,1],['Come trovo h?',`${P/2}−${b}=${h} cm.`,1],['Come scrivo il rapporto?',`Riduci ${b}:${h} dividendo per ${g}.`,2],['Mostrami la soluzione',`h=${h} cm; b:h=${b/g}:${h/g}.`,2]]};
     }
   },
   rectPerimeterDiffRatio:{
     figures:['rettangolo'], strategies:['perimetro','differenza','rapporto'],
     generate(){
       const [h,d]=pickVariant('rectPerimeterDiffRatio',[[6,3],[8,4],[9,6],[10,5],[12,6]]); const b=h+d,P=2*(b+h),g=gcd(b,h);
-      return {text:`Un rettangolo ha perimetro ${P} cm e la base supera l’altezza di ${d} cm. Dopo aver trovato i lati, esprimi il rapporto base : altezza ai minimi termini.`,notes:['Risolvi prima la relazione tra somma e differenza.','Poi confronta i due lati ottenuti.','Il rapporto va ridotto ai minimi termini.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect x="110" y="65" width="300" height="180" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="260" y="282" text-anchor="middle">P=${P} · b−h=${d}</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b+h=${P/2}; h=(${P/2}−${d}):2=${h}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="345" text-anchor="middle">b:h=${b/g}:${h/g}</text></g></svg>`,helps:[['Come trovo i lati?',`Dal semiperimetro ${P/2} togli la differenza ${d}, poi dividi per 2.`,1],['E la base?',`b=${h}+${d}=${b} cm.`,1],['Come ottengo il rapporto?',`Riduci ${b}:${h} dividendo per ${g}.`,2],['Mostrami la soluzione',`b=${b}, h=${h}; rapporto=${b/g}:${h/g}.`,2]]};
+      return {text:`Un rettangolo ha perimetro ${P} cm e la base supera l’altezza di ${d} cm. Dopo aver trovato i lati, esprimi il rapporto base : altezza ai minimi termini.`,notes:['Risolvi prima la relazione tra somma e differenza.','Poi confronta i due lati ottenuti.','Il rapporto va ridotto ai minimi termini.'],svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect x="110" y="65" width="300" height="180" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="260" y="282" text-anchor="middle">P=${P}; b−h=${d}</text><g data-v="1" opacity="0"><text class="label-focus" x="260" y="315" text-anchor="middle">b+h=${P/2}; h=(${P/2}−${d}):2=${h}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="345" text-anchor="middle">b:h=${b/g}:${h/g}</text></g></svg>`,helps:[['Come trovo i lati?',`Dal semiperimetro ${P/2} togli la differenza ${d}, poi dividi per 2.`,1],['E la base?',`b=${h}+${d}=${b} cm.`,1],['Come ottengo il rapporto?',`Riduci ${b}:${h} dividendo per ${g}.`,2],['Mostrami la soluzione',`b=${b}, h=${h}; rapporto=${b/g}:${h/g}.`,2]]};
     }
   }
 
@@ -583,32 +583,62 @@ Object.assign(FAMILIES,{
   }
 });
 
+function ufBar(x,y,count,unit,{showLabel=true,extraClass=''}={}){
+  // Barra UF realmente suddivisa: ogni confine tra unità è marcato da una tacca.
+  const x2=x+count*unit;
+  const ticks=Array.from({length:count+1},(_,i)=>
+    `<line class="uf-tick ${extraClass}" x1="${x+i*unit}" y1="${y-8}" x2="${x+i*unit}" y2="${y+8}"/>`
+  ).join('');
+  return `<g class="uf-bar ${extraClass}"><line x1="${x}" y1="${y}" x2="${x2}" y2="${y}"/>${ticks}${showLabel?`<text class="label-unit" x="${(x+x2)/2}" y="${y-18}" text-anchor="middle">${count} UF</text>`:''}</g>`;
+}
+
 function segmentRelationSvg(kind,m,u,total,short,long,context){
-  // 1 UF ha sempre la stessa lunghezza fisica all'interno della scena.
-  const unit=58, x=92, y1=105, y2=205;
-  const shortW=unit, longW=m*unit;
-  const relationLabel=`${m} volte`;
-  const bars=`<g class="geo-base">
-    <line data-geo="short" x1="${x}" y1="${y1}" x2="${x+shortW}" y2="${y1}"/>
-    <line data-geo="long" x1="${x}" y1="${y2}" x2="${x+longW}" y2="${y2}"/>
-  </g>
-  <text x="${x-18}" y="${y1+6}" text-anchor="end">a</text><text x="${x-18}" y="${y2+6}" text-anchor="end">b</text>
-  <text x="${x+shortW/2}" y="${y1-20}" text-anchor="middle">1 UF</text>
-  <g data-v="1" opacity="0">${Array.from({length:m},(_,i)=>`<line class="unit" x1="${x+i*unit}" y1="${y2-13}" x2="${x+(i+1)*unit}" y2="${y2-13}" stroke-width="4"/>`).join('')}<text class="label-unit" x="${x+longW/2}" y="${y2-28}" text-anchor="middle">${m} UF</text></g>`;
-  const equation=kind==='sum'?`${1+m} UF = ${total} cm`: `${m-1} UF = ${total} cm`;
-  const final=`1 UF = ${u} cm → segmenti ${short} cm e ${long} cm`;
+  // 1 UF mantiene la stessa lunghezza fisica e le tacche ne rendono visibili i confini.
+  const unit=Math.min(58,300/m), x=110;
+  const equation=kind==='sum'?`${1+m} UF = ${total} cm`:`${m-1} UF = ${total} cm`;
+  const final=`1 UF = ${u} cm  →  ${short} cm e ${long} cm`;
+  const relationLabel=m===2?'doppia':m===3?'tripla':m===4?'quadrupla':`${m} volte l’altezza`;
+  const difference = kind==='diff'
+    ? `<g data-v="1" opacity="0">${ufBar(x+unit,225,m-1,unit,{showLabel:false,extraClass:'difference-bar'})}<text class="label-unit" x="${x+(m+1)*unit/2}" y="197" text-anchor="middle">differenza = ${m-1} UF</text></g>` : '';
+
+  const bars=`<g class="segment-model">
+    <text x="${x-22}" y="131" text-anchor="end">minore</text>
+    ${ufBar(x,125,1,unit)}
+    <text x="${x-22}" y="231" text-anchor="end">maggiore</text>
+    <g data-v="1" opacity="0">${ufBar(x,225,m,unit)}</g>
+    ${difference}
+  </g>`;
+
   if(context==='rectangle'){
-    const rw=Math.min(300,m*72), rh=72, rx=110, ry=68;
-    return `<svg viewBox="0 0 520 350" aria-label="Rettangolo con lati legati da un rapporto"><g class="geo-base"><rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="none" stroke="currentColor" stroke-width="5"/></g><text x="${rx+rw/2}" y="${ry-18}" text-anchor="middle">base = ${relationLabel} l’altezza</text><text x="${rx+rw/2}" y="${ry+rh+28}" text-anchor="middle">base ?</text><text x="${rx-16}" y="${ry+rh/2+5}" text-anchor="end">h ?</text><g transform="translate(0,70)">${bars}</g><g data-v="2" opacity="0"><text class="label-focus" x="260" y="312" text-anchor="middle">${equation}</text></g><g data-v="3" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">${final}</text></g></svg>`;
+    // Il rettangolo dà il contesto; il modello a segmenti è separato nello spazio sottostante.
+    // Evitiamo di sovrapporre etichette, figura e barre UF.
+    const rw=240, rh=82, rx=140, ry=34;
+    return `<svg viewBox="0 0 520 420" aria-label="Rettangolo e modello a segmenti in unità frazionarie">
+      <g class="geo-base"><rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="none" stroke="currentColor" stroke-width="5"/></g>
+      <text x="260" y="24" text-anchor="middle">base ${relationLabel} dell’altezza</text>
+      <text x="260" y="145" text-anchor="middle">b ?</text><text x="${rx-18}" y="${ry+rh/2+6}" text-anchor="end">h ?</text>
+      <g transform="translate(0,70)">${bars}</g>
+      <g data-v="2" opacity="0"><text class="label-focus" x="260" y="365" text-anchor="middle">${equation}</text></g>
+      <g data-v="3" opacity="0"><text class="label-aux" x="260" y="402" text-anchor="middle">${final}</text></g>
+    </svg>`;
   }
   return `<svg viewBox="0 0 520 350" aria-label="Rappresentazione in unità frazionarie di due segmenti">${bars}<g data-v="2" opacity="0"><text class="label-focus" x="260" y="292" text-anchor="middle">${equation}</text></g><g data-v="3" opacity="0"><text class="label-aux" x="260" y="330" text-anchor="middle">${final}</text></g></svg>`;
 }
 
 function segmentSumDiffSvg(short,long,sum,diff,context){
-  const x=90,y1=112,y2=220,scale=260/long,A=long*scale,B=short*scale;
-  const rect=context==='rectangle'?`<rect x="105" y="52" width="310" height="120" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="38" text-anchor="middle">base + altezza = ${sum} cm · base − altezza = ${diff} cm</text>`:'';
-  const shift=context==='rectangle'?70:0;
-  return `<svg viewBox="0 0 520 350" aria-label="Problema di somma e differenza">${rect}<g transform="translate(0,${shift})"><g class="geo-base"><line data-geo="long" x1="${x}" y1="${y1}" x2="${x+A}" y2="${y1}"/><line data-geo="short" x1="${x}" y1="${y2}" x2="${x+B}" y2="${y2}"/></g><text x="${x-18}" y="${y1+6}" text-anchor="end">maggiore</text><text x="${x-18}" y="${y2+6}" text-anchor="end">minore</text><g data-v="1" opacity="0"><line class="unit" x1="${x+B}" y1="${y1-14}" x2="${x+A}" y2="${y1-14}" stroke-width="5"/><text class="label-unit" x="${x+(A+B)/2}" y="${y1-27}" text-anchor="middle">differenza = ${diff}</text></g></g><g data-v="2" opacity="0"><text class="label-focus" x="260" y="312" text-anchor="middle">${sum} − ${diff} = ${2*short} cm → due parti uguali</text></g><g data-v="3" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">${short} cm e ${long} cm</text></g></svg>`;
+  const x=105, scale=Math.min(270/long,16), A=long*scale, B=short*scale;
+  const y1=context==='rectangle'?205:115, y2=context==='rectangle'?285:220;
+  const rect=context==='rectangle'?`<g class="geo-base"><rect x="145" y="42" width="230" height="92" fill="none" stroke="currentColor" stroke-width="5"/></g>
+    <text x="260" y="25" text-anchor="middle">b + h = ${sum} cm</text>
+    <text x="260" y="162" text-anchor="middle">b − h = ${diff} cm</text>`:'';
+  const bottom=context==='rectangle'?410:340;
+  return `<svg viewBox="0 0 520 ${context==='rectangle'?430:350}" aria-label="Problema di somma e differenza">${rect}
+    <g class="geo-base"><line data-geo="long" x1="${x}" y1="${y1}" x2="${x+A}" y2="${y1}"/><line data-geo="short" x1="${x}" y1="${y2}" x2="${x+B}" y2="${y2}"/></g>
+    <text x="${x-18}" y="${y1+6}" text-anchor="end">maggiore</text><text x="${x-18}" y="${y2+6}" text-anchor="end">minore</text>
+    <g data-v="1" opacity="0"><line class="difference-segment" x1="${x+B}" y1="${y1}" x2="${x+A}" y2="${y1}"/><line class="difference-cap" x1="${x+B}" y1="${y1-9}" x2="${x+B}" y2="${y1+9}"/><line class="difference-cap" x1="${x+A}" y1="${y1-9}" x2="${x+A}" y2="${y1+9}"/><text class="label-unit" x="${x+(A+B)/2}" y="${y1-20}" text-anchor="middle">differenza = ${diff} cm</text></g>
+    <g data-v="2" opacity="0"><text class="label-focus" x="260" y="${bottom-30}" text-anchor="middle">${sum} − ${diff} = ${2*short} cm</text><text class="label-focus" x="260" y="${bottom-5}" text-anchor="middle">restano due parti uguali</text></g>
+    <g data-v="3" opacity="0"><text class="label-aux" x="260" y="${bottom+22}" text-anchor="middle">${short} cm e ${long} cm</text></g>
+  </svg>`;
 }
 
 Object.assign(FAMILIES,{
@@ -676,7 +706,7 @@ function renderHome(){state.view='home';state.openHelp=null;const cards=FIGURES.
 function startFromFigure(fig){const keys=familyKeysFor(fig);if(!keys.length)return;state.entryFigure=fig;state.family=rand(keys);newInstance();}
 function newInstance(){state.instance=FAMILIES[state.family].generate();state.openHelp=null;renderProblem();}
 function differentProblem(){const keys=familyKeysFor(state.entryFigure);const alternatives=keys.filter(k=>k!==state.family);state.family=rand(alternatives.length?alternatives:keys);newInstance();}
-function renderProblem(){state.view='problem';const x=state.instance;const label=FIGURES.find(f=>f[0]===state.entryFigure)?.[1]||'';app.innerHTML=shell(`<div class="problem-head"><div><div class="eyebrow">${label}</div><div class="status">Il tipo di strategia resta nascosto: scegli tu come procedere.</div></div><button id="homeTop" class="secondary">← Home</button></div><section class="card"><b>Problema</b><p>${x.text}</p></section><section class="grid"><div class="diagram">${x.svg}<div class="note">${state.openHelp===null ? (x.notes?.[0]||'Osserva la figura e prova a decidere da dove partire.') : (x.notes?.[x.helps[state.openHelp][2]]||x.helps[state.openHelp][1])}</div></div><div class="helps">${x.helps.map((h,i)=>`<div><button class="help-btn ${state.openHelp===i?'open':''}" data-help="${i}"><span>${i+1} · ${h[0]}</span><span class="chev">▾</span></button><div class="help-text ${state.openHelp===i?'':'hidden'}" data-text="${i}">${h[1]}</div></div>`).join('')}</div></section><div class="end-actions"><button id="similar" class="primary">Provane uno simile</button><button id="different" class="secondary" ${familyKeysFor(state.entryFigure).length < 2 ? 'disabled title="Non ci sono ancora altri tipi di problema per questa figura"' : ''}>Provane uno diverso</button><button id="home" class="secondary">Torna alla home</button></div>`,'<button id="form" class="tool-btn">📐 Formulario</button>');bindProblem();applyVisual();}
+function renderProblem(){state.view='problem';const x=state.instance;const label=FIGURES.find(f=>f[0]===state.entryFigure)?.[1]||'';app.innerHTML=shell(`<div class="problem-head"><div><div class="eyebrow">${label}</div><div class="status">Il tipo di strategia resta nascosto: scegli tu come procedere.</div></div><button id="homeTop" class="secondary">← Home</button></div><section class="card"><b>Problema</b><p>${x.text}</p></section><section class="grid"><div class="diagram">${x.svg}<div class="note">${state.openHelp===null ? (x.notes?.[0]||'Osserva la figura e prova a decidere da dove partire.') : (x.notes?.[x.helps[state.openHelp][2]]||x.helps[state.openHelp][1])}</div></div><div class="helps">${x.helps.map((h,i)=>`<div><button class="help-btn ${state.openHelp===i?'open':''}" data-help="${i}"><span>${i+1} — ${h[0]}</span><span class="chev">▾</span></button><div class="help-text ${state.openHelp===i?'':'hidden'}" data-text="${i}">${h[1]}</div></div>`).join('')}</div></section><div class="end-actions"><button id="similar" class="primary">Provane uno simile</button><button id="different" class="secondary" ${familyKeysFor(state.entryFigure).length < 2 ? 'disabled title="Non ci sono ancora altri tipi di problema per questa figura"' : ''}>Provane uno diverso</button><button id="home" class="secondary">Torna alla home</button></div>`,'<button id="form" class="tool-btn">📐 Formulario</button>');bindProblem();applyVisual();}
 function bindProblem(){app.querySelector('#form').onclick=()=>renderFormula('problem');app.querySelector('#homeTop').onclick=renderHome;app.querySelector('#home').onclick=renderHome;app.querySelector('#similar').onclick=newInstance;const different=app.querySelector('#different'); if(!different.disabled) different.onclick=differentProblem;app.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>{const i=+b.dataset.help;state.openHelp=state.openHelp===i?null:i;renderProblem();});}
 function applyVisual(){
   const svg=app.querySelector('.diagram svg');

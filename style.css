@@ -19,3 +19,11 @@ button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.25);transform:n
 @media(max-width:430px){.wrap{padding:20px 14px 38px}.figure-grid{grid-template-columns:1fr 1fr;gap:12px}.home-card{padding:12px;min-height:148px;font-size:.98rem}.home-card svg{height:82px}.home-card:not(:disabled):after{width:32px;height:32px;right:9px;bottom:9px}.home-intro{padding-left:46px;font-size:1rem}.brand{font-size:3.5rem}}
 @media (prefers-reduced-motion: reduce){.diagram svg [data-geo],.tool-btn,.secondary,.primary,.home-card,.help-btn,.formula-actions button{transition:none}}
 .diagram svg .geo-unit-highlight{stroke:var(--green)!important;stroke-width:7!important;opacity:1!important}
+
+/* v0.9.1 — leggibilità dei modelli a segmenti */
+.diagram .uf-bar line{stroke:var(--green);stroke-width:5;stroke-linecap:round}
+.diagram .uf-bar .uf-tick{stroke:var(--green);stroke-width:2.5;stroke-linecap:round}
+.diagram .difference-bar line,.diagram .difference-segment,.diagram .difference-cap{stroke:var(--orange);stroke-width:6;stroke-linecap:round}
+.diagram .difference-bar .uf-tick{stroke:var(--orange);stroke-width:2.5}
+.help-btn span:first-child{min-width:0;overflow-wrap:anywhere;line-height:1.25}
+.help-btn{overflow:hidden}

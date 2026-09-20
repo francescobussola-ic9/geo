@@ -38,3 +38,13 @@ button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.25);transform:n
 .linked-stepbox{fill:var(--paper,#fffdf8);stroke:rgba(25,45,70,.14);stroke-width:1.5}
 .linked-steptext{font-size:14px}
 .linked-progress{fill:var(--orange);stroke:none}.linked-progress-text{fill:white;font-size:13px;font-weight:800}
+
+/* v0.10.1 — Figure collegate: allineamento grafico e dato-ponte visuale */
+.diagram svg .linked-name{font-size:16px;font-weight:700}
+.diagram svg .linked-label{font-size:14px;font-weight:500}
+.diagram svg .linked-bridge-label{font-size:16px;font-weight:500}
+.diagram svg .linked-equal-area path,
+.diagram svg .linked-equal-area rect{fill:var(--soft-yellow);fill-opacity:.95;stroke:none;pointer-events:none}
+.diagram svg .linked-equal-perimeter path,
+.diagram svg .linked-equal-perimeter rect{fill:none;stroke:var(--yellow);stroke-width:8;stroke-linejoin:round;pointer-events:none}
+.diagram svg .linked-correspondence line{stroke:var(--yellow);stroke-width:8;stroke-linecap:round;pointer-events:none}

@@ -712,29 +712,51 @@ for(const [id,kind,task,strategy] of COMPOSITE_FAMILIES){
 
 // --- Figure collegate: 20 problemi individuali, senza varianti "simili" ---
 const COMPLEX_USED=[];
+function linkedShapePath(type,x,y,w,h){
+  if(type==='rettangolo'||type==='quadrato') return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2"/>`;
+  if(type==='rombo') return `<path d="M${x+w/2} ${y} L${x+w} ${y+h/2} L${x+w/2} ${y+h} L${x} ${y+h/2} Z"/>`;
+  if(type==='triangolo') return `<path d="M${x+w/2} ${y} L${x+w} ${y+h} L${x} ${y+h} Z"/>`;
+  if(type==='triangoloR') return `<path d="M${x} ${y} L${x} ${y+h} L${x+w} ${y+h} Z"/>`;
+  if(type==='trapezio') return `<path d="M${x+w*.23} ${y} L${x+w*.77} ${y} L${x+w} ${y+h} L${x} ${y+h} Z"/>`;
+  if(type==='trapezioR') return `<path d="M${x} ${y} L${x+w*.65} ${y} L${x+w} ${y+h} L${x} ${y+h} Z"/>`;
+  return '';
+}
 function linkedShape(type,x,y,w,h,labels=[]){
-  let shape='';
-  if(type==='rettangolo'||type==='quadrato') shape=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2"/>`;
-  if(type==='rombo') shape=`<path d="M${x+w/2} ${y} L${x+w} ${y+h/2} L${x+w/2} ${y+h} L${x} ${y+h/2} Z"/>`;
-  if(type==='triangolo') shape=`<path d="M${x+w/2} ${y} L${x+w} ${y+h} L${x} ${y+h} Z"/>`;
-  if(type==='triangoloR') shape=`<path d="M${x} ${y} L${x} ${y+h} L${x+w} ${y+h} Z"/>`;
-  if(type==='trapezio') shape=`<path d="M${x+w*.23} ${y} L${x+w*.77} ${y} L${x+w} ${y+h} L${x} ${y+h} Z"/>`;
-  if(type==='trapezioR') shape=`<path d="M${x} ${y} L${x+w*.65} ${y} L${x+w} ${y+h} L${x} ${y+h} Z"/>`;
-  const texts=labels.map((t,i)=>`<text class="linked-label" x="${x+w/2}" y="${y+h+24+i*20}" text-anchor="middle">${t}</text>`).join('');
+  const shape=linkedShapePath(type,x,y,w,h);
+  // Come nelle famiglie storiche: le etichette sono testo leggero e hanno spazio proprio.
+  const texts=labels.map((t,i)=>`<text class="linked-label" x="${x+w/2}" y="${y+h+26+i*27}" text-anchor="middle">${t}</text>`).join('');
   return shape+texts;
 }
+function linkedBridgeVisual(p,leftBox,rightBox,step){
+  const [lx,ly,lw,lh]=leftBox,[rx,ry,rw,rh]=rightBox;
+  if(p.bridge==='stessa area'){
+    return `<g data-v="${step}" class="linked-equal-area" aria-hidden="true">${linkedShapePath(p.a,lx,ly,lw,lh)}${linkedShapePath(p.b,rx,ry,rw,rh)}</g>`;
+  }
+  if(p.bridge==='stesso perimetro'){
+    return `<g data-v="${step}" class="linked-equal-perimeter" aria-hidden="true">${linkedShapePath(p.a,lx,ly,lw,lh)}${linkedShapePath(p.b,rx,ry,rw,rh)}</g>`;
+  }
+  if(p.bridge==='lato = ipotenusa'){
+    // Triangolo rettangolo: ipotenusa; rombo: un lato corrispondente.
+    return `<g data-v="${step}" class="linked-correspondence" aria-hidden="true"><line x1="${lx}" y1="${ly}" x2="${lx+lw}" y2="${ly+lh}"/><line x1="${rx+rw/2}" y1="${ry}" x2="${rx+rw}" y2="${ry+rh/2}"/></g>`;
+  }
+  if(p.bridge==='ipotenusa = diagonale'){
+    // Rettangolo: diagonale; triangolo rettangolo: ipotenusa.
+    return `<g data-v="${step}" class="linked-correspondence" aria-hidden="true"><line x1="${lx}" y1="${ly+lh}" x2="${lx+lw}" y2="${ly}"/><line x1="${rx}" y1="${ry}" x2="${rx+rw}" y2="${ry+rh}"/></g>`;
+  }
+  return '';
+}
 function linkedSvg(p){
-  const left=linkedShape(p.a,45,82,155,115,p.aLabels||[]), right=linkedShape(p.b,320,82,155,115,p.bLabels||[]);
-  const maxStep=p.helps.length;
-  const gap=p.stages.length>1?300/(p.stages.length-1):0;
-  const stage=p.stages.map((s,i)=>`<g data-v="${i+1}" opacity="0"><circle class="linked-progress" cx="${110+i*gap}" cy="325" r="14"/><text class="linked-progress-text" x="${110+i*gap}" y="330" text-anchor="middle">${i+1}</text></g>`).join('');
+  const leftBox=[45,82,155,115],rightBox=[320,82,155,115];
+  const left=linkedShape(p.a,...leftBox,p.aLabels||[]), right=linkedShape(p.b,...rightBox,p.bLabels||[]);
+  const bridgeStep=p.leftSteps+1;
+  const bridgeVisual=linkedBridgeVisual(p,leftBox,rightBox,bridgeStep);
   return `<svg viewBox="0 0 520 390" aria-label="Due figure collegate dai dati del problema">
     <g data-geo="first" class="geo-base linked-figure">${left}</g>
     <g data-geo="bridge"><path class="linked-arrow" d="M215 140 H300"/><path class="linked-arrowhead" d="M292 132 L304 140 L292 148"/></g>
-    <text data-geo="bridge-label" class="label-unit" x="260" y="122" text-anchor="middle">${p.bridge}</text>
+    <text data-geo="bridge-label" class="label-unit linked-bridge-label" x="260" y="122" text-anchor="middle">${p.bridge}</text>
     <g data-geo="second" class="geo-base linked-figure">${right}</g>
+    ${bridgeVisual}
     <text class="linked-name" x="122" y="58" text-anchor="middle">${p.aName}</text><text class="linked-name" x="397" y="58" text-anchor="middle">${p.bName}</text>
-    ${stage}
   </svg>`;
 }
 function linkedProblem(p){

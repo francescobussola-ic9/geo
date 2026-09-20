@@ -489,9 +489,18 @@ function compositeProblem(kind,task){
     inverse=`L’area totale è ${A1+A2} cm². Il rettangolo misura ${s}×${hr} cm. Il rombo condivide con esso un lato di ${s} cm. Trova l’altezza del rombo.`;invAnswer=`A rombo=${A2} cm²; h=A:b=${hR} cm.`;
   }
   const total=A1+A2;
-  if(task==='area') text=`Una figura composta è formata da ${names}. Le misure sono: ${labels}. Calcola l’area totale.`;
-  if(task==='perimeter') text=`Una figura composta è formata da ${names}. Le misure sono: ${labels}. Calcola il perimetro esterno della figura.`;
-  if(task==='inverse') text=inverse;
+  const joins={
+    rectRect:'I due rettangoli sono affiancati e condividono interamente il lato verticale del rettangolo più piccolo.',
+    squareTri:'Il triangolo è costruito esternamente su un lato del quadrato e la sua base coincide interamente con quel lato.',
+    rectTri:'Il triangolo è costruito esternamente sul lato del rettangolo lungo quanto la sua base e la base del triangolo coincide interamente con quel lato.',
+    squareTrap:'Il trapezio è costruito esternamente su un lato del quadrato e la sua base maggiore coincide interamente con quel lato.',
+    rectTrap:'Il trapezio è costruito esternamente sul lato del rettangolo lungo quanto la sua base maggiore, che coincide interamente con quel lato.',
+    triTrap:'La base del triangolo coincide interamente con la base minore del trapezio; le due figure si trovano da parti opposte del segmento comune.',
+    rectRhomb:'Un lato del rombo coincide interamente con il lato del rettangolo della stessa lunghezza; le due figure si trovano da parti opposte del segmento comune.'
+  };
+  if(task==='area') text=`Una figura composta è formata da ${names}. ${joins[kind]} Le misure sono: ${labels}. Calcola l’area totale.`;
+  if(task==='perimeter') text=`Una figura composta è formata da ${names}. ${joins[kind]} Le misure sono: ${labels}. Calcola il perimetro esterno della figura.`;
+  if(task==='inverse') text=`${inverse} ${joins[kind]}`;
   const help1=task==='perimeter'?'Il segmento evidenziato è comune alle due figure ed è interno: non appartiene al perimetro.':'Individua le due figure semplici: il segmento evidenziato è quello che condividono.';
   const help2=task==='area'?`Calcola separatamente le aree: A₁=${fmt(A1)} cm² e A₂=${fmt(A2)} cm².`:task==='perimeter'?'Segui soltanto il contorno esterno: il segmento evidenziato non va contato.':`Sottrai dall’area totale l’area della parte di cui conosci già tutte le misure.`;
   const solution=task==='area'?`A=${fmt(A1)}+${fmt(A2)}=${fmt(total)} cm².`:task==='perimeter'?`Il perimetro esterno misura ${fmt(P)} cm.`:invAnswer;
@@ -632,22 +641,30 @@ Object.assign(FAMILIES,{
   }
 });
 
-const COMPOSITE_STRUCTURES=[
- ['rectRect','Rettangolo + rettangolo'],['squareTri','Quadrato + triangolo'],['rectTri','Rettangolo + triangolo'],
- ['squareTrap','Quadrato + trapezio isoscele'],['rectTrap','Rettangolo + trapezio'],['triTrap','Triangolo + trapezio'],['rectRhomb','Rettangolo + rombo']
+// --- v0.9: figure composte organizzate per STRATEGIA, non per prodotto cartesiano figura × consegna.
+// Le coppie di figure sono esempi rappresentativi; una nuova sagoma non crea automaticamente
+// una nuova tipologia cognitiva.
+const COMPOSITE_FAMILIES=[
+  ['composite_sumAreas','rectTri','area','somma_aree'],
+  ['composite_externalPerimeter','squareTri','perimeter','perimetro_lato_comune'],
+  ['composite_inverseArea','rectTrap','inverse','area_totale_sottrazione_formula_inversa'],
+  ['composite_twoRectanglesArea','rectRect','area','scomposizione_rettangoli'],
+  ['composite_trapezoidPerimeter','squareTrap','perimeter','perimetro_trapezio_lato_comune'],
+  ['composite_twoStageInverse','triTrap','inverse','area_prima_figura_area_seconda_inversa'],
+  ['composite_rhombusInverse','rectRhomb','inverse','area_totale_area_rombo_altezza']
 ];
-for(const [kind] of COMPOSITE_STRUCTURES){
-  for(const task of ['area','perimeter','inverse']) FAMILIES[`composite_${kind}_${task}`]={figures:['composta'],strategies:['figure_composte',task],generate:()=>compositeProblem(kind,task)};
+for(const [id,kind,task,strategy] of COMPOSITE_FAMILIES){
+  FAMILIES[id]={figures:['composta'],strategies:['figure_composte',strategy],generate:()=>compositeProblem(kind,task)};
 }
 
 const FIGURES=[
+ ['segmenti','Segmenti','<path d="M22 38 H128 M22 76 H94"/>'],
  ['triangolo','Triangoli','<path d="M25 82 L75 18 L125 82 Z"/>'],
  ['rettangolo','Rettangoli','<rect x="25" y="27" width="100" height="58"/>'],
  ['trapezio','Trapezi','<path d="M22 84 L128 84 L105 25 L45 25 Z"/>'],
  ['rombo','Rombi','<path d="M75 14 L130 55 L75 96 L20 55 Z"/>'],
  ['parallelogramma','Parallelogrammi','<path d="M38 25 L130 25 L112 85 L20 85 Z"/>'],
- ['composta','Figure composte','<path d="M20 24 H92 V48 H130 V92 H58 V68 H20 Z"/>'],
- ['segmenti','Segmenti','<path d="M22 38 H128 M22 76 H94"/>']
+ ['composta','Figure composte','<path d="M20 24 H92 V48 H130 V92 H58 V68 H20 Z"/>']
 ];
 const FORMULAS=[['Triangolo','A = b × h : 2; P = a + b + c','b = 2A : h; h = 2A : b'],['Rettangolo','A = b × h; P = 2(b + h)','b = A : h; h = A : b'],['Parallelogramma','A = b × h','b = A : h; h = A : b'],['Trapezio','A = (B + b) × h : 2','h = 2A : (B + b); B = 2A : h − b; b = 2A : h − B'],['Rombo','A = D × d : 2; P = 4l','D = 2A : d; d = 2A : D; l = P : 4'],['Quadrato','A = l²; P = 4l','l = √A; l = P : 4'],['Pitagora','i² = c₁² + c₂²','i = √(c₁² + c₂²); c₁ = √(i² − c₂²); c₂ = √(i² − c₁²)']];
 

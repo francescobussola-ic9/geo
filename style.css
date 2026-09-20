@@ -27,3 +27,14 @@ button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.25);transform:n
 .diagram .difference-bar .uf-tick{stroke:var(--orange);stroke-width:2.5}
 .help-btn span:first-child{min-width:0;overflow-wrap:anywhere;line-height:1.25}
 .help-btn{overflow:hidden}
+
+/* Figure collegate */
+.linked-figure{transition:opacity .2s ease,filter .2s ease}
+.linked-figure path,.linked-figure rect{fill:rgba(255,255,255,.38);stroke:currentColor;stroke-width:5;stroke-linejoin:round}
+.linked-arrow{fill:none;stroke:var(--coral,#e66f61);stroke-width:4;stroke-linecap:round}
+.linked-arrowhead{fill:none;stroke:var(--coral,#e66f61);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.linked-name{font-weight:700;font-size:16px}
+.linked-label{font-size:14px}
+.linked-stepbox{fill:var(--paper,#fffdf8);stroke:rgba(25,45,70,.14);stroke-width:1.5}
+.linked-steptext{font-size:14px}
+.linked-progress{fill:var(--orange);stroke:none}.linked-progress-text{fill:white;font-size:13px;font-weight:800}

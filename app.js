@@ -214,15 +214,24 @@ const FAMILIES={
     generate(){
       const [m,n,u]=pickVariant('perimeterRatio',cartesian([[2,3],[3,4],[3,5],[4,5]],[2,3,4,5]).map(([ratio,u])=>[...ratio,u]));
       const b=n*u,h=m*u,P=2*(b+h),semi=P/2,total=m+n;
-      const W=300,H=W*m/n,x=110,y=65,bottom=y+H,cell=W/n;
+      const W=260,H=W*m/n,x=130,y=45,bottom=y+H,unit=Math.min(42,260/total),barX=110;
       return {text:`Un rettangolo ha il perimetro di ${P} cm. La base è i ${n}/${m} dell’altezza. Calcola l’area.`,
-      notes:['Osserva il rapporto tra i lati.',`Il semiperimetro misura ${semi} cm.`,`Base e altezza possono essere viste come ${n} UF e ${m} UF.`,`In tutto sono ${total} UF: una UF misura ${u} cm.`,`Quindi b = ${b} cm e h = ${h} cm.`],
-      svg:`<svg viewBox="0 0 520 350"><g class="geo-base"><rect data-geo="shape" x="${x}" y="${y}" width="${W}" height="${H}" fill="none" stroke="currentColor" stroke-width="5"/></g>
-      <text data-geo="b-label" x="260" y="${bottom+34}" text-anchor="middle">b ?</text><text data-geo="h-label" x="${x-24}" y="${y+H/2}" text-anchor="end">h ?</text>
-      <g data-v="1" opacity="0"><text class="label-aux" x="260" y="35" text-anchor="middle">b + h = ${semi} cm</text></g>
-      <g data-v="2" opacity="0">${Array.from({length:n},(_,i)=>`<line class="unit" x1="${x+i*cell}" y1="${bottom+8}" x2="${x+(i+1)*cell}" y2="${bottom+8}" stroke-width="5"/>`).join('')}<text class="label-unit" x="260" y="${bottom+58}" text-anchor="middle">b = ${n} UF; h = ${m} UF</text></g>
-      <g data-v="3" opacity="0"><text class="label-focus" x="260" y="${bottom+88}" text-anchor="middle">${semi} : ${total} = ${u} cm = 1 UF</text></g></svg>`,
-      helps:[['Da dove parto?',`Calcola il semiperimetro: ${P} : 2 = ${semi} cm.`,1],['Come uso il rapporto?',`Rappresenta b con ${n} UF e h con ${m} UF.`,2],['Quanto vale una UF?',`${semi} : ${total} = ${u} cm.`,3],['Mostrami la soluzione',`b=${b} cm, h=${h} cm; A=${b*h} cm².`,3]]};
+      notes:['Il semiperimetro è la somma di base e altezza.','Il rapporto si può rappresentare con UF tutte della stessa lunghezza.','Conta le UF complessive, poi trova il valore di una UF.','Ricava le dimensioni e infine l’area.'],
+      svg:`<svg viewBox="0 0 520 465" aria-label="Rettangolo e modello a unità frazionarie"><g class="geo-base"><rect data-geo="shape" x="${x}" y="${y}" width="${W}" height="${H}" fill="none" stroke="currentColor" stroke-width="5"/></g>
+      <text data-geo="b-label" x="260" y="${bottom+28}" text-anchor="middle">b ?</text><text data-geo="h-label" x="${x-24}" y="${y+H/2}" text-anchor="end">h ?</text>
+      <g data-v="1" opacity="0"><text class="label-aux" x="260" y="${bottom+58}" text-anchor="middle">b + h = ${semi} cm</text></g>
+      <g data-v="2" opacity="0"><text x="82" y="${bottom+105}" text-anchor="end">base</text>${ufBar(barX,bottom+100,n,unit)}<text x="82" y="${bottom+155}" text-anchor="end">altezza</text>${ufBar(barX,bottom+150,m,unit)}</g>
+      <g data-v="3" opacity="0"><text class="label-unit" x="390" y="${bottom+128}" text-anchor="middle">${n} UF + ${m} UF = ${total} UF</text></g>
+      <g data-v="4" opacity="0"><text class="label-focus" x="260" y="${bottom+198}" text-anchor="middle">${semi} : ${total} = ${u} cm = 1 UF</text></g>
+      <g data-v="5" opacity="0"><text class="label-aux" x="260" y="${bottom+232}" text-anchor="middle">b = ${b} cm; h = ${h} cm</text></g></svg>`,
+      helps:[
+        ['Che cosa rappresenta metà del perimetro?',`Il semiperimetro è ${P} : 2 = ${semi} cm. In un rettangolo corrisponde a base + altezza.`,1],
+        ['Come rappresento il rapporto?',`Usa UF della stessa lunghezza: ${n} UF per la base e ${m} UF per l’altezza.`,2],
+        ['Quante UF ci sono in tutto?',`Conta le parti delle due barre: ${n} + ${m} = ${total} UF.`,3],
+        ['Quanto vale una UF?',`Le ${total} UF valgono ${semi} cm: ${semi} : ${total} = ${u} cm.`,4],
+        ['Ora puoi trovare le dimensioni?',`La base corrisponde a ${n} UF e l’altezza a ${m} UF.`,5],
+        ['Mostrami la soluzione',`b=${b} cm, h=${h} cm; A=${b}×${h}=${b*h} cm².`,5]
+      ]};
     }
   },
   triangleIsoPythagoras:{
@@ -537,10 +546,10 @@ Object.assign(FAMILIES, {
 
 
 // --- v0.8: espansione Parallelogrammi + sezione Segmenti ---
-function parallelogramSvg({b,h,side=null,topText='',bottomText='',heightText='',showHeightAt=1,finalText=''}){
+function parallelogramSvg({b,h,side=null,topText='',bottomText='',heightText='',showHeightAt=1,finalText='',extraSvg='',viewHeight=350,finalAt=3}){
   const scale=Math.min(300/b,165/h), W=b*scale, H=h*scale, O=Math.min(72,Math.max(38,(side||6)*4));
   const x=82,y=70;
-  return `<svg viewBox="0 0 520 350" aria-label="Parallelogramma">
+  return `<svg viewBox="0 0 520 ${viewHeight}" aria-label="Parallelogramma">
     <g class="geo-base">
       <line data-geo="base" x1="${x}" y1="${y+H}" x2="${x+W}" y2="${y+H}"/>
       <line data-geo="right-side" x1="${x+W}" y1="${y+H}" x2="${x+W+O}" y2="${y}"/>
@@ -555,7 +564,8 @@ function parallelogramSvg({b,h,side=null,topText='',bottomText='',heightText='',
       <path data-geo="right-angle" class="aux" d="M${x+O} ${y+H-14} H${x+O+14} V${y+H}" fill="none" stroke-width="3"/>
       ${heightText?`<text data-geo="h-label" class="label-aux" x="${x+O+18}" y="${y+H/2}">${heightText}</text>`:''}
     </g>
-    ${finalText?`<g data-v="3" opacity="0"><text class="label-focus" x="260" y="338" text-anchor="middle">${finalText}</text></g>`:''}
+    ${extraSvg}
+    ${finalText?`<g data-v="${finalAt}" opacity="0"><text class="label-focus" x="260" y="${viewHeight-12}" text-anchor="middle">${finalText}</text></g>`:''}
   </svg>`;
 }
 
@@ -570,8 +580,21 @@ Object.assign(FAMILIES,{
   parallelogramRatioPerimeter:{
     figures:['parallelogramma'],strategies:['perimetro','rapporto','UF','area'],
     generate(){
-      const [m,n,u,h]=pickVariant('parallelogramRatioPerimeter',[[3,2,4,7],[4,3,3,8],[5,3,3,9],[5,4,4,10],[3,2,6,11],[4,3,5,12]]),b=m*u,l=n*u,P=2*(b+l),A=b*h;
-      return {text:`Un parallelogramma ha perimetro ${P} cm. La base e il lato obliquo sono nel rapporto ${m}:${n}. L’altezza relativa alla base misura ${h} cm. Calcola l’area.`,notes:['Il semiperimetro è la somma di base e lato.','Rappresenta base e lato con unità frazionarie.','Trovata la base, usa l’altezza per l’area.'],svg:parallelogramSvg({b,h,topText:`P = ${P} cm`,bottomText:'b ?',heightText:`h = ${h} cm`,showHeightAt:2,finalText:`b = ${b} cm → A = ${A} cm²`}),helps:[['Che cosa rappresenta metà del perimetro?',`Il semiperimetro è ${P}:2=${P/2} cm e corrisponde alla somma dei due lati diversi.`,1],['Come posso rappresentare il rapporto?',`Rappresenta base e lato con ${m} UF e ${n} UF: in tutto sono ${m+n} UF.`,1],['Quanto vale una UF?',`Le ${m+n} UF valgono ${P/2} cm: una UF vale ${P/2}:${m+n}=${u} cm.`,2],['Quale misura ti serve per proseguire?',`La base corrisponde a ${m} UF, quindi misura ${b} cm. Ora mettila in relazione con l’altezza già nota.`,2],['Mostrami la soluzione',`b=${b} cm; A=${b}×${h}=${A} cm².`,3]],scenes:{2:{highlight:['base'],aux:['height','right-angle']}}};
+      const [m,n,u,h]=pickVariant('parallelogramRatioPerimeter',[[3,2,4,7],[4,3,3,8],[5,3,3,9],[5,4,4,10],[3,2,6,11],[4,3,5,12]]),b=m*u,l=n*u,P=2*(b+l),semi=P/2,total=m+n,A=b*h;
+      const unit=Math.min(42,270/total),barX=112;
+      const ufModel=`<g data-v="2" opacity="0"><text x="82" y="365" text-anchor="end">base</text>${ufBar(barX,360,m,unit)}<text x="82" y="420" text-anchor="end">lato</text>${ufBar(barX,415,n,unit)}</g>
+        <g data-v="3" opacity="0"><text class="label-unit" x="400" y="392" text-anchor="middle">${m} UF + ${n} UF = ${total} UF</text></g>
+        <g data-v="4" opacity="0"><text class="label-focus" x="260" y="458" text-anchor="middle">${semi} : ${total} = ${u} cm = 1 UF</text></g>
+        <g data-v="5" opacity="0"><text class="label-aux" x="260" y="492" text-anchor="middle">base = ${m} UF = ${b} cm</text></g>`;
+      return {text:`Un parallelogramma ha perimetro ${P} cm. La base e il lato obliquo sono nel rapporto ${m}:${n}. L’altezza relativa alla base misura ${h} cm. Calcola l’area.`,notes:['Il semiperimetro è la somma di base e lato.','Rappresenta il rapporto con UF tutte della stessa lunghezza.','Conta le UF complessive e trova il valore di una UF.','Ricava la base, poi torna al parallelogramma per l’area.'],svg:parallelogramSvg({b,h,topText:`P = ${P} cm`,bottomText:'b ?',heightText:`h = ${h} cm`,showHeightAt:6,extraSvg:ufModel,viewHeight:540,finalAt:7,finalText:`b = ${b} cm → A = ${A} cm²`}),helps:[
+        ['Che cosa rappresenta metà del perimetro?',`Il semiperimetro è ${P} : 2 = ${semi} cm e corrisponde a base + lato obliquo.`,1],
+        ['Come rappresento il rapporto?',`Usa UF della stessa lunghezza: ${m} UF per la base e ${n} UF per il lato obliquo.`,2],
+        ['Quante UF ci sono in tutto?',`Conta le parti delle due barre: ${m} + ${n} = ${total} UF.`,3],
+        ['Quanto vale una UF?',`Le ${total} UF valgono ${semi} cm: ${semi} : ${total} = ${u} cm.`,4],
+        ['Ora puoi trovare la base?',`La base corrisponde a ${m} UF. Usa il valore di una UF che hai appena trovato.`,5],
+        ['Hai ciò che serve per l’area?',`Torna al parallelogramma: ora conosci la base (${b} cm) e l’altezza (${h} cm).`,6],
+        ['Mostrami la soluzione',`b=${m}×${u}=${b} cm; A=${b}×${h}=${A} cm².`,7]
+      ],scenes:{6:{highlight:['base'],aux:['height','right-angle']}}};
     }
   },
   parallelogramSideFromPerimeter:{
@@ -701,7 +724,7 @@ const FORMULAS=[['Triangolo','A = b × h : 2; P = a + b + c','b = 2A : h; h = 2A
 const app=document.querySelector('#app');
 const state={view:'home',entryFigure:null,family:null,instance:null,openHelp:null,formulaReturn:'problem'};
 const familyKeysFor=figure=>Object.keys(FAMILIES).filter(k=>FAMILIES[k].figures.includes(figure));
-function shell(inner,tools=''){return `<div class="wrap"><div class="accent-rule"></div><header class="top"><div><h1 class="brand">GE<span>Ø</span></h1><p class="tagline">Geometria, un pezzo alla volta.</p></div>${tools}</header>${inner}</div>`}
+function shell(inner,tools=''){return `<div class="wrap"><div class="accent-rule"></div><header class="top"><div><h1 class="brand">GE<span>Ø</span></h1><p class="tagline">Dentro il problema</p></div>${tools}</header>${inner}</div>`}
 function renderHome(){state.view='home';state.openHelp=null;const cards=FIGURES.map(([id,label,shape])=>{const available=familyKeysFor(id).length>0;return `<button class="home-card" data-figure="${id}" ${available?'':'disabled'} title="${available?'Scegli '+label:'In arrivo'}"><svg viewBox="0 0 150 110" aria-hidden="true">${shape}</svg><div>${label}</div>${available?'':'<div class="status">in arrivo</div>'}</button>`}).join('');app.innerHTML=shell(`<p class="home-intro">Scegli una figura. GEØ ti proporrà un problema senza anticiparti quale strategia servirà per risolverlo.</p><section class="figure-grid">${cards}</section>`,'<button id="form" class="tool-btn">📐 Formulario</button>');app.querySelector('#form').onclick=()=>renderFormula('home');app.querySelectorAll('[data-figure]:not([disabled])').forEach(b=>b.onclick=()=>startFromFigure(b.dataset.figure));}
 function startFromFigure(fig){const keys=familyKeysFor(fig);if(!keys.length)return;state.entryFigure=fig;state.family=rand(keys);newInstance();}
 function newInstance(){state.instance=FAMILIES[state.family].generate();state.openHelp=null;renderProblem();}

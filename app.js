@@ -723,9 +723,44 @@ function linkedShapePath(type,x,y,w,h){
 }
 function linkedShape(type,x,y,w,h,labels=[]){
   const shape=linkedShapePath(type,x,y,w,h);
-  // Come nelle famiglie storiche: le etichette sono testo leggero e hanno spazio proprio.
-  const texts=labels.map((t,i)=>`<text class="linked-label" x="${x+w/2}" y="${y+h+26+i*27}" text-anchor="middle">${t}</text>`).join('');
-  return shape+texts;
+  // Le etichette seguono la geometria, come nelle famiglie storiche: niente pile automatiche.
+  const text=(value,tx,ty,anchor='middle',extra='')=>`<text class="linked-label ${extra}" x="${tx}" y="${ty}" text-anchor="${anchor}">${value}</text>`;
+  const out=[];
+  const addGeneric=(value,i)=>out.push(text(value,x+w/2,y+h+27+i*25));
+  labels.forEach((raw,i)=>{
+    const value=String(raw);
+    // Basi di trapezi: se sono dichiarate insieme, separale e legale alle due basi.
+    if((type==='trapezio'||type==='trapezioR') && /B\s*=/.test(value) && /b\s*=/.test(value) && value.includes(',')){
+      const parts=value.split(',').map(v=>v.trim());
+      const big=parts.find(v=>/^B\s*=/.test(v));
+      const small=parts.find(v=>/^b\s*=/.test(v));
+      if(small) out.push(text(small,x+w/2,y-13));
+      if(big) out.push(text(big,x+w/2,y+h+27));
+      return;
+    }
+    // Singole basi: base maggiore sotto, base minore sopra.
+    if((type==='trapezio'||type==='trapezioR') && /^B\s*=/.test(value)){out.push(text(value,x+w/2,y+h+27));return;}
+    if((type==='trapezio'||type==='trapezioR') && /^b\s*=/.test(value)){out.push(text(value,x+w/2,y-13));return;}
+    // Altezza dei trapezi/rettangoli a sinistra della figura.
+    if(/^h\s*=/.test(value) && (type==='trapezio'||type==='trapezioR'||type==='rettangolo')){out.push(text(value,x-12,y+h/2+6,'end'));return;}
+    // Lato obliquo di trapezio: vicino al fianco destro.
+    if(/^l\s*=/.test(value) && (type==='trapezio'||type==='trapezioR')){out.push(text(value,x+w+12,y+h/2+6,'start'));return;}
+    // Triangoli: base sotto, altezza a sinistra, cateti sui rispettivi lati.
+    if(type==='triangolo' && /^b\s*=/.test(value)){out.push(text(value,x+w/2,y+h+27));return;}
+    if(type==='triangolo' && /^h\s*=/.test(value)){out.push(text(value,x+w/2+18,y+h/2,'start'));return;}
+    if(type==='triangoloR' && /^c[₁1]\s*=/.test(value)){out.push(text(value,x-10,y+h/2+6,'end'));return;}
+    if(type==='triangoloR' && /^c[₂2]\s*=/.test(value)){out.push(text(value,x+w/2,y+h+27));return;}
+    // Quadrato: lato sotto.
+    if(type==='quadrato' && /^l/.test(value)){out.push(text(value,x+w/2,y+h+27));return;}
+    // Rombo: lato a destra; diagonale nota sotto. Le relazioni globali restano sotto, ben separate.
+    if(type==='rombo' && /^l\s*=/.test(value)){out.push(text(value,x+w+10,y+h/2+6,'start'));return;}
+    if(type==='rombo' && /^[dD]\s*=/.test(value)){out.push(text(value,x+w/2,y+h+27));return;}
+    // Rettangoli: dati dimensionali semplici legati ai lati.
+    if(type==='rettangolo' && /^b\s*=/.test(value) && !/[+−-]/.test(value)){out.push(text(value,x+w/2,y+h+27));return;}
+    // Le relazioni (somma/differenza/rapporto/area/perimetro) sono dati globali: scheda ordinata sotto la figura.
+    addGeneric(value,i);
+  });
+  return shape+out.join('');
 }
 function linkedBridgeVisual(p,leftBox,rightBox,step){
   const [lx,ly,lw,lh]=leftBox,[rx,ry,rw,rh]=rightBox;

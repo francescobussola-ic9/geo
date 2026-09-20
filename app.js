@@ -873,9 +873,22 @@ function applyVisual(){
     }
     (scene.dim||[]).forEach(id=>q(id)?.classList.add('dimmed'));
     (scene.hide||[]).forEach(id=>q(id)?.classList.add('focus-hidden'));
-    (scene.highlight||[]).forEach(id=>q(id)?.classList.add('geo-highlight'));
-    (scene.aux||[]).forEach(id=>q(id)?.classList.add('geo-aux-highlight'));
-    (scene.unit||[]).forEach(id=>q(id)?.classList.add('geo-unit-highlight'));
+    // Evidenzia la geometria, non il contenitore: stroke e stroke-width su un <g>
+    // vengono ereditati anche dai <text> e li trasformano in un falso grassetto.
+    const addVisualClass=(id,className)=>{
+      const el=q(id);
+      if(!el)return;
+      if(el.tagName.toLowerCase()==='g'){
+        el.querySelectorAll('path,line,rect,polygon,polyline,circle,ellipse').forEach(child=>child.classList.add(className));
+      }else if(el.tagName.toLowerCase()==='text'){
+        el.classList.add('geo-label-highlight');
+      }else{
+        el.classList.add(className);
+      }
+    };
+    (scene.highlight||[]).forEach(id=>addVisualClass(id,'geo-highlight'));
+    (scene.aux||[]).forEach(id=>addVisualClass(id,'geo-aux-highlight'));
+    (scene.unit||[]).forEach(id=>addVisualClass(id,'geo-unit-highlight'));
     (scene.labels||[]).forEach(id=>q(id)?.classList.add('geo-label-highlight'));
   }
 

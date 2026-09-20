@@ -797,7 +797,7 @@ function linkedSvg(p){
 function linkedProblem(p){
   const helps=p.helps.map((h,i)=>[h[0],h[1],i+1]);
   const scenes={};
-  helps.forEach((h,i)=>{const step=i+1; if(step<=p.leftSteps) scenes[step]={highlight:['first'],dim:['second']}; else if(step===p.leftSteps+1) scenes[step]={highlight:['bridge'],labels:['bridge-label']}; else scenes[step]={dim:['first'],highlight:['second']};});
+  helps.forEach((h,i)=>{const step=i+1; if(step<=p.leftSteps) scenes[step]={highlight:['first'],dim:['second']}; else if(step===p.leftSteps+1) scenes[step]={labels:['bridge-label']}; else scenes[step]={dim:['first']};});
   return {text:p.text,notes:['Ci sono due figure: cerca prima quale informazione deve passare dalla prima alla seconda.',...p.stages],svg:linkedSvg(p),helps,scenes,noSimilar:true};
 }
 const COMPLEX_PROBLEMS=[
@@ -822,6 +822,56 @@ const COMPLEX_PROBLEMS=[
 {a:'rombo',b:'triangolo',aName:'Rombo',bName:'Triangolo isoscele',bridge:'stessa area',aLabels:['d = 3/4 D','D + d = 42'],bLabels:['b = 21 cm'],leftSteps:2,text:'La diagonale minore di un rombo è i 3/4 della diagonale maggiore e la loro somma è 42 cm. Un triangolo isoscele equivalente al rombo ha la base di 21 cm. Determina il perimetro del triangolo.',stages:['Usa il rapporto 3:4 sulle diagonali.','Calcola l’area del rombo.','Trasferisci l’area al triangolo.','Ricava l’altezza.','Trova il lato obliquo.','Calcola il perimetro.'],helps:[['Come trovi le diagonali?','Rappresenta d = 3 UF e D = 4 UF: 7 UF = 42 cm, quindi 1 UF = 6 cm. Le diagonali sono 18 e 24 cm.'],['Quale area ottieni?','A = 18 × 24 : 2 = 216 cm².'],['Che cosa passa al triangolo?','Il triangolo equivalente ha area 216 cm².'],['Come trovi l’altezza?','216 = 21 × h : 2, quindi h = 432 : 21 ≈ 20,57 cm.'],['Come trovi il lato obliquo?','Metà base è 10,5 cm: l = √(10,5² + 20,57²) ≈ 23,10 cm.'],['Mostrami la soluzione','P ≈ 21 + 2 × 23,10 = 67,19 cm.']]},
 {a:'triangoloR',b:'trapezio',aName:'Triangolo rettangolo',bName:'Trapezio isoscele',bridge:'stessa area',aLabels:['c₁ + c₂ = 42','c₁ − c₂ = 12'],bLabels:['b = 12, B = 30'],leftSteps:2,text:'La somma dei cateti di un triangolo rettangolo è 42 cm e la loro differenza è 12 cm. Un trapezio isoscele equivalente al triangolo ha le basi di 12 cm e 30 cm. Determina il perimetro del trapezio.',stages:['Usa somma e differenza sui cateti.','Calcola l’area del triangolo.','Trasferisci l’area al trapezio.','Ricava l’altezza.','Trova il lato obliquo.','Calcola il perimetro.'],helps:[['Come trovi i cateti?','c₁ = (42 + 12) : 2 = 27 cm; c₂ = (42 − 12) : 2 = 15 cm.'],['Quale area ottieni?','A = 27 × 15 : 2 = 202,5 cm².'],['Che cosa passa al trapezio?','Il trapezio equivalente ha area 202,5 cm².'],['Come trovi l’altezza?','202,5 = (12 + 30) × h : 2, quindi h = 405 : 42 ≈ 9,64 cm.'],['Come trovi il lato obliquo?','Ogni proiezione laterale è (30 − 12) : 2 = 9 cm; l = √(9² + 9,64²) ≈ 13,19 cm.'],['Mostrami la soluzione','P ≈ 12 + 30 + 2 × 13,19 = 68,38 cm.']]}
 ];
+
+// v0.10.4 — scaffolding: un ostacolo cognitivo significativo per hint.
+// Ogni vecchio hint resta semanticamente al suo posto; se contiene più calcoli, viene spezzato.
+function splitLinkedDetail(text){
+  let parts=[String(text)];
+  const splitOnce=(arr,re)=>arr.flatMap(x=>{
+    const m=x.match(re); if(!m)return [x];
+    return [x.slice(0,m.index).trim(),x.slice(m.index+m[0].length).trim()].filter(Boolean);
+  });
+  parts=splitOnce(parts,/;\s*/);
+  // Se dopo un primo risultato ne viene calcolato subito un altro, separalo.
+  let again=true;
+  while(again){
+    again=false;
+    for(let i=0;i<parts.length;i++){
+      const x=parts[i];
+      const m=x.match(/\s+e\s+(?=(?:b|h|l|d|D|c[₁₂12]?|P|A)\s*(?:=|≈))/);
+      if(m){parts.splice(i,1,x.slice(0,m.index).trim(),x.slice(m.index+m[0].length).trim());again=true;break;}
+    }
+  }
+  return parts.filter(Boolean);
+}
+function linkedClauseTitle(clause,fallback){
+  const c=String(clause).trim();
+  if(/^A\s*=/.test(c)||/area\s*=/.test(c))return 'Quale area ottieni?';
+  if(/^P\s*=/.test(c)||/perimetro\s*=/.test(c))return 'Ora puoi trovare il perimetro?';
+  if(/^h\s*=/.test(c)||/^h\s*≈/.test(c))return 'Ora puoi trovare l’altezza?';
+  if(/^b\s*=/.test(c)||/^b\s*≈/.test(c))return 'E la base?';
+  if(/^[dD]\s*=/.test(c))return 'E l’altra diagonale?';
+  if(/^l\s*=/.test(c)||/^l\s*≈/.test(c))return 'Ora puoi trovare il lato?';
+  if(/^c[₁₂12]?\s*=/.test(c))return 'Ora puoi trovare il cateto?';
+  return fallback||'Qual è il passo successivo?';
+}
+function refineLinkedScaffolding(p){
+  const final=p.helps[p.helps.length-1];
+  const source=p.helps.slice(0,-1);
+  const refined=[];
+  let newLeftSteps=p.leftSteps;
+  source.forEach((h,oldIndex)=>{
+    // Il vecchio hint in posizione leftSteps era quello del ponte.
+    if(oldIndex===p.leftSteps)newLeftSteps=refined.length;
+    const parts=splitLinkedDetail(h[1]);
+    parts.forEach((part,j)=>refined.push([j===0?h[0]:linkedClauseTitle(part,'Qual è il passo successivo?'),part]));
+  });
+  refined.push(final);
+  p.helps=refined;
+  p.leftSteps=newLeftSteps;
+}
+COMPLEX_PROBLEMS.forEach(refineLinkedScaffolding);
+
 FAMILIES.linkedComplex={figures:['collegate'],strategies:['multi_step','figure_collegate'],generate(){
   let pool=COMPLEX_PROBLEMS.map((_,i)=>i).filter(i=>!COMPLEX_USED.includes(i));
   if(!pool.length){COMPLEX_USED.length=0;pool=COMPLEX_PROBLEMS.map((_,i)=>i);}

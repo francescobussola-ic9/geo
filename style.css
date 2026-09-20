@@ -31,8 +31,8 @@ button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.25);transform:n
 /* Figure collegate */
 .linked-figure{transition:opacity .2s ease,filter .2s ease}
 .linked-figure path,.linked-figure rect{fill:rgba(255,255,255,.38);stroke:currentColor;stroke-width:5;stroke-linejoin:round}
-.linked-arrow{fill:none;stroke:var(--coral,#e66f61);stroke-width:4;stroke-linecap:round}
-.linked-arrowhead{fill:none;stroke:var(--coral,#e66f61);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.linked-arrow{fill:none;stroke:#37977d;stroke-width:4;stroke-linecap:round}
+.linked-arrowhead{fill:none;stroke:#37977d;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
 .linked-name{font-weight:700;font-size:16px}
 .linked-label{font-size:14px}
 .linked-stepbox{fill:var(--paper,#fffdf8);stroke:rgba(25,45,70,.14);stroke-width:1.5}
@@ -46,8 +46,8 @@ button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.25);transform:n
 .diagram svg .linked-equal-area path,
 .diagram svg .linked-equal-area rect{fill:var(--soft-yellow);fill-opacity:.95;stroke:none;pointer-events:none}
 .diagram svg .linked-equal-perimeter path,
-.diagram svg .linked-equal-perimeter rect{fill:none;stroke:var(--yellow);stroke-width:8;stroke-linejoin:round;pointer-events:none}
-.diagram svg .linked-correspondence line{stroke:var(--yellow);stroke-width:8;stroke-linecap:round;pointer-events:none}
+.diagram svg .linked-equal-perimeter rect{fill:none;stroke:var(--orange);stroke-width:8;stroke-linejoin:round;pointer-events:none}
+.diagram svg .linked-correspondence line{stroke:var(--orange);stroke-width:8;stroke-linecap:round;pointer-events:none}
 
 
 /* v0.10.3 — gli highlight geometrici non devono ispessire il testo */
@@ -56,3 +56,8 @@ button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.25);transform:n
 .diagram svg .linked-bridge-label{stroke:none!important;stroke-width:0!important}
 .diagram svg .linked-label.geo-label-highlight,
 .diagram svg .linked-bridge-label.geo-label-highlight{font-weight:500!important;fill:var(--orange)!important}
+
+/* v0.10.4 — grammatica cromatica Figure collegate */
+.diagram svg .linked-arrow,.diagram svg .linked-arrowhead{stroke:#37977d!important}
+.diagram svg .linked-bridge-label{fill:#37977d!important}
+.diagram svg .linked-equal-perimeter path,.diagram svg .linked-equal-perimeter rect,.diagram svg .linked-correspondence line{stroke:var(--orange)!important}

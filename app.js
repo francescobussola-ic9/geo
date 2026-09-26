@@ -1073,16 +1073,16 @@ function ensureHomeLayoutStyle(){
     .home-brand-block{padding-top:2px}
     .home-brand-block .brand{margin:0}
     .home-brand-block .tagline{margin-top:4px}
-    .home-login{border:1px solid #d7e2ec;border-radius:22px;padding:22px 24px;background:rgba(255,255,255,.62);box-shadow:0 8px 30px rgba(15,43,86,.035)}
-    .home-login-line{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;margin-bottom:14px}
-    .home-login-title{font-weight:800;color:var(--ink,#0b2a59);font-size:1.05rem}
-    .home-login-copy{color:#64748b}
+    .home-login{border:1px solid #d7e2ec;border-radius:22px;padding:14px 18px;background:rgba(255,255,255,.62);box-shadow:0 8px 30px rgba(15,43,86,.035)}
+    .home-login-line{display:block;margin-bottom:8px;line-height:1.22}
+    .home-login-title{display:block;font-weight:800;color:var(--ink,#0b2a59);font-size:1.05rem;margin-bottom:3px}
+    .home-login-copy{display:block;color:#64748b;font-size:.96rem}
     .home-login-controls{display:flex;gap:10px;align-items:center}
-    .home-name-input{flex:1;min-width:180px;padding:13px 15px;border:1px solid #cbd5e1;border-radius:14px;background:rgba(255,255,255,.82);font:inherit;color:inherit;outline:none}
+    .home-name-input{flex:1;min-width:180px;padding:10px 14px;border:1px solid #cbd5e1;border-radius:14px;background:rgba(255,255,255,.82);font:inherit;color:inherit;outline:none}
     .home-name-input:focus{border-color:#8eb9d9;box-shadow:0 0 0 3px rgba(142,185,217,.16)}
-    .home-saved-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .home-saved-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
     .home-saved-name{font-weight:800;color:var(--ink,#0b2a59);font-size:1.08rem}
-    .home-saved-note{margin-top:4px;color:#64748b;font-size:.94rem}
+    .home-saved-note{margin-top:2px;color:#64748b;font-size:.92rem}
     .home-saved-actions{display:flex;gap:8px;flex-wrap:wrap}
     .home-middle-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:center;margin-bottom:22px}
     .home-middle-row .home-intro{margin:0}
@@ -1094,7 +1094,7 @@ function ensureHomeLayoutStyle(){
       .home-formula-wrap{justify-content:flex-start}
     }
     @media(max-width:560px){
-      .home-login{padding:18px}
+      .home-login{padding:14px 16px}
       .home-login-controls{align-items:stretch;flex-direction:column}
       .home-name-input{width:100%;box-sizing:border-box}
       .home-login-controls button{width:100%}

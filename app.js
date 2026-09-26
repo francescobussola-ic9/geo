@@ -340,25 +340,14 @@ Object.assign(FAMILIES, {
     figures:['triangolo'], strategies:['formula_inversa','area','pitagora','perimetro'],
     generate(){
       const [h,p,l]=pickVariant('triangleIsoBaseArea',PYTHAGOREAN_VARIANTS); const base=2*p,A=base*h/2,P=base+2*l;
-      const s=Math.min(280/base,190/h),cx=260,yB=270,yT=yB-h*s,xL=cx-p*s,xR=cx+p*s;
-      return {text:`Un triangolo isoscele ha base ${base} cm e area ${A} cm². Calcola il perimetro.`,notes:['Per calcolare il perimetro manca il lato obliquo.','Tra i dati disponibili, area e base permettono di ricavare l’altezza.','L’altezza divide la base in due parti uguali e forma due triangoli rettangoli.','Concentrati su uno dei due triangoli rettangoli.','Ora puoi ricavare il lato obliquo e tornare al perimetro.'],svg:`<svg viewBox="0 0 520 370"><g class="geo-base"><line data-geo="left-leg" x1="${xL}" y1="${yB}" x2="${cx}" y2="${yT}"/><line data-geo="right-leg" x1="${cx}" y1="${yT}" x2="${xR}" y2="${yB}"/><line data-geo="base-left" x1="${xL}" y1="${yB}" x2="${cx}" y2="${yB}"/><line data-geo="base-right" x1="${cx}" y1="${yB}" x2="${xR}" y2="${yB}"/></g><text data-geo="base-label" x="${cx}" y="${yB+35}" text-anchor="middle">b=${base} cm</text><text data-geo="area-label" x="${cx}" y="35" text-anchor="middle">A=${A} cm²</text>
-      <g data-v="1" opacity="0"><text data-geo="side-unknown-left" class="label-focus" x="${(xL+cx)/2-24}" y="${(yB+yT)/2}">l ?</text><text data-geo="side-unknown-right" class="label-focus" x="${(xR+cx)/2+12}" y="${(yB+yT)/2}">l ?</text></g>
-      <g data-v="2" opacity="0"><line data-geo="height" class="aux" x1="${cx}" y1="${yT}" x2="${cx}" y2="${yB}" stroke-width="4" stroke-dasharray="8 6"/><path data-geo="right-angle" class="aux" d="M${cx} ${yB-14} H${cx+14} V${yB}" fill="none" stroke-width="3"/><text data-geo="height-result" class="label-focus" x="${cx+18}" y="${(yT+yB)/2}">h=${h} cm</text></g>
-      <g data-v="3" opacity="0"><text data-geo="left-half" class="label-unit" x="${(xL+cx)/2}" y="${yB+28}" text-anchor="middle">${p} cm</text><text data-geo="right-half" class="label-unit" x="${(cx+xR)/2}" y="${yB+28}" text-anchor="middle">${p} cm</text></g>
-      <g data-v="5" opacity="0"><text data-geo="side-result" class="label-focus" x="260" y="360" text-anchor="middle">l=√(${h}²+${p}²)=${l} cm</text></g></svg>`,helps:[['Che cosa mi manca?',`Per calcolare il perimetro devi conoscere anche la misura dei due lati obliqui.`,1],['Quali dati posso usare?',`Conosci l’area e la base. Dalla relazione A=b×h:2 puoi ricavare h=${h} cm.`,2],['Che cosa succede alla base?',`Nel triangolo isoscele l’altezza divide la base in due parti uguali: ${base}:2=${p} cm.`,3],['Cosa devo osservare?',`Concentrati su uno dei due triangoli rettangoli: conosci i cateti ${h} cm e ${p} cm.`,4],['Come posso andare avanti?',`Ora puoi ricavare il lato obliquo: l=√(${h}²+${p}²)=${l} cm.`,5],['Mostrami la soluzione',`l=${l} cm; P=${base}+2×${l}=${P} cm.`,5]],
-      scenes:{1:{keep:['left-leg','right-leg','base-left','base-right','base-label','area-label','side-unknown-left','side-unknown-right'],highlight:['left-leg','right-leg']},4:{keep:['left-leg','base-left','height','right-angle','height-result','left-half'],highlight:['left-leg'],aux:['height','right-angle']},5:{keep:['left-leg','base-left','height','right-angle','height-result','left-half','side-result'],highlight:['left-leg'],aux:['height','right-angle']}}};
+      return {text:`Un triangolo isoscele ha base ${base} cm e area ${A} cm². Calcola il perimetro.`,notes:['Per il perimetro manca il lato obliquo.','Dall’area puoi ricavare l’altezza.','L’altezza dimezza la base e crea un triangolo rettangolo.'],svg:`<svg viewBox="0 0 520 350"><path d="M90 270 L260 65 L430 270 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="310" text-anchor="middle">b=${base} cm · A=${A} cm²</text><g data-v="1" opacity="0"><line class="aux" x1="260" y1="65" x2="260" y2="270" stroke-width="4" stroke-dasharray="8 6"/><text class="label-focus" x="278" y="170">h=${h}</text></g><g data-v="2" opacity="0"><text class="label-aux" x="260" y="340" text-anchor="middle">l=√(${h}²+${p}²)=${l} → P=${P}</text></g></svg>`,helps:[['Come ricavo l’altezza?',`h=2A:b = 2×${A}:${base}=${h} cm.`,1],['Come trovo il lato?',`La semibase è ${p} cm: usa Pitagora con ${h} e ${p}.`,2],['Mostrami la soluzione',`l=${l} cm; P=${base}+2×${l}=${P} cm.`,2]]};
     }
   },
-    triangleIsoSideHeight:{
+  triangleIsoSideHeight:{
     figures:['triangolo'], strategies:['pitagora','base','perimetro','area'],
     generate(){
       const [h,p,l]=pickVariant('triangleIsoSideHeight',PYTHAGOREAN_VARIANTS); const base=2*p,A=base*h/2,P=base+2*l;
-      const s=Math.min(280/base,190/h),cx=260,yB=270,yT=yB-h*s,xL=cx-p*s,xR=cx+p*s;
-      return {text:`Un triangolo isoscele ha lati obliqui di ${l} cm e altezza ${h} cm. Calcola base, perimetro e area.`,notes:['L’altezza divide il triangolo in due triangoli rettangoli.','Concentrati su uno dei due triangoli rettangoli.','Conosci ipotenusa e un cateto: ricava la semibase.','Raddoppia la semibase.'],svg:`<svg viewBox="0 0 520 370"><g class="geo-base"><line data-geo="left-leg" x1="${xL}" y1="${yB}" x2="${cx}" y2="${yT}"/><line data-geo="right-leg" x1="${cx}" y1="${yT}" x2="${xR}" y2="${yB}"/><line data-geo="base-left" x1="${xL}" y1="${yB}" x2="${cx}" y2="${yB}"/><line data-geo="base-right" x1="${cx}" y1="${yB}" x2="${xR}" y2="${yB}"/></g><line data-geo="height" class="aux" x1="${cx}" y1="${yT}" x2="${cx}" y2="${yB}" stroke-width="4" stroke-dasharray="8 6"/><path data-geo="right-angle" class="aux" d="M${cx} ${yB-14} H${cx+14} V${yB}" fill="none" stroke-width="3"/><text data-geo="left-label" x="${(xL+cx)/2-25}" y="${(yB+yT)/2}">${l} cm</text><text data-geo="right-label" x="${(xR+cx)/2+12}" y="${(yB+yT)/2}">${l} cm</text><text data-geo="h-label" x="${cx+18}" y="${(yT+yB)/2}">h=${h} cm</text>
-      <g data-v="2" opacity="0"><text data-geo="half-unknown" class="label-focus" x="${(xL+cx)/2}" y="${yB+28}" text-anchor="middle">b/2 ?</text></g>
-      <g data-v="3" opacity="0"><text data-geo="half-result" class="label-focus" x="260" y="330" text-anchor="middle">b/2=√(${l}²−${h}²)=${p} cm</text></g>
-      <g data-v="4" opacity="0"><text data-geo="left-half" class="label-unit" x="${(xL+cx)/2}" y="${yB+28}" text-anchor="middle">${p} cm</text><text data-geo="right-half" class="label-unit" x="${(cx+xR)/2}" y="${yB+28}" text-anchor="middle">${p} cm</text><text data-geo="base-result" class="label-focus" x="260" y="360" text-anchor="middle">b=${p}+${p}=${base} cm</text></g></svg>`,helps:[['Cosa devo osservare?',`L’altezza divide il triangolo isoscele in due triangoli rettangoli. Concentrati su uno dei due.`,1],['Che cosa devo trovare?',`Nel triangolo rettangolo conosci l’ipotenusa ${l} cm e il cateto ${h} cm. Manca la semibase.`,2],['Come trovo la semibase?',`Usa Pitagora: b/2=√(${l}²−${h}²)=${p} cm.`,3],['Come ottengo la base?',`La base è formata da due parti uguali di ${p} cm.`,4],['Mostrami la soluzione',`b=${base} cm; P=${base}+2×${l}=${P} cm; A=${base}×${h}:2=${A} cm².`,4]],
-      scenes:{1:{keep:['left-leg','base-left','height','right-angle','left-label','h-label'],highlight:['left-leg','base-left'],aux:['height','right-angle']},2:{keep:['left-leg','base-left','height','right-angle','left-label','h-label','half-unknown'],highlight:['left-leg','base-left'],aux:['height','right-angle']},3:{keep:['left-leg','base-left','height','right-angle','left-label','h-label','half-unknown','half-result'],highlight:['left-leg','base-left'],aux:['height','right-angle']},4:{keep:['left-leg','right-leg','base-left','base-right','height','right-angle','left-label','right-label','h-label','left-half','right-half','base-result'],highlight:['base-left','base-right'],aux:['height','right-angle']}}};
+      return {text:`Un triangolo isoscele ha lati obliqui di ${l} cm e altezza ${h} cm. Calcola base, perimetro e area.`,notes:['L’altezza divide il triangolo in due triangoli rettangoli.','Conosci ipotenusa e un cateto: ricava la semibase.','Raddoppia la semibase.'],svg:`<svg viewBox="0 0 520 350"><path d="M90 270 L260 65 L430 270 Z" fill="none" stroke="currentColor" stroke-width="5"/><line class="aux" x1="260" y1="65" x2="260" y2="270" stroke-width="4" stroke-dasharray="8 6"/><text x="285" y="165">h=${h}</text><text x="150" y="165">l=${l}</text><g data-v="1" opacity="0"><text class="label-focus" x="175" y="295" text-anchor="middle">b/2=√(${l}²−${h}²)=${p}</text></g></svg>`,helps:[['Dove applico Pitagora?',`Su metà triangolo: ipotenusa ${l}, cateto ${h}, semibase incognita.`,1],['Come ottengo la base?',`La semibase è ${p} cm, quindi b=${2*p} cm.`,1],['Mostrami la soluzione',`b=${base} cm; P=${P} cm; A=${A} cm².`,1]]};
     }
   },
   rhombusAreaDiagonal:{
@@ -721,7 +710,86 @@ for(const [id,kind,task,strategy] of COMPOSITE_FAMILIES){
 }
 
 
-// --- Figure collegate: 20 problemi individuali, senza varianti "simili" ---
+
+
+// --- v0.11: famiglie aggiuntive per la distinzione classe seconda / classe terza.
+// I nuovi problemi senza Pitagora lavorano sulle relazioni tra grandezze (UF, somma e differenza, rapporto).
+// I nuovi problemi con Pitagora mantengono un percorso medio: un passaggio preparatorio e applicazione del teorema.
+Object.assign(FAMILIES,{
+  triangleIsoPerimeterRatio:{
+    figures:['triangolo'],strategies:['perimetro','rapporto','UF','area'],
+    generate(){
+      const [h,p,side]=pickVariant('triangleIsoPerimeterRatio',PYTHAGOREAN_VARIANTS),base=2*p,g=gcd(base,side),m=base/g,n=side/g,u=g,P=base+2*side,A=base*h/2,total=m+2*n;
+      return {debugNew:true,text:`Un triangolo isoscele ha il perimetro di ${P} cm. La base è i ${m}/${n} del lato obliquo. Sapendo che l’altezza misura ${h} cm, calcola l’area.`,notes:['Rappresenta base e lato obliquo con UF della stessa lunghezza.','Nel perimetro il lato obliquo compare due volte.','Trova il valore di una UF, poi la base.','Ora puoi usare base e altezza per l’area.'],svg:`<svg viewBox="0 0 520 380"><path d="M120 260 L260 65 L400 260 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="300" text-anchor="middle">b = ${m} UF</text><text x="150" y="155">l = ${n} UF</text><text x="360" y="155">l = ${n} UF</text><g data-v="2" opacity="0"><text class="label-unit" x="260" y="340" text-anchor="middle">${m} + ${n} + ${n} = ${total} UF</text></g><g data-v="3" opacity="0"><text class="label-focus" x="260" y="370" text-anchor="middle">1 UF = ${P} : ${total} = ${u} cm → b = ${base} cm</text></g></svg>`,helps:[['Come rappresento il rapporto?',`Base = ${m} UF; ciascun lato obliquo = ${n} UF.`,1],['Quante UF formano il perimetro?',`${m}+${n}+${n}=${total} UF.`,2],['Quanto vale una UF?',`${P}:${total}=${u} cm, quindi b=${m}×${u}=${base} cm.`,3],['Mostrami la soluzione',`A=${base}×${h}:2=${A} cm².`,3]]};
+    }
+  },
+  triangleIsoSumRatio:{
+    figures:['triangolo'],strategies:['somma','rapporto','UF','perimetro','area'],
+    generate(){
+      const [h,p,side]=pickVariant('triangleIsoSumRatio',PYTHAGOREAN_VARIANTS),base=2*p,g=gcd(base,side),m=base/g,n=side/g,u=g,sum=base+side,P=base+2*side,A=base*h/2,total=m+n;
+      return {debugNew:true,text:`La somma della base e di un lato obliquo di un triangolo isoscele è ${sum} cm. La base è i ${m}/${n} del lato obliquo. L’altezza misura ${h} cm. Calcola il perimetro e l’area.`,notes:['La somma riguarda una base e un solo lato obliquo.','Rappresenta le due misure con UF.','Trova una UF e quindi le due lunghezze.','Ricorda che nel perimetro i lati obliqui sono due.'],svg:`<svg viewBox="0 0 520 380"><path d="M120 260 L260 65 L400 260 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="300" text-anchor="middle">b = ${m} UF</text><text x="150" y="155">l = ${n} UF</text><g data-v="2" opacity="0"><text class="label-unit" x="260" y="340" text-anchor="middle">${m} + ${n} = ${total} UF = ${sum} cm</text></g><g data-v="3" opacity="0"><text class="label-focus" x="260" y="370" text-anchor="middle">b = ${base} cm; l = ${side} cm</text></g></svg>`,helps:[['Quali grandezze devi rappresentare?',`Base = ${m} UF e lato obliquo = ${n} UF.`,1],['Quante UF corrispondono alla somma?',`${m}+${n}=${total} UF, che valgono ${sum} cm.`,2],['Quanto vale una UF?',`${sum}:${total}=${u} cm: b=${base} cm e l=${side} cm.`,3],['Mostrami la soluzione',`P=${base}+2×${side}=${P} cm; A=${base}×${h}:2=${A} cm².`,3]]};
+    }
+  },
+  trapezoidBasesSumRatio:{
+    figures:['trapezio'],strategies:['somma','rapporto','UF','area'],
+    generate(){
+      const [m,n,u,h]=pickVariant('trapezoidBasesSumRatio',[[2,3,4,8],[3,4,3,10],[3,5,3,8],[4,5,2,12],[4,7,2,10],[5,6,2,8],[5,7,2,12],[6,7,2,10]]),small=m*u,big=n*u,sum=small+big,A=sum*h/2,total=m+n;
+      return {debugNew:true,text:`La somma delle basi di un trapezio è ${sum} cm. La base minore è i ${m}/${n} della base maggiore. L’altezza misura ${h} cm. Calcola l’area.`,notes:['Rappresenta le due basi con UF della stessa lunghezza.','La somma delle basi corrisponde alla somma delle UF.','Ricava le due basi.','Poi torna alla formula dell’area.'],svg:`<svg viewBox="0 0 520 370"><path d="M90 260 L160 90 L360 90 L430 260 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="300" text-anchor="middle">B = ${n} UF</text><text x="260" y="70" text-anchor="middle">b = ${m} UF</text><g data-v="2" opacity="0"><text class="label-unit" x="260" y="340" text-anchor="middle">${m}+${n}=${total} UF = ${sum} cm</text></g></svg>`,helps:[['Come rappresento le basi?',`b=${m} UF e B=${n} UF.`,1],['Quante UF formano la loro somma?',`${m}+${n}=${total} UF.`,2],['Quanto vale una UF?',`${sum}:${total}=${u} cm, quindi b=${small} cm e B=${big} cm.`,3],['Mostrami la soluzione',`A=(${big}+${small})×${h}:2=${A} cm².`,3]]};
+    }
+  },
+  trapezoidBasesDifferenceRatio:{
+    figures:['trapezio'],strategies:['differenza','rapporto','UF','area'],
+    generate(){
+      const [m,n,u,h]=pickVariant('trapezoidBasesDifferenceRatio',[[2,3,4,8],[3,4,3,10],[3,5,3,8],[4,5,2,12],[4,7,2,10],[5,6,2,8],[5,7,2,12],[6,7,2,10]]),small=m*u,big=n*u,diff=big-small,A=(big+small)*h/2,parts=n-m;
+      return {debugNew:true,text:`La base maggiore di un trapezio supera la base minore di ${diff} cm. La base minore è i ${m}/${n} della base maggiore. L’altezza misura ${h} cm. Calcola l’area.`,notes:['Rappresenta le due basi con UF.','La differenza corrisponde alle UF che la base maggiore ha in più.','Trova una UF e quindi le basi.','Usa infine l’altezza data.'],svg:`<svg viewBox="0 0 520 370"><path d="M90 260 L160 90 L360 90 L430 260 Z" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="300" text-anchor="middle">B = ${n} UF</text><text x="260" y="70" text-anchor="middle">b = ${m} UF</text><g data-v="2" opacity="0"><text class="label-unit" x="260" y="340" text-anchor="middle">differenza = ${n}−${m} = ${parts} UF</text></g></svg>`,helps:[['Come rappresento il rapporto?',`b=${m} UF e B=${n} UF.`,1],['A quante UF corrisponde la differenza?',`${n}−${m}=${parts} UF, che valgono ${diff} cm.`,2],['Quanto vale una UF?',`${diff}:${parts}=${u} cm, quindi b=${small} cm e B=${big} cm.`,3],['Mostrami la soluzione',`A=(${big}+${small})×${h}:2=${A} cm².`,3]]};
+    }
+  },
+  rhombusDiagonalsSumRatio:{
+    figures:['rombo'],strategies:['diagonali','somma','rapporto','UF','area'],
+    generate(){
+      const [m,n,u]=pickVariant('rhombusDiagonalsSumRatio',[[2,3,4],[3,4,3],[3,5,3],[4,5,2],[4,7,2],[5,6,2],[5,7,2],[6,7,2]]),d=m*u,D=n*u,sum=d+D,A=D*d/2,total=m+n;
+      return {debugNew:true,text:`La somma delle diagonali di un rombo è ${sum} cm. La diagonale minore è i ${m}/${n} della maggiore. Calcola l’area.`,notes:['Rappresenta le diagonali con UF.','La loro somma corrisponde a tutte le UF.','Trova il valore di una UF e quindi le diagonali.','Ora puoi calcolare l’area.'],svg:`<svg viewBox="0 0 520 370"><path d="M260 55 L420 180 L260 305 L100 180 Z" fill="none" stroke="currentColor" stroke-width="5"/><line x1="100" y1="180" x2="420" y2="180" class="aux"/><line x1="260" y1="55" x2="260" y2="305" class="aux"/><text x="260" y="345" text-anchor="middle">d = ${m} UF; D = ${n} UF</text><g data-v="2" opacity="0"><text class="label-unit" x="260" y="25" text-anchor="middle">${total} UF = ${sum} cm</text></g></svg>`,helps:[['Come rappresento le diagonali?',`d=${m} UF e D=${n} UF.`,1],['Quante UF formano la somma?',`${m}+${n}=${total} UF.`,2],['Quanto vale una UF?',`${sum}:${total}=${u} cm: d=${d} cm e D=${D} cm.`,3],['Mostrami la soluzione',`A=${D}×${d}:2=${A} cm².`,3]]};
+    }
+  },
+  rhombusDiagonalsDifferenceRatio:{
+    figures:['rombo'],strategies:['diagonali','differenza','rapporto','UF','area'],
+    generate(){
+      const [m,n,u]=pickVariant('rhombusDiagonalsDifferenceRatio',[[2,3,4],[3,4,3],[3,5,3],[4,5,2],[4,7,2],[5,6,2],[5,7,2],[6,7,2]]),d=m*u,D=n*u,diff=D-d,A=D*d/2,parts=n-m;
+      return {debugNew:true,text:`La diagonale maggiore di un rombo supera la diagonale minore di ${diff} cm. La diagonale minore è i ${m}/${n} della maggiore. Calcola l’area.`,notes:['Rappresenta le diagonali con UF.','La differenza è formata dalle UF che avanzano nella diagonale maggiore.','Trova una UF e quindi le diagonali.','Calcola infine l’area.'],svg:`<svg viewBox="0 0 520 370"><path d="M260 55 L420 180 L260 305 L100 180 Z" fill="none" stroke="currentColor" stroke-width="5"/><line x1="100" y1="180" x2="420" y2="180" class="aux"/><line x1="260" y1="55" x2="260" y2="305" class="aux"/><text x="260" y="345" text-anchor="middle">d = ${m} UF; D = ${n} UF</text><g data-v="2" opacity="0"><text class="label-unit" x="260" y="25" text-anchor="middle">${n}−${m}=${parts} UF = ${diff} cm</text></g></svg>`,helps:[['Come rappresento il rapporto?',`d=${m} UF e D=${n} UF.`,1],['A quante UF corrisponde la differenza?',`${n}−${m}=${parts} UF.`,2],['Quanto vale una UF?',`${diff}:${parts}=${u} cm: d=${d} cm e D=${D} cm.`,3],['Mostrami la soluzione',`A=${D}×${d}:2=${A} cm².`,3]]};
+    }
+  },
+  rectDiagonalFromPerimeterSide:{
+    figures:['rettangolo'],strategies:['perimetro','pitagora','diagonale'],
+    generate(){
+      const [h,b,d]=pickVariant('rectDiagonalFromPerimeterSide',PYTHAGOREAN_VARIANTS),P=2*(b+h);
+      return {debugNew:true,text:`Un rettangolo ha il perimetro di ${P} cm e l’altezza di ${h} cm. Calcola la diagonale.`,notes:['Dal perimetro puoi ricavare il semiperimetro.','Con il semiperimetro e l’altezza trova la base.','Ora base, altezza e diagonale formano un triangolo rettangolo.'],svg:`<svg viewBox="0 0 520 350"><rect x="110" y="65" width="300" height="190" fill="none" stroke="currentColor" stroke-width="5"/><text x="90" y="165" text-anchor="end">h = ${h} cm</text><text x="260" y="300" text-anchor="middle">P = ${P} cm</text><g data-v="2" opacity="0"><text class="label-focus" x="260" y="335" text-anchor="middle">b = ${P/2}−${h}=${b} cm</text></g><g data-v="3" opacity="0"><line class="aux" x1="110" y1="255" x2="410" y2="65" stroke-width="4"/></g></svg>`,helps:[['Che cosa puoi ricavare dal perimetro?',`Il semiperimetro è ${P}:2=${P/2} cm.`,1],['Come trovi la base?',`b=${P/2}−${h}=${b} cm.`,2],['Ora quale figura puoi osservare?','La diagonale è l’ipotenusa del triangolo rettangolo formato da base e altezza.',3],['Mostrami la soluzione',`d=√(${b}²+${h}²)=${d} cm.`,3]]};
+    }
+  },
+  rectDiagonalFromSumRatio:{
+    figures:['rettangolo'],strategies:['somma','rapporto','UF','pitagora','diagonale'],
+    generate(){
+      const [h,b,d]=pickVariant('rectDiagonalFromSumRatio',PYTHAGOREAN_VARIANTS.filter(([h,b])=>h!==b)),g=gcd(h,b),m=h/g,n=b/g,u=g,sum=h+b,total=m+n;
+      return {debugNew:true,text:`La somma della base e dell’altezza di un rettangolo è ${sum} cm. L’altezza è i ${m}/${n} della base. Calcola la diagonale.`,notes:['Rappresenta altezza e base con UF.','La somma delle UF corrisponde alla somma delle dimensioni.','Trova base e altezza.','Poi usa il triangolo rettangolo formato dalla diagonale.'],svg:`<svg viewBox="0 0 520 370"><rect x="110" y="65" width="300" height="190" fill="none" stroke="currentColor" stroke-width="5"/><text x="260" y="300" text-anchor="middle">h = ${m} UF; b = ${n} UF</text><g data-v="2" opacity="0"><text class="label-unit" x="260" y="335" text-anchor="middle">${total} UF = ${sum} cm → 1 UF = ${u} cm</text></g><g data-v="3" opacity="0"><line class="aux" x1="110" y1="255" x2="410" y2="65" stroke-width="4"/></g></svg>`,helps:[['Come rappresento il rapporto?',`h=${m} UF e b=${n} UF.`,1],['Quanto vale una UF?',`${m}+${n}=${total} UF; ${sum}:${total}=${u} cm.`,2],['Quali sono le dimensioni?',`h=${h} cm e b=${b} cm. Ora la diagonale è l’ipotenusa.`,3],['Mostrami la soluzione',`d=√(${b}²+${h}²)=${d} cm.`,3]]};
+    }
+  },
+  parallelogramSidePythagoras:{
+    figures:['parallelogramma'],strategies:['proiezione','pitagora','perimetro'],
+    generate(){
+      const [h,p,l,b]=pickVariant('parallelogramSidePythagoras',PYTHAGOREAN_VARIANTS.flatMap(t=>[14,16,18,20].map(b=>[...t,b])).filter(([h,p,l,b])=>p<b)),P=2*(b+l);
+      return {debugNew:true,text:`Un parallelogramma ha base ${b} cm, altezza ${h} cm e la proiezione del lato obliquo sulla base misura ${p} cm. Calcola il perimetro.`,notes:['Per il perimetro manca il lato obliquo.','Altezza, proiezione e lato obliquo formano un triangolo rettangolo.','Trova il lato e poi torna al perimetro.'],svg:`<svg viewBox="0 0 520 350"><path d="M100 260 L170 80 L420 80 L350 260 Z" fill="none" stroke="currentColor" stroke-width="5"/><line class="aux" x1="170" y1="80" x2="170" y2="260" stroke-width="4" stroke-dasharray="8 6"/><text x="260" y="305" text-anchor="middle">b = ${b} cm</text><text x="185" y="170">h = ${h} cm</text><text x="135" y="285" text-anchor="middle">p = ${p} cm</text></svg>`,helps:[['Che cosa manca per il perimetro?','Serve la misura del lato obliquo.',1],['Quale triangolo puoi usare?','Il lato obliquo è l’ipotenusa del triangolo con cateti altezza e proiezione.',2],['Quanto misura il lato?',`l=√(${h}²+${p}²)=${l} cm.`,3],['Mostrami la soluzione',`P=2×(${b}+${l})=${P} cm.`,3]]};
+    }
+  },
+  parallelogramDiagonalPythagoras:{
+    figures:['parallelogramma'],strategies:['differenza_segmenti','proiezione','pitagora','diagonale'],
+    generate(){
+      const [h,q,d,p]=pickVariant('parallelogramDiagonalPythagoras',[[12,5,13,4],[12,9,15,5],[8,15,17,5],[15,8,17,4],[9,12,15,5],[5,12,13,4],[6,8,10,4],[8,6,10,4]]),b=p+q;
+      return {debugNew:true,text:`Un parallelogramma ha base ${b} cm e altezza ${h} cm. La proiezione del lato obliquo sulla base misura ${p} cm. Calcola la diagonale minore.`,notes:['Osserva dove cade l’altezza sulla base.','Per il triangolo della diagonale serve il tratto di base rimasto.','Sottrai la proiezione dalla base.','Poi applica Pitagora.'],svg:`<svg viewBox="0 0 520 350"><path d="M100 260 L170 80 L420 80 L350 260 Z" fill="none" stroke="currentColor" stroke-width="5"/><line class="aux" x1="170" y1="80" x2="170" y2="260" stroke-width="4" stroke-dasharray="8 6"/><text x="260" y="305" text-anchor="middle">b = ${b} cm</text><text x="185" y="170">h = ${h} cm</text><text x="135" y="285" text-anchor="middle">p = ${p} cm</text><g data-v="2" opacity="0"><text class="label-focus" x="270" y="335" text-anchor="middle">${b}−${p}=${q} cm</text></g><g data-v="3" opacity="0"><line class="aux" x1="170" y1="80" x2="350" y2="260" stroke-width="4"/></g></svg>`,helps:[['Quale tratto serve per costruire il triangolo della diagonale?','Guarda la parte di base compresa tra il piede dell’altezza e il vertice opposto.',1],['Quanto misura quel tratto?',`${b}−${p}=${q} cm.`,2],['Ora che cosa puoi fare?','La diagonale minore è l’ipotenusa del triangolo rettangolo con cateti altezza e tratto di base.',3],['Mostrami la soluzione',`d=√(${h}²+${q}²)=${d} cm.`,3]]};
+    }
+  }
+});
+
+
+// --- Figure collegate: problemi problemi individuali, senza varianti "simili" ---
 const COMPLEX_USED=[];
 function linkedShapePath(type,x,y,w,h){
   if(type==='rettangolo'||type==='quadrato') return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2"/>`;
@@ -809,7 +877,7 @@ function linkedProblem(p){
   const helps=p.helps.map((h,i)=>[h[0],h[1],i+1]);
   const scenes={};
   helps.forEach((h,i)=>{const step=i+1; if(step<=p.leftSteps) scenes[step]={highlight:['first'],dim:['second']}; else if(step===p.leftSteps+1) scenes[step]={labels:['bridge-label']}; else scenes[step]={dim:['first']};});
-  return {text:p.text,notes:['Ci sono due figure: cerca prima quale informazione deve passare dalla prima alla seconda.',...p.stages],svg:linkedSvg(p),helps,scenes,noSimilar:true};
+  return {debugNew:!!p.debugNew,text:p.text,notes:['Ci sono due figure: cerca prima quale informazione deve passare dalla prima alla seconda.',...p.stages],svg:linkedSvg(p),helps,scenes,noSimilar:true};
 }
 const COMPLEX_PROBLEMS=[
 {a:'rettangolo',b:'rombo',aName:'Rettangolo',bName:'Rombo',bridge:'stesso perimetro',aLabels:['h = 26 cm','b = h + 9 cm'],bLabels:['d = 28 cm'],leftSteps:2,text:'Un rettangolo ha l’altezza di 26 cm e la base supera l’altezza di 9 cm. Un rombo è isoperimetrico al rettangolo e una sua diagonale misura 28 cm. Determina l’area del rombo.',stages:['Trova prima la base del rettangolo.','Calcola il suo perimetro: sarà il dato-ponte.','Trasferisci quel perimetro al rombo.','Dal perimetro ricava il lato del rombo.','Usa metà diagonali e Pitagora.','Con le due diagonali calcola l’area.'],helps:[['Da quale figura conviene partire?','Nel rettangolo conosci h = 26 cm e sai che la base è 9 cm più lunga.'],['Quale dato deve passare alla seconda figura?','Trova b = 26 + 9 = 35 cm, poi P = 2 × (35 + 26) = 122 cm.'],['Che cosa significa isoperimetrico?','Il rombo ha lo stesso perimetro: 122 cm.'],['Che cosa puoi ricavare ora nel rombo?','Il lato vale 122 : 4 = 30,5 cm.'],['Come entra in gioco la diagonale?','Le diagonali del rombo si dimezzano e sono perpendicolari: con lato 30,5 e semidiagonale 14 puoi usare Pitagora per trovare metà dell’altra diagonale.'],['Mostrami la soluzione','D/2 = √(30,5² − 14²) ≈ 27,10 cm; D ≈ 54,19 cm; A = 28 × 54,19 : 2 ≈ 758,7 cm².']]},
@@ -833,6 +901,21 @@ const COMPLEX_PROBLEMS=[
 {a:'rombo',b:'triangolo',aName:'Rombo',bName:'Triangolo isoscele',bridge:'stessa area',aLabels:['d = 3/4 D','D + d = 42'],bLabels:['b = 21 cm'],leftSteps:2,text:'La diagonale minore di un rombo è i 3/4 della diagonale maggiore e la loro somma è 42 cm. Un triangolo isoscele equivalente al rombo ha la base di 21 cm. Determina il perimetro del triangolo.',stages:['Usa il rapporto 3:4 sulle diagonali.','Calcola l’area del rombo.','Trasferisci l’area al triangolo.','Ricava l’altezza.','Trova il lato obliquo.','Calcola il perimetro.'],helps:[['Come trovi le diagonali?','Rappresenta d = 3 UF e D = 4 UF: 7 UF = 42 cm, quindi 1 UF = 6 cm. Le diagonali sono 18 e 24 cm.'],['Quale area ottieni?','A = 18 × 24 : 2 = 216 cm².'],['Che cosa passa al triangolo?','Il triangolo equivalente ha area 216 cm².'],['Come trovi l’altezza?','216 = 21 × h : 2, quindi h = 432 : 21 ≈ 20,57 cm.'],['Come trovi il lato obliquo?','Metà base è 10,5 cm: l = √(10,5² + 20,57²) ≈ 23,10 cm.'],['Mostrami la soluzione','P ≈ 21 + 2 × 23,10 = 67,19 cm.']]},
 {a:'triangoloR',b:'trapezio',aName:'Triangolo rettangolo',bName:'Trapezio isoscele',bridge:'stessa area',aLabels:['c₁ + c₂ = 42','c₁ − c₂ = 12'],bLabels:['b = 12, B = 30'],leftSteps:2,text:'La somma dei cateti di un triangolo rettangolo è 42 cm e la loro differenza è 12 cm. Un trapezio isoscele equivalente al triangolo ha le basi di 12 cm e 30 cm. Determina il perimetro del trapezio.',stages:['Usa somma e differenza sui cateti.','Calcola l’area del triangolo.','Trasferisci l’area al trapezio.','Ricava l’altezza.','Trova il lato obliquo.','Calcola il perimetro.'],helps:[['Come trovi i cateti?','c₁ = (42 + 12) : 2 = 27 cm; c₂ = (42 − 12) : 2 = 15 cm.'],['Quale area ottieni?','A = 27 × 15 : 2 = 202,5 cm².'],['Che cosa passa al trapezio?','Il trapezio equivalente ha area 202,5 cm².'],['Come trovi l’altezza?','202,5 = (12 + 30) × h : 2, quindi h = 405 : 42 ≈ 9,64 cm.'],['Come trovi il lato obliquo?','Ogni proiezione laterale è (30 − 12) : 2 = 9 cm; l = √(9² + 9,64²) ≈ 13,19 cm.'],['Mostrami la soluzione','P ≈ 12 + 30 + 2 × 13,19 = 68,38 cm.']]}
 ];
+
+// I primi 20 sono i problemi storici: il n. 4 non richiede Pitagora, gli altri sì.
+COMPLEX_PROBLEMS.forEach((p,i)=>p.strategies=i===3?['multi_step','figure_collegate']:['multi_step','figure_collegate','pitagora']);
+
+// Nuovi problemi collegati per la classe seconda: nessuno richiede Pitagora.
+COMPLEX_PROBLEMS.push(
+{debugNew:true,strategies:['multi_step','figure_collegate'],a:'rettangolo',b:'parallelogramma',aName:'Rettangolo',bName:'Parallelogramma',bridge:'stessa area',aLabels:['b = 18 cm','h = 10 cm'],bLabels:['b = 15 cm'],leftSteps:2,text:'Un rettangolo ha base 18 cm e altezza 10 cm. Un parallelogramma equivalente ha la base di 15 cm. Determina l’altezza del parallelogramma.',stages:['Calcola l’area del rettangolo.','Trasferisci l’area al parallelogramma.','Usa la formula inversa dell’area.'],helps:[['Da quale figura conviene partire?','Calcola l’area del rettangolo.'],['Quale dato ottieni?','A = 18 × 10 = 180 cm².'],['Che cosa passa al parallelogramma?','Il parallelogramma equivalente ha area 180 cm².'],['Mostrami la soluzione','h = A : b = 180 : 15 = 12 cm.']]},
+{debugNew:true,strategies:['multi_step','figure_collegate'],a:'rombo',b:'rettangolo',aName:'Rombo',bName:'Rettangolo',bridge:'stessa area',aLabels:['D = 24 cm','d = 10 cm'],bLabels:['b = 15 cm'],leftSteps:2,text:'Un rombo ha le diagonali di 24 cm e 10 cm. Un rettangolo equivalente ha la base di 15 cm. Determina l’altezza del rettangolo.',stages:['Calcola l’area del rombo.','Trasferisci l’area al rettangolo.','Ricava l’altezza.'],helps:[['Quale dato puoi ricavare dal rombo?','Calcola l’area usando le diagonali.'],['Quale area ottieni?','A = 24 × 10 : 2 = 120 cm².'],['Che cosa passa al rettangolo?','Il rettangolo equivalente ha area 120 cm².'],['Mostrami la soluzione','h = 120 : 15 = 8 cm.']]},
+{debugNew:true,strategies:['multi_step','figure_collegate'],a:'trapezio',b:'triangolo',aName:'Trapezio',bName:'Triangolo',bridge:'stessa area',aLabels:['B = 20, b = 12','h = 8 cm'],bLabels:['b = 16 cm'],leftSteps:2,text:'Un trapezio ha le basi di 20 cm e 12 cm e l’altezza di 8 cm. Un triangolo equivalente ha la base di 16 cm. Determina l’altezza del triangolo.',stages:['Calcola l’area del trapezio.','Trasferisci l’area al triangolo.','Ricava l’altezza del triangolo.'],helps:[['Quale dato puoi ottenere dal trapezio?','Calcola la sua area.'],['Quale area ottieni?','A = (20 + 12) × 8 : 2 = 128 cm².'],['Che cosa passa al triangolo?','Il triangolo equivalente ha area 128 cm².'],['Mostrami la soluzione','h = 2A : b = 256 : 16 = 16 cm.']]},
+{debugNew:true,strategies:['multi_step','figure_collegate'],a:'rettangolo',b:'triangolo',aName:'Rettangolo',bName:'Triangolo isoscele',bridge:'stesso perimetro',aLabels:['b = 14 cm','h = 8 cm'],bLabels:['b = 12 cm'],leftSteps:2,text:'Un rettangolo ha base 14 cm e altezza 8 cm. Un triangolo isoscele è isoperimetrico al rettangolo e ha la base di 12 cm. Determina la misura di ciascun lato obliquo del triangolo.',stages:['Calcola il perimetro del rettangolo.','Trasferisci il perimetro al triangolo.','Togli la base e dividi la parte restante tra i due lati uguali.'],helps:[['Quale dato devi ricavare dal rettangolo?','Calcola il suo perimetro.'],['Quale perimetro ottieni?','P = 2 × (14 + 8) = 44 cm.'],['Che cosa passa al triangolo?','Il triangolo isoperimetrico ha perimetro 44 cm.'],['Mostrami la soluzione','Tolti 12 cm della base restano 32 cm: ciascun lato obliquo misura 32 : 2 = 16 cm.']]},
+{debugNew:true,strategies:['multi_step','figure_collegate'],a:'parallelogramma',b:'trapezio',aName:'Parallelogramma',bName:'Trapezio',bridge:'stessa area',aLabels:['b = 18 cm','h = 10 cm'],bLabels:['B = 22, b = 14'],leftSteps:2,text:'Un parallelogramma ha base 18 cm e altezza 10 cm. Un trapezio equivalente ha le basi di 22 cm e 14 cm. Determina l’altezza del trapezio.',stages:['Calcola l’area del parallelogramma.','Trasferisci l’area al trapezio.','Ricava l’altezza.'],helps:[['Quale dato puoi ottenere dal parallelogramma?','Calcola la sua area.'],['Quale area ottieni?','A = 18 × 10 = 180 cm².'],['Che cosa passa al trapezio?','Il trapezio equivalente ha area 180 cm².'],['Mostrami la soluzione','h = 2A : (B + b) = 360 : 36 = 10 cm.']]},
+{debugNew:true,strategies:['multi_step','figure_collegate'],a:'rombo',b:'parallelogramma',aName:'Rombo',bName:'Parallelogramma',bridge:'stesso perimetro',aLabels:['l = 9 cm'],bLabels:['l = 8 cm'],leftSteps:2,text:'Un rombo ha il lato di 9 cm. Un parallelogramma isoperimetrico ha il lato obliquo di 8 cm. Determina la base del parallelogramma.',stages:['Calcola il perimetro del rombo.','Trasferisci il perimetro al parallelogramma.','Usa il semiperimetro per trovare la base.'],helps:[['Quale dato puoi ottenere dal rombo?','Calcola il suo perimetro.'],['Quale perimetro ottieni?','P = 4 × 9 = 36 cm.'],['Che cosa passa al parallelogramma?','Il parallelogramma ha lo stesso perimetro: 36 cm.'],['Mostrami la soluzione','Il semiperimetro è 18 cm: b = 18 − 8 = 10 cm.']]},
+{debugNew:true,strategies:['multi_step','figure_collegate'],a:'triangolo',b:'rettangolo',aName:'Triangolo',bName:'Rettangolo',bridge:'stessa area',aLabels:['b = 18 cm','h = 12 cm'],bLabels:['b = 9 cm'],leftSteps:2,text:'Un triangolo ha base 18 cm e altezza 12 cm. Un rettangolo equivalente ha la base di 9 cm. Determina l’altezza del rettangolo.',stages:['Calcola l’area del triangolo.','Trasferisci l’area al rettangolo.','Ricava l’altezza.'],helps:[['Quale dato puoi ottenere dal triangolo?','Calcola la sua area.'],['Quale area ottieni?','A = 18 × 12 : 2 = 108 cm².'],['Che cosa passa al rettangolo?','Il rettangolo equivalente ha area 108 cm².'],['Mostrami la soluzione','h = 108 : 9 = 12 cm.']]},
+{debugNew:true,strategies:['multi_step','figure_collegate'],a:'trapezio',b:'rettangolo',aName:'Trapezio',bName:'Rettangolo',bridge:'stessa area',aLabels:['B = 18, b = 10','h = 6 cm'],bLabels:['b = 7 cm'],leftSteps:2,text:'Un trapezio ha le basi di 18 cm e 10 cm e l’altezza di 6 cm. Un rettangolo equivalente ha la base di 7 cm. Determina il perimetro del rettangolo.',stages:['Calcola l’area del trapezio.','Trasferisci l’area al rettangolo.','Trova l’altezza e poi il perimetro.'],helps:[['Quale dato puoi ottenere dal trapezio?','Calcola la sua area.'],['Quale area ottieni?','A = (18 + 10) × 6 : 2 = 84 cm².'],['Che cosa passa al rettangolo?','Il rettangolo equivalente ha area 84 cm².'],['Come trovi l’altezza?','h = 84 : 7 = 12 cm.'],['Mostrami la soluzione','P = 2 × (7 + 12) = 38 cm.']]}
+);
 
 // v0.10.4 — scaffolding: un ostacolo cognitivo significativo per hint.
 // Ogni vecchio hint resta semanticamente al suo posto; se contiene più calcoli, viene spezzato.
@@ -884,8 +967,9 @@ function refineLinkedScaffolding(p){
 COMPLEX_PROBLEMS.forEach(refineLinkedScaffolding);
 
 FAMILIES.linkedComplex={figures:['collegate'],strategies:['multi_step','figure_collegate'],generate(){
-  let pool=COMPLEX_PROBLEMS.map((_,i)=>i).filter(i=>!COMPLEX_USED.includes(i));
-  if(!pool.length){COMPLEX_USED.length=0;pool=COMPLEX_PROBLEMS.map((_,i)=>i);}
+  const allowed=COMPLEX_PROBLEMS.map((p,i)=>[p,i]).filter(([p])=>state.schoolClass===3||!p.strategies.includes('pitagora')).map(([,i])=>i);
+  let pool=allowed.filter(i=>!COMPLEX_USED.includes(i));
+  if(!pool.length){COMPLEX_USED.length=0;pool=allowed;}
   const i=rand(pool);COMPLEX_USED.push(i);return linkedProblem(COMPLEX_PROBLEMS[i]);
 }};
 
@@ -899,255 +983,18 @@ const FIGURES=[
  ['composta','Figure composte','<path d="M20 24 H92 V48 H130 V92 H58 V68 H20 Z"/>'],
  ['collegate','Figure collegate','<path d="M18 34 H62 V78 H18 Z M88 34 H132 V78 H88 Z M64 56 H84 M78 50 L86 56 L78 62"/>']
 ];
-const frac=(num,den)=>`<span class="mfrac"><span>${num}</span><span>${den}</span></span>`;
-const root=x=>`<span class="mroot"><span class="radical">√</span><span class="radicand">${x}</span></span>`;
-const formulas=(...items)=>items.map(x=>`<div class="formula-row">${x}</div>`).join('');
-
-const FORMULAS=[
-  ['Triangolo',
-    formulas(
-      `A = ${frac('b · h','2')}`,
-      `P = a + b + c`
-    ),
-    formulas(
-      `b = ${frac('2A','h')}`,
-      `h = ${frac('2A','b')}`
-    )
-  ],
-  ['Rettangolo',
-    formulas(
-      `A = b · h`,
-      `P = 2(b + h)`
-    ),
-    formulas(
-      `b = ${frac('A','h')}`,
-      `h = ${frac('A','b')}`
-    )
-  ],
-  ['Parallelogramma',
-    formulas(
-      `A = b · h`
-    ),
-    formulas(
-      `b = ${frac('A','h')}`,
-      `h = ${frac('A','b')}`
-    )
-  ],
-  ['Trapezio',
-    formulas(
-      `A = ${frac('(B + b) · h','2')}`
-    ),
-    formulas(
-      `h = ${frac('2A','B + b')}`,
-      `B = ${frac('2A','h')} − b`,
-      `b = ${frac('2A','h')} − B`
-    )
-  ],
-  ['Rombo',
-    formulas(
-      `A = ${frac('D · d','2')}`,
-      `P = 4l`
-    ),
-    formulas(
-      `D = ${frac('2A','d')}`,
-      `d = ${frac('2A','D')}`,
-      `l = ${frac('P','4')}`
-    )
-  ],
-  ['Quadrato',
-    formulas(
-      `A = l²`,
-      `P = 4l`
-    ),
-    formulas(
-      `l = ${root('A')}`,
-      `l = ${frac('P','4')}`
-    )
-  ],
-  ['Pitagora',
-    formulas(
-      `i² = c₁² + c₂²`
-    ),
-    formulas(
-      `i = ${root('c₁² + c₂²')}`,
-      `c₁ = ${root('i² − c₂²')}`,
-      `c₂ = ${root('i² − c₁²')}`
-    )
-  ]
-];
-
+const FORMULAS=[['Triangolo','A = b × h : 2; P = a + b + c','b = 2A : h; h = 2A : b'],['Rettangolo','A = b × h; P = 2(b + h)','b = A : h; h = A : b'],['Parallelogramma','A = b × h','b = A : h; h = A : b'],['Trapezio','A = (B + b) × h : 2','h = 2A : (B + b); B = 2A : h − b; b = 2A : h − B'],['Rombo','A = D × d : 2; P = 4l','D = 2A : d; d = 2A : D; l = P : 4'],['Quadrato','A = l²; P = 4l','l = √A; l = P : 4'],['Pitagora','i² = c₁² + c₂²','i = √(c₁² + c₂²); c₁ = √(i² − c₂²); c₂ = √(i² − c₁²)']];
 
 const app=document.querySelector('#app');
-
-// --- Telemetria GEØ ---------------------------------------------------------
-// Il nickname è facoltativo: senza nickname non viene inviato alcun dato.
-const LOG_ENDPOINT='https://script.google.com/macros/s/AKfycbxOtGBk53p1bHpAvGNH6a6vjYYGb0uAHkEGE1RY67tu-_QBEkj0M5mFuzbbJ0MyA-RQ/exec';
-const NICKNAME_KEY='geo_nickname';
-const SESSION_KEY='geo_session';
-const SEQUENCE_KEY='geo_sequence';
-const HELP_LOG_DELAY=10000;
-
-function makeId(){
-  return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
-let volatileNickname='';
-let volatileSessionId='';
-function getNickname(){
-  try{return (localStorage.getItem(NICKNAME_KEY)||volatileNickname||'').trim();}
-  catch(_){return volatileNickname.trim();}
-}
-function saveNickname(value){
-  volatileNickname=(value||'').trim();
-  try{if(volatileNickname)localStorage.setItem(NICKNAME_KEY,volatileNickname);else localStorage.removeItem(NICKNAME_KEY);}catch(_){}
-}
-function getSessionId(){
-  try{
-    let id=sessionStorage.getItem(SESSION_KEY);
-    if(!id){id=makeId();sessionStorage.setItem(SESSION_KEY,id);}
-    return id;
-  }catch(_){
-    if(!volatileSessionId)volatileSessionId=makeId();
-    return volatileSessionId;
-  }
-}
-
-function nextSequence(){
-  try{
-    const current=Number(sessionStorage.getItem(SEQUENCE_KEY)||'0');
-    const next=current+1;
-    sessionStorage.setItem(SEQUENCE_KEY,String(next));
-    return next;
-  }catch(_){
-    state.volatileSequence=(state.volatileSequence||0)+1;
-    return state.volatileSequence;
-  }
-}
-
-function logEvent(evento,extra={}){
-  const nickname=getNickname();
-  if(!nickname)return;
-  const family=state.family ? FAMILIES[state.family] : null;
-  const payload={
-    nickname,
-    sessione:getSessionId(),
-    sequenza:nextSequence(),
-    evento,
-    argomento:extra.argomento ?? state.entryFigure ?? '',
-    problema:extra.problema ?? state.family ?? '',
-    aiuto:extra.aiuto ?? '',
-    strategie:evento==='PROBLEMA' && Array.isArray(family?.strategies) ? family.strategies.join(', ') : ''
-  };
-  // text/plain evita richieste CORS preflight verso Apps Script.
-  fetch(LOG_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).catch(()=>{});
-}
-
-let helpTimer=null;
-function cancelHelpTimer(){if(helpTimer!==null){clearTimeout(helpTimer);helpTimer=null;}}
-function startHelpTimer(helpIndex){
-  cancelHelpTimer();
-  if(!getNickname() || state.loggedHelps.has(helpIndex))return;
-  const attemptId=state.attemptId;
-  helpTimer=setTimeout(()=>{
-    helpTimer=null;
-    if(state.view==='problem' && state.attemptId===attemptId && state.openHelp===helpIndex && !state.loggedHelps.has(helpIndex)){
-      state.loggedHelps.add(helpIndex);
-      logEvent('AIUTO_USATO',{aiuto:`A${helpIndex+1}`});
-    }
-  },HELP_LOG_DELAY);
-}
-
-const state={view:'home',entryFigure:null,family:null,instance:null,openHelp:null,formulaReturn:'problem',attemptId:null,loggedHelps:new Set()};
-const familyKeysFor=figure=>Object.keys(FAMILIES).filter(k=>FAMILIES[k].figures.includes(figure));
-function shell(inner,tools=''){
-  const nickname=getNickname();
-  const hello=nickname?`<div class="status" style="margin-top:4px">Ciao, ${escapeHtml(nickname)}!</div>`:'';
-  return `<div class="wrap"><div class="accent-rule"></div><header class="top"><div><h1 class="brand">GE<span>Ø</span></h1><p class="tagline">Dentro il problema</p>${hello}</div>${tools}</header>${inner}</div>`
-}
-function escapeHtml(value){return String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-function ensureHomeLayoutStyle(){
-  if(document.querySelector('#geo-home-layout-style'))return;
-  const style=document.createElement('style');
-  style.id='geo-home-layout-style';
-  style.textContent=`
-    .home-top-grid{display:grid;grid-template-columns:minmax(280px,1fr) minmax(420px,.95fr);gap:42px;align-items:start;margin-bottom:34px}
-    .home-brand-block{padding-top:2px}
-    .home-brand-block .brand{margin:0}
-    .home-brand-block .tagline{margin-top:4px}
-    .home-login{border:1px solid #d7e2ec;border-radius:22px;padding:14px 18px;background:rgba(255,255,255,.62);box-shadow:0 8px 30px rgba(15,43,86,.035)}
-    .home-login-line{display:block;margin-bottom:8px;line-height:1.22}
-    .home-login-title{display:block;font-weight:800;color:var(--ink,#0b2a59);font-size:1.05rem;margin-bottom:3px}
-    .home-login-copy{display:block;color:#64748b;font-size:.96rem}
-    .home-login-controls{display:flex;gap:10px;align-items:center}
-    .home-name-input{flex:1;min-width:180px;padding:10px 14px;border:1px solid #cbd5e1;border-radius:14px;background:rgba(255,255,255,.82);font:inherit;color:inherit;outline:none}
-    .home-name-input:focus{border-color:#8eb9d9;box-shadow:0 0 0 3px rgba(142,185,217,.16)}
-    .home-saved-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-    .home-saved-name{font-weight:800;color:var(--ink,#0b2a59);font-size:1.08rem}
-    .home-saved-note{margin-top:2px;color:#64748b;font-size:.92rem}
-    .home-saved-actions{display:flex;gap:8px;flex-wrap:wrap}
-    .home-middle-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:center;margin-bottom:22px}
-    .home-middle-row .home-intro{margin:0}
-    .home-formula-wrap{display:flex;justify-content:flex-end}
-    .home-formula-wrap .tool-btn{min-width:190px}
-    @media(max-width:820px){
-      .home-top-grid{grid-template-columns:1fr;gap:20px;margin-bottom:24px}
-      .home-middle-row{grid-template-columns:1fr;gap:14px}
-      .home-formula-wrap{justify-content:flex-start}
-    }
-    @media(max-width:560px){
-      .home-login{padding:14px 16px}
-      .home-login-controls{align-items:stretch;flex-direction:column}
-      .home-name-input{width:100%;box-sizing:border-box}
-      .home-login-controls button{width:100%}
-    }
-  `;
-  document.head.appendChild(style);
-}
-function renderHome(){
-  cancelHelpTimer();state.view='home';state.openHelp=null;ensureHomeLayoutStyle();
-  const nickname=getNickname();
-  const cards=FIGURES.map(([id,label,shape])=>{const available=familyKeysFor(id).length>0;return `<button class="home-card" data-figure="${id}" ${available?'':'disabled'} title="${available?'Scegli '+label:'In arrivo'}"><svg viewBox="0 0 150 110" aria-hidden="true">${shape}</svg><div>${label}</div>${available?'':'<div class="status">in arrivo</div>'}</button>`}).join('');
-  const loginBox=nickname
-    ? `<section class="home-login"><div class="home-saved-row"><div><div class="home-saved-name">Ciao, ${escapeHtml(nickname)}!</div><div class="home-saved-note">I tuoi progressi vengono salvati.</div></div><div class="home-saved-actions"><button id="changeName" class="secondary">Cambia nome</button><button id="removeNickname" class="secondary">Rimuovi nome</button></div></div></section>`
-    : `<section class="home-login"><div class="home-login-line"><span class="home-login-title">Vuoi salvare i tuoi progressi?</span><span class="home-login-copy">Inserisci il tuo nome. È facoltativo.</span></div><div class="home-login-controls"><input id="nickname" class="home-name-input" maxlength="40" autocomplete="off" placeholder="Il tuo nome"><button id="saveNickname" class="secondary">Salva</button></div></section>`;
-  app.innerHTML=`<div class="wrap"><div class="accent-rule"></div><div class="home-top-grid"><div class="home-brand-block"><h1 class="brand">GE<span>Ø</span></h1><p class="tagline">Dentro il problema</p></div>${loginBox}</div><div class="home-middle-row"><p class="home-intro">Scegli una figura. GEØ ti proporrà un problema senza anticiparti quale strategia servirà per risolverlo.</p><div class="home-formula-wrap"><button id="form" class="tool-btn">📐 Formulario</button></div></div><section class="figure-grid">${cards}</section></div>`;
-  app.querySelector('#form').onclick=()=>renderFormula('home');
-  const save=app.querySelector('#saveNickname');
-  if(save){
-    save.onclick=()=>{const v=app.querySelector('#nickname').value.trim().slice(0,40);saveNickname(v);renderHome();};
-    app.querySelector('#nickname').addEventListener('keydown',e=>{if(e.key==='Enter')save.click();});
-  }
-  const change=app.querySelector('#changeName');
-  if(change)change.onclick=()=>{
-    const current=getNickname();
-    saveNickname('');
-    renderHome();
-    const input=app.querySelector('#nickname');if(input){input.value=current;input.focus();input.select();}
-  };
-  const remove=app.querySelector('#removeNickname');if(remove)remove.onclick=()=>{saveNickname('');renderHome();};
-  app.querySelectorAll('[data-figure]:not([disabled])').forEach(b=>b.onclick=()=>startFromFigure(b.dataset.figure));
-}
-function startFromFigure(fig){const keys=familyKeysFor(fig);if(!keys.length)return;state.entryFigure=fig;logEvent('ARGOMENTO',{argomento:fig,problema:''});state.family=rand(keys);newInstance();}
-function newInstance(){
-  cancelHelpTimer();
-  state.instance=FAMILIES[state.family].generate();state.openHelp=null;state.attemptId=makeId();state.loggedHelps=new Set();
-  logEvent('PROBLEMA');renderProblem();
-}
+const state={view:'home',entryFigure:null,family:null,instance:null,openHelp:null,formulaReturn:'problem',schoolClass:3};
+const familyKeysFor=figure=>Object.keys(FAMILIES).filter(k=>FAMILIES[k].figures.includes(figure)&&(state.schoolClass===3||!FAMILIES[k].strategies.includes('pitagora')));
+function shell(inner,tools=''){return `<div class="wrap"><div class="accent-rule"></div><header class="top"><div><h1 class="brand">GE<span>Ø</span></h1><p class="tagline">Dentro il problema</p></div>${tools}</header>${inner}</div>`}
+function renderHome(){state.view='home';state.openHelp=null;const cards=FIGURES.map(([id,label,shape])=>{const available=familyKeysFor(id).length>0;return `<button class="home-card" data-figure="${id}" ${available?'':'disabled'} title="${available?'Scegli '+label:'In arrivo'}"><svg viewBox="0 0 150 110" aria-hidden="true">${shape}</svg><div>${label}</div>${available?'':'<div class="status">in arrivo</div>'}</button>`}).join('');app.innerHTML=shell(`<p class="home-intro">Scegli una figura. GEØ ti proporrà un problema senza anticiparti quale strategia servirà per risolverlo.</p><div class="backline" style="margin:14px 0 20px"><span class="status">Classe</span><button data-class="2" class="${state.schoolClass===2?'primary':'secondary'}">Seconda</button><button data-class="3" class="${state.schoolClass===3?'primary':'secondary'}">Terza</button></div><section class="figure-grid">${cards}</section>`,'<button id="form" class="tool-btn">📐 Formulario</button>');app.querySelector('#form').onclick=()=>renderFormula('home');app.querySelectorAll('[data-class]').forEach(b=>b.onclick=()=>{state.schoolClass=+b.dataset.class;COMPLEX_USED.length=0;renderHome();});app.querySelectorAll('[data-figure]:not([disabled])').forEach(b=>b.onclick=()=>startFromFigure(b.dataset.figure));}
+function startFromFigure(fig){const keys=familyKeysFor(fig);if(!keys.length)return;state.entryFigure=fig;state.family=rand(keys);newInstance();}
+function newInstance(){state.instance=FAMILIES[state.family].generate();state.openHelp=null;renderProblem();}
 function differentProblem(){const keys=familyKeysFor(state.entryFigure);const alternatives=keys.filter(k=>k!==state.family);state.family=rand(alternatives.length?alternatives:keys);newInstance();}
-function goHome(){cancelHelpTimer();if(state.view==='problem')logEvent('HOME');renderHome();}
-function renderProblem(){state.view='problem';const x=state.instance;const label=FIGURES.find(f=>f[0]===state.entryFigure)?.[1]||'';app.innerHTML=shell(`<div class="problem-head"><div><div class="eyebrow">${label}</div><div class="status">Il tipo di strategia resta nascosto: scegli tu come procedere.</div></div><button id="homeTop" class="secondary">← Home</button></div><section class="card"><b>Problema</b><p>${x.text}</p></section><section class="grid"><div class="diagram">${x.svg}<div class="note">${state.openHelp===null ? (x.notes?.[0]||'Osserva la figura e prova a decidere da dove partire.') : (x.notes?.[x.helps[state.openHelp][2]]||x.helps[state.openHelp][1])}</div></div><div class="helps">${x.helps.map((h,i)=>`<div><button class="help-btn ${state.openHelp===i?'open':''}" data-help="${i}"><span>${i+1} — ${h[0]}</span><span class="chev">▾</span></button><div class="help-text ${state.openHelp===i?'':'hidden'}" data-text="${i}">${h[1]}</div></div>`).join('')}</div></section><div class="end-actions">${x.noSimilar?'':`<button id="similar" class="primary">Provane uno simile</button>`}<button id="different" class="secondary" ${(familyKeysFor(state.entryFigure).length < 2 && !x.noSimilar) ? 'disabled title="Non ci sono ancora altri tipi di problema per questa figura"' : ''}>Provane uno diverso</button><button id="home" class="secondary">Torna alla home</button></div>`,'<button id="form" class="tool-btn">📐 Formulario</button>');bindProblem();applyVisual();}
-function bindProblem(){
-  app.querySelector('#form').onclick=()=>{cancelHelpTimer();renderFormula('problem');};
-  app.querySelector('#homeTop').onclick=goHome;app.querySelector('#home').onclick=goHome;
-  const similar=app.querySelector('#similar');if(similar)similar.onclick=newInstance;
-  const different=app.querySelector('#different');if(!different.disabled)different.onclick=state.instance.noSimilar?newInstance:differentProblem;
-  app.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>{
-    const i=+b.dataset.help;
-    cancelHelpTimer();
-    state.openHelp=state.openHelp===i?null:i; // un solo aiuto aperto alla volta
-    renderProblem();
-    if(state.openHelp!==null)startHelpTimer(state.openHelp);
-  });
-}
+function renderProblem(){state.view='problem';const x=state.instance;const label=FIGURES.find(f=>f[0]===state.entryFigure)?.[1]||'';app.innerHTML=shell(`<div class="problem-head"><div><div class="eyebrow">${label}</div><div class="status">Il tipo di strategia resta nascosto: scegli tu come procedere.</div></div><button id="homeTop" class="secondary">← Home</button></div><section class="card"><b>Problema</b><p>${x.debugNew?'<span style="display:inline-block;margin-right:8px;padding:2px 7px;border:1px solid currentColor;border-radius:999px;font-size:.72em;font-weight:700">NUOVO</span> ':''}${x.text}</p></section><section class="grid"><div class="diagram">${x.svg}<div class="note">${state.openHelp===null ? (x.notes?.[0]||'Osserva la figura e prova a decidere da dove partire.') : (x.notes?.[x.helps[state.openHelp][2]]||x.helps[state.openHelp][1])}</div></div><div class="helps">${x.helps.map((h,i)=>`<div><button class="help-btn ${state.openHelp===i?'open':''}" data-help="${i}"><span>${i+1} — ${h[0]}</span><span class="chev">▾</span></button><div class="help-text ${state.openHelp===i?'':'hidden'}" data-text="${i}">${h[1]}</div></div>`).join('')}</div></section><div class="end-actions">${x.noSimilar?'':`<button id="similar" class="primary">Provane uno simile</button>`}<button id="different" class="secondary" ${(familyKeysFor(state.entryFigure).length < 2 && !x.noSimilar) ? 'disabled title="Non ci sono ancora altri tipi di problema per questa figura"' : ''}>Provane uno diverso</button><button id="home" class="secondary">Torna alla home</button></div>`,'<button id="form" class="tool-btn">📐 Formulario</button>');bindProblem();applyVisual();}
+function bindProblem(){app.querySelector('#form').onclick=()=>renderFormula('problem');app.querySelector('#homeTop').onclick=renderHome;app.querySelector('#home').onclick=renderHome;const similar=app.querySelector('#similar'); if(similar) similar.onclick=newInstance;const different=app.querySelector('#different'); if(!different.disabled) different.onclick=state.instance.noSimilar?newInstance:differentProblem;app.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>{const i=+b.dataset.help;state.openHelp=state.openHelp===i?null:i;renderProblem();});}
 function applyVisual(){
   const svg=app.querySelector('.diagram svg');
   if(!svg)return;
@@ -1238,71 +1085,5 @@ function applyVisual(){
     const q=svg.querySelector('[data-geo="height-label"]'); if(q) q.classList.add('dimmed');
   }
 }
-function renderFormula(returnTo){
-  state.view='formula';
-  state.formulaReturn=returnTo;
-
-  if(!document.querySelector('#formula-math-style')){
-    const style=document.createElement('style');
-    style.id='formula-math-style';
-    style.textContent=`
-      .formula{
-        font-family:"Times New Roman", "STIX Two Text", serif;
-        font-size:1.35rem;
-        line-height:1.5;
-        font-style:italic;
-        padding:14px 10px;
-      }
-      .formula-row{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        min-height:42px;
-        margin:5px 0;
-        white-space:nowrap;
-      }
-      .mfrac{
-        display:inline-flex;
-        flex-direction:column;
-        vertical-align:middle;
-        text-align:center;
-        line-height:1.1;
-        margin:0 .18em;
-      }
-      .mfrac > span:first-child{
-        padding:0 .25em .12em;
-        border-bottom:1.5px solid currentColor;
-      }
-      .mfrac > span:last-child{
-        padding:.12em .25em 0;
-      }
-      .mroot{
-        display:inline-flex;
-        align-items:flex-start;
-        vertical-align:middle;
-        margin:0 .08em;
-      }
-      .mroot .radical{
-        font-size:1.2em;
-        line-height:1em;
-        font-style:normal;
-      }
-      .mroot .radicand{
-        border-top:1.5px solid currentColor;
-        padding:0 .16em .05em .1em;
-        line-height:1.05;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  app.innerHTML=shell(`<div class="backline"><button id="back" class="secondary">← ${returnTo==='home'?'Torna alla home':'Torna al problema'}</button><span class="status">Le formule restano nascoste finché non scegli di visualizzarle.</span></div><div class="formula-grid" style="margin-top:16px">${FORMULAS.map((f,i)=>`<article class="formula-card"><h3>${f[0]}</h3><div class="formula-actions"><button data-reveal="d${i}">Mostra formule dirette</button><button data-reveal="i${i}">Mostra formule inverse</button></div><div id="d${i}" class="formula hidden">${f[1]}</div><div id="i${i}" class="formula hidden">${f[2]}</div></article>`).join('')}</div>`);
-
-  app.querySelector('#back').onclick=()=>{if(returnTo==='home')renderHome();else{renderProblem();if(state.openHelp!==null)startHelpTimer(state.openHelp);}};
-  app.querySelectorAll('[data-reveal]').forEach(b=>b.onclick=()=>{
-    const el=app.querySelector('#'+b.dataset.reveal),hidden=el.classList.toggle('hidden');
-    b.textContent=hidden?b.textContent.replace('Nascondi','Mostra'):b.textContent.replace('Mostra','Nascondi');
-  });
-}
-
+function renderFormula(returnTo){state.view='formula';state.formulaReturn=returnTo;app.innerHTML=shell(`<div class="backline"><button id="back" class="secondary">← ${returnTo==='home'?'Torna alla home':'Torna al problema'}</button><span class="status">Le formule restano nascoste finché non scegli di visualizzarle.</span></div><div class="formula-grid" style="margin-top:16px">${FORMULAS.map((f,i)=>`<article class="formula-card"><h3>${f[0]}</h3><div class="formula-actions"><button data-reveal="d${i}">Mostra formule dirette</button><button data-reveal="i${i}">Mostra formule inverse</button></div><div id="d${i}" class="formula hidden">${f[1]}</div><div id="i${i}" class="formula hidden">${f[2]}</div></article>`).join('')}</div>`);app.querySelector('#back').onclick=()=>returnTo==='home'?renderHome():renderProblem();app.querySelectorAll('[data-reveal]').forEach(b=>b.onclick=()=>{const el=app.querySelector('#'+b.dataset.reveal),hidden=el.classList.toggle('hidden');b.textContent=hidden?b.textContent.replace('Nascondi','Mostra'):b.textContent.replace('Mostra','Nascondi')});}
 renderHome();

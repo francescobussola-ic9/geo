@@ -899,7 +899,92 @@ const FIGURES=[
  ['composta','Figure composte','<path d="M20 24 H92 V48 H130 V92 H58 V68 H20 Z"/>'],
  ['collegate','Figure collegate','<path d="M18 34 H62 V78 H18 Z M88 34 H132 V78 H88 Z M64 56 H84 M78 50 L86 56 L78 62"/>']
 ];
-const FORMULAS=[['Triangolo','A = b × h : 2; P = a + b + c','b = 2A : h; h = 2A : b'],['Rettangolo','A = b × h; P = 2(b + h)','b = A : h; h = A : b'],['Parallelogramma','A = b × h','b = A : h; h = A : b'],['Trapezio','A = (B + b) × h : 2','h = 2A : (B + b); B = 2A : h − b; b = 2A : h − B'],['Rombo','A = D × d : 2; P = 4l','D = 2A : d; d = 2A : D; l = P : 4'],['Quadrato','A = l²; P = 4l','l = √A; l = P : 4'],['Pitagora','i² = c₁² + c₂²','i = √(c₁² + c₂²); c₁ = √(i² − c₂²); c₂ = √(i² − c₁²)']];
+const frac=(num,den)=>`<span class="mfrac"><span>${num}</span><span>${den}</span></span>`;
+const root=x=>`<span class="mroot"><span class="radical">√</span><span class="radicand">${x}</span></span>`;
+const formulas=(...items)=>items.map(x=>`<div class="formula-row">${x}</div>`).join('');
+
+const FORMULAS=[
+  ['Triangolo',
+    formulas(
+      `A = ${frac('b · h','2')}`,
+      `P = a + b + c`
+    ),
+    formulas(
+      `b = ${frac('2A','h')}`,
+      `h = ${frac('2A','b')}`
+    )
+  ],
+  ['Rettangolo',
+    formulas(
+      `A = b · h`,
+      `P = 2(b + h)`
+    ),
+    formulas(
+      `b = ${frac('A','h')}`,
+      `h = ${frac('A','b')}`
+    )
+  ],
+  ['Parallelogramma',
+    formulas(
+      `A = b · h`
+    ),
+    formulas(
+      `b = ${frac('A','h')}`,
+      `h = ${frac('A','b')}`
+    )
+  ],
+  ['Trapezio',
+    formulas(
+      `A = ${frac('(B + b) · h','2')}`
+    ),
+    formulas(
+      `h = ${frac('2A','B + b')}`,
+      `B = ${frac('2A','h')} − b`,
+      `b = ${frac('2A','h')} − B`
+    )
+  ],
+  ['Rombo',
+    formulas(
+      `A = ${frac('D · d','2')}`,
+      `P = 4l`
+    ),
+    formulas(
+      `D = ${frac('2A','d')}`,
+      `d = ${frac('2A','D')}`,
+      `l = ${frac('P','4')}`
+    )
+  ],
+  ['Quadrato',
+    formulas(
+      `A = l²`,
+      `P = 4l`
+    ),
+    formulas(
+      `l = ${root('A')}`,
+      `l = ${frac('P','4')}`
+    )
+  ],
+  ['Pitagora',
+    formulas(
+      `i² = c₁² + c₂²`
+    ),
+    formulas(
+      `i = ${root('c₁² + c₂²')}`,
+      `c₁ = ${root('i² − c₂²')}`,
+      `c₂ = ${root('i² − c₁²')}`
+    )
+  ]
+];
+
+
+  app.innerHTML=shell(`<div class="backline"><button id="back" class="secondary">← ${returnTo==='home'?'Torna alla home':'Torna al problema'}</button><span class="status">Le formule restano nascoste finché non scegli di visualizzarle.</span></div><div class="formula-grid" style="margin-top:16px">${FORMULAS.map((f,i)=>`<article class="formula-card"><h3>${f[0]}</h3><div class="formula-actions"><button data-reveal="d${i}">Mostra formule dirette</button><button data-reveal="i${i}">Mostra formule inverse</button></div><div id="d${i}" class="formula hidden">${f[1]}</div><div id="i${i}" class="formula hidden">${f[2]}</div></article>`).join('')}</div>`);
+
+  app.querySelector('#back').onclick=()=>returnTo==='home'?renderHome():renderProblem();
+  app.querySelectorAll('[data-reveal]').forEach(b=>b.onclick=()=>{
+    const el=app.querySelector('#'+b.dataset.reveal),hidden=el.classList.toggle('hidden');
+    b.textContent=hidden?b.textContent.replace('Nascondi','Mostra'):b.textContent.replace('Mostra','Nascondi');
+  });
+}
 
 const app=document.querySelector('#app');
 const state={view:'home',entryFigure:null,family:null,instance:null,openHelp:null,formulaReturn:'problem'};
@@ -1001,5 +1086,62 @@ function applyVisual(){
     const q=svg.querySelector('[data-geo="height-label"]'); if(q) q.classList.add('dimmed');
   }
 }
-function renderFormula(returnTo){state.view='formula';state.formulaReturn=returnTo;app.innerHTML=shell(`<div class="backline"><button id="back" class="secondary">← ${returnTo==='home'?'Torna alla home':'Torna al problema'}</button><span class="status">Le formule restano nascoste finché non scegli di visualizzarle.</span></div><div class="formula-grid" style="margin-top:16px">${FORMULAS.map((f,i)=>`<article class="formula-card"><h3>${f[0]}</h3><div class="formula-actions"><button data-reveal="d${i}">Mostra formule dirette</button><button data-reveal="i${i}">Mostra formule inverse</button></div><div id="d${i}" class="formula hidden">${f[1]}</div><div id="i${i}" class="formula hidden">${f[2]}</div></article>`).join('')}</div>`);app.querySelector('#back').onclick=()=>returnTo==='home'?renderHome():renderProblem();app.querySelectorAll('[data-reveal]').forEach(b=>b.onclick=()=>{const el=app.querySelector('#'+b.dataset.reveal),hidden=el.classList.toggle('hidden');b.textContent=hidden?b.textContent.replace('Nascondi','Mostra'):b.textContent.replace('Mostra','Nascondi')});}
+function renderFormula(returnTo){
+  state.view='formula';
+  state.formulaReturn=returnTo;
+
+  if(!document.querySelector('#formula-math-style')){
+    const style=document.createElement('style');
+    style.id='formula-math-style';
+    style.textContent=`
+      .formula{
+        font-family:"Times New Roman", "STIX Two Text", serif;
+        font-size:1.35rem;
+        line-height:1.5;
+        font-style:italic;
+        padding:14px 10px;
+      }
+      .formula-row{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        min-height:42px;
+        margin:5px 0;
+        white-space:nowrap;
+      }
+      .mfrac{
+        display:inline-flex;
+        flex-direction:column;
+        vertical-align:middle;
+        text-align:center;
+        line-height:1.1;
+        margin:0 .18em;
+      }
+      .mfrac > span:first-child{
+        padding:0 .25em .12em;
+        border-bottom:1.5px solid currentColor;
+      }
+      .mfrac > span:last-child{
+        padding:.12em .25em 0;
+      }
+      .mroot{
+        display:inline-flex;
+        align-items:flex-start;
+        vertical-align:middle;
+        margin:0 .08em;
+      }
+      .mroot .radical{
+        font-size:1.2em;
+        line-height:1em;
+        font-style:normal;
+      }
+      .mroot .radicand{
+        border-top:1.5px solid currentColor;
+        padding:0 .16em .05em .1em;
+        line-height:1.05;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
 renderHome();

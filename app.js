@@ -977,25 +977,96 @@ const FORMULAS=[
 ];
 
 
-  app.innerHTML=shell(`<div class="backline"><button id="back" class="secondary">← ${returnTo==='home'?'Torna alla home':'Torna al problema'}</button><span class="status">Le formule restano nascoste finché non scegli di visualizzarle.</span></div><div class="formula-grid" style="margin-top:16px">${FORMULAS.map((f,i)=>`<article class="formula-card"><h3>${f[0]}</h3><div class="formula-actions"><button data-reveal="d${i}">Mostra formule dirette</button><button data-reveal="i${i}">Mostra formule inverse</button></div><div id="d${i}" class="formula hidden">${f[1]}</div><div id="i${i}" class="formula hidden">${f[2]}</div></article>`).join('')}</div>`);
+const app=document.querySelector('#app');
 
-  app.querySelector('#back').onclick=()=>returnTo==='home'?renderHome():renderProblem();
-  app.querySelectorAll('[data-reveal]').forEach(b=>b.onclick=()=>{
-    const el=app.querySelector('#'+b.dataset.reveal),hidden=el.classList.toggle('hidden');
-    b.textContent=hidden?b.textContent.replace('Nascondi','Mostra'):b.textContent.replace('Mostra','Nascondi');
-  });
+// --- Telemetria GEØ ---------------------------------------------------------
+// Il nickname è facoltativo: senza nickname non viene inviato alcun dato.
+const LOG_ENDPOINT='https://script.google.com/macros/s/AKfycbxOtGBk53p1bHpAvGNH6a6vjYYGb0uAHkEGE1RY67tu-_QBEkj0M5mFuzbbJ0MyA-RQ/exec';
+const NICKNAME_KEY='geo_nickname';
+const SESSION_KEY='geo_session';
+const HELP_LOG_DELAY=10000;
+
+function makeId(){
+  return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+function getNickname(){return (localStorage.getItem(NICKNAME_KEY)||'').trim();}
+function getSessionId(){
+  let id=sessionStorage.getItem(SESSION_KEY);
+  if(!id){id=makeId();sessionStorage.setItem(SESSION_KEY,id);}
+  return id;
+}
+function logEvent(evento,extra={}){
+  const nickname=getNickname();
+  if(!nickname)return;
+  const payload={
+    nickname,
+    sessione:getSessionId(),
+    evento,
+    argomento:extra.argomento ?? state.entryFigure ?? '',
+    problema:extra.problema ?? state.family ?? '',
+    aiuto:extra.aiuto ?? ''
+  };
+  // text/plain evita richieste CORS preflight verso Apps Script.
+  fetch(LOG_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).catch(()=>{});
 }
 
-const app=document.querySelector('#app');
-const state={view:'home',entryFigure:null,family:null,instance:null,openHelp:null,formulaReturn:'problem'};
+let helpTimer=null;
+function cancelHelpTimer(){if(helpTimer!==null){clearTimeout(helpTimer);helpTimer=null;}}
+function startHelpTimer(helpIndex){
+  cancelHelpTimer();
+  if(!getNickname() || state.loggedHelps.has(helpIndex))return;
+  const attemptId=state.attemptId;
+  helpTimer=setTimeout(()=>{
+    helpTimer=null;
+    if(state.view==='problem' && state.attemptId===attemptId && state.openHelp===helpIndex && !state.loggedHelps.has(helpIndex)){
+      state.loggedHelps.add(helpIndex);
+      logEvent('AIUTO_USATO',{aiuto:`A${helpIndex+1}`});
+    }
+  },HELP_LOG_DELAY);
+}
+
+const state={view:'home',entryFigure:null,family:null,instance:null,openHelp:null,formulaReturn:'problem',attemptId:null,loggedHelps:new Set()};
 const familyKeysFor=figure=>Object.keys(FAMILIES).filter(k=>FAMILIES[k].figures.includes(figure));
-function shell(inner,tools=''){return `<div class="wrap"><div class="accent-rule"></div><header class="top"><div><h1 class="brand">GE<span>Ø</span></h1><p class="tagline">Dentro il problema</p></div>${tools}</header>${inner}</div>`}
-function renderHome(){state.view='home';state.openHelp=null;const cards=FIGURES.map(([id,label,shape])=>{const available=familyKeysFor(id).length>0;return `<button class="home-card" data-figure="${id}" ${available?'':'disabled'} title="${available?'Scegli '+label:'In arrivo'}"><svg viewBox="0 0 150 110" aria-hidden="true">${shape}</svg><div>${label}</div>${available?'':'<div class="status">in arrivo</div>'}</button>`}).join('');app.innerHTML=shell(`<p class="home-intro">Scegli una figura. GEØ ti proporrà un problema senza anticiparti quale strategia servirà per risolverlo.</p><section class="figure-grid">${cards}</section>`,'<button id="form" class="tool-btn">📐 Formulario</button>');app.querySelector('#form').onclick=()=>renderFormula('home');app.querySelectorAll('[data-figure]:not([disabled])').forEach(b=>b.onclick=()=>startFromFigure(b.dataset.figure));}
-function startFromFigure(fig){const keys=familyKeysFor(fig);if(!keys.length)return;state.entryFigure=fig;state.family=rand(keys);newInstance();}
-function newInstance(){state.instance=FAMILIES[state.family].generate();state.openHelp=null;renderProblem();}
+function shell(inner,tools=''){
+  const nickname=getNickname();
+  const hello=nickname?`<div class="status" style="margin-top:4px">Ciao, ${escapeHtml(nickname)}!</div>`:'';
+  return `<div class="wrap"><div class="accent-rule"></div><header class="top"><div><h1 class="brand">GE<span>Ø</span></h1><p class="tagline">Dentro il problema</p>${hello}</div>${tools}</header>${inner}</div>`
+}
+function escapeHtml(value){return String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function renderHome(){
+  cancelHelpTimer();state.view='home';state.openHelp=null;
+  const nickname=getNickname();
+  const cards=FIGURES.map(([id,label,shape])=>{const available=familyKeysFor(id).length>0;return `<button class="home-card" data-figure="${id}" ${available?'':'disabled'} title="${available?'Scegli '+label:'In arrivo'}"><svg viewBox="0 0 150 110" aria-hidden="true">${shape}</svg><div>${label}</div>${available?'':'<div class="status">in arrivo</div>'}</button>`}).join('');
+  const nickBox=`<section class="card" style="margin-bottom:16px"><b>Vuoi salvare i tuoi progressi?</b><p class="status">Inserisci un nickname. È facoltativo: senza nickname GEØ non registra il tuo utilizzo.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="nickname" maxlength="40" autocomplete="off" placeholder="Nickname" value="${escapeHtml(nickname)}" style="flex:1;min-width:180px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px"><button id="saveNickname" class="secondary">Salva</button>${nickname?'<button id="removeNickname" class="secondary">Rimuovi</button>':''}</div></section>`;
+  app.innerHTML=shell(`${nickBox}<p class="home-intro">Scegli una figura. GEØ ti proporrà un problema senza anticiparti quale strategia servirà per risolverlo.</p><section class="figure-grid">${cards}</section>`,'<button id="form" class="tool-btn">📐 Formulario</button>');
+  app.querySelector('#form').onclick=()=>renderFormula('home');
+  app.querySelector('#saveNickname').onclick=()=>{const v=app.querySelector('#nickname').value.trim().slice(0,40);if(v)localStorage.setItem(NICKNAME_KEY,v);else localStorage.removeItem(NICKNAME_KEY);renderHome();};
+  app.querySelector('#nickname').addEventListener('keydown',e=>{if(e.key==='Enter')app.querySelector('#saveNickname').click();});
+  const remove=app.querySelector('#removeNickname');if(remove)remove.onclick=()=>{localStorage.removeItem(NICKNAME_KEY);renderHome();};
+  app.querySelectorAll('[data-figure]:not([disabled])').forEach(b=>b.onclick=()=>startFromFigure(b.dataset.figure));
+}
+function startFromFigure(fig){const keys=familyKeysFor(fig);if(!keys.length)return;state.entryFigure=fig;logEvent('ARGOMENTO',{argomento:fig,problema:''});state.family=rand(keys);newInstance();}
+function newInstance(){
+  cancelHelpTimer();
+  state.instance=FAMILIES[state.family].generate();state.openHelp=null;state.attemptId=makeId();state.loggedHelps=new Set();
+  logEvent('PROBLEMA');renderProblem();
+}
 function differentProblem(){const keys=familyKeysFor(state.entryFigure);const alternatives=keys.filter(k=>k!==state.family);state.family=rand(alternatives.length?alternatives:keys);newInstance();}
+function goHome(){cancelHelpTimer();if(state.view==='problem')logEvent('HOME');renderHome();}
 function renderProblem(){state.view='problem';const x=state.instance;const label=FIGURES.find(f=>f[0]===state.entryFigure)?.[1]||'';app.innerHTML=shell(`<div class="problem-head"><div><div class="eyebrow">${label}</div><div class="status">Il tipo di strategia resta nascosto: scegli tu come procedere.</div></div><button id="homeTop" class="secondary">← Home</button></div><section class="card"><b>Problema</b><p>${x.text}</p></section><section class="grid"><div class="diagram">${x.svg}<div class="note">${state.openHelp===null ? (x.notes?.[0]||'Osserva la figura e prova a decidere da dove partire.') : (x.notes?.[x.helps[state.openHelp][2]]||x.helps[state.openHelp][1])}</div></div><div class="helps">${x.helps.map((h,i)=>`<div><button class="help-btn ${state.openHelp===i?'open':''}" data-help="${i}"><span>${i+1} — ${h[0]}</span><span class="chev">▾</span></button><div class="help-text ${state.openHelp===i?'':'hidden'}" data-text="${i}">${h[1]}</div></div>`).join('')}</div></section><div class="end-actions">${x.noSimilar?'':`<button id="similar" class="primary">Provane uno simile</button>`}<button id="different" class="secondary" ${(familyKeysFor(state.entryFigure).length < 2 && !x.noSimilar) ? 'disabled title="Non ci sono ancora altri tipi di problema per questa figura"' : ''}>Provane uno diverso</button><button id="home" class="secondary">Torna alla home</button></div>`,'<button id="form" class="tool-btn">📐 Formulario</button>');bindProblem();applyVisual();}
-function bindProblem(){app.querySelector('#form').onclick=()=>renderFormula('problem');app.querySelector('#homeTop').onclick=renderHome;app.querySelector('#home').onclick=renderHome;const similar=app.querySelector('#similar'); if(similar) similar.onclick=newInstance;const different=app.querySelector('#different'); if(!different.disabled) different.onclick=state.instance.noSimilar?newInstance:differentProblem;app.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>{const i=+b.dataset.help;state.openHelp=state.openHelp===i?null:i;renderProblem();});}
+function bindProblem(){
+  app.querySelector('#form').onclick=()=>{cancelHelpTimer();renderFormula('problem');};
+  app.querySelector('#homeTop').onclick=goHome;app.querySelector('#home').onclick=goHome;
+  const similar=app.querySelector('#similar');if(similar)similar.onclick=newInstance;
+  const different=app.querySelector('#different');if(!different.disabled)different.onclick=state.instance.noSimilar?newInstance:differentProblem;
+  app.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.help;
+    cancelHelpTimer();
+    state.openHelp=state.openHelp===i?null:i; // un solo aiuto aperto alla volta
+    renderProblem();
+    if(state.openHelp!==null)startHelpTimer(state.openHelp);
+  });
+}
 function applyVisual(){
   const svg=app.querySelector('.diagram svg');
   if(!svg)return;
@@ -1143,5 +1214,14 @@ function renderFormula(returnTo){
     `;
     document.head.appendChild(style);
   }
+
+  app.innerHTML=shell(`<div class="backline"><button id="back" class="secondary">← ${returnTo==='home'?'Torna alla home':'Torna al problema'}</button><span class="status">Le formule restano nascoste finché non scegli di visualizzarle.</span></div><div class="formula-grid" style="margin-top:16px">${FORMULAS.map((f,i)=>`<article class="formula-card"><h3>${f[0]}</h3><div class="formula-actions"><button data-reveal="d${i}">Mostra formule dirette</button><button data-reveal="i${i}">Mostra formule inverse</button></div><div id="d${i}" class="formula hidden">${f[1]}</div><div id="i${i}" class="formula hidden">${f[2]}</div></article>`).join('')}</div>`);
+
+  app.querySelector('#back').onclick=()=>{if(returnTo==='home')renderHome();else{renderProblem();if(state.openHelp!==null)startHelpTimer(state.openHelp);}};
+  app.querySelectorAll('[data-reveal]').forEach(b=>b.onclick=()=>{
+    const el=app.querySelector('#'+b.dataset.reveal),hidden=el.classList.toggle('hidden');
+    b.textContent=hidden?b.textContent.replace('Nascondi','Mostra'):b.textContent.replace('Mostra','Nascondi');
+  });
+}
 
 renderHome();

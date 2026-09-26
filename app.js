@@ -984,6 +984,7 @@ const app=document.querySelector('#app');
 const LOG_ENDPOINT='https://script.google.com/macros/s/AKfycbxOtGBk53p1bHpAvGNH6a6vjYYGb0uAHkEGE1RY67tu-_QBEkj0M5mFuzbbJ0MyA-RQ/exec';
 const NICKNAME_KEY='geo_nickname';
 const SESSION_KEY='geo_session';
+const SEQUENCE_KEY='geo_sequence';
 const HELP_LOG_DELAY=10000;
 
 function makeId(){
@@ -1010,16 +1011,31 @@ function getSessionId(){
   }
 }
 
+function nextSequence(){
+  try{
+    const current=Number(sessionStorage.getItem(SEQUENCE_KEY)||'0');
+    const next=current+1;
+    sessionStorage.setItem(SEQUENCE_KEY,String(next));
+    return next;
+  }catch(_){
+    state.volatileSequence=(state.volatileSequence||0)+1;
+    return state.volatileSequence;
+  }
+}
+
 function logEvent(evento,extra={}){
   const nickname=getNickname();
   if(!nickname)return;
+  const family=state.family ? FAMILIES[state.family] : null;
   const payload={
     nickname,
     sessione:getSessionId(),
+    sequenza:nextSequence(),
     evento,
     argomento:extra.argomento ?? state.entryFigure ?? '',
     problema:extra.problema ?? state.family ?? '',
-    aiuto:extra.aiuto ?? ''
+    aiuto:extra.aiuto ?? '',
+    strategie:evento==='PROBLEMA' && Array.isArray(family?.strategies) ? family.strategies.join(', ') : ''
   };
   // text/plain evita richieste CORS preflight verso Apps Script.
   fetch(LOG_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).catch(()=>{});

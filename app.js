@@ -1064,15 +1064,65 @@ function shell(inner,tools=''){
   return `<div class="wrap"><div class="accent-rule"></div><header class="top"><div><h1 class="brand">GE<span>Ø</span></h1><p class="tagline">Dentro il problema</p>${hello}</div>${tools}</header>${inner}</div>`
 }
 function escapeHtml(value){return String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function ensureHomeLayoutStyle(){
+  if(document.querySelector('#geo-home-layout-style'))return;
+  const style=document.createElement('style');
+  style.id='geo-home-layout-style';
+  style.textContent=`
+    .home-top-grid{display:grid;grid-template-columns:minmax(280px,1fr) minmax(420px,.95fr);gap:42px;align-items:start;margin-bottom:34px}
+    .home-brand-block{padding-top:2px}
+    .home-brand-block .brand{margin:0}
+    .home-brand-block .tagline{margin-top:4px}
+    .home-login{border:1px solid #d7e2ec;border-radius:22px;padding:22px 24px;background:rgba(255,255,255,.62);box-shadow:0 8px 30px rgba(15,43,86,.035)}
+    .home-login-line{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;margin-bottom:14px}
+    .home-login-title{font-weight:800;color:var(--ink,#0b2a59);font-size:1.05rem}
+    .home-login-copy{color:#64748b}
+    .home-login-controls{display:flex;gap:10px;align-items:center}
+    .home-name-input{flex:1;min-width:180px;padding:13px 15px;border:1px solid #cbd5e1;border-radius:14px;background:rgba(255,255,255,.82);font:inherit;color:inherit;outline:none}
+    .home-name-input:focus{border-color:#8eb9d9;box-shadow:0 0 0 3px rgba(142,185,217,.16)}
+    .home-saved-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .home-saved-name{font-weight:800;color:var(--ink,#0b2a59);font-size:1.08rem}
+    .home-saved-note{margin-top:4px;color:#64748b;font-size:.94rem}
+    .home-saved-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .home-middle-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:center;margin-bottom:22px}
+    .home-middle-row .home-intro{margin:0}
+    .home-formula-wrap{display:flex;justify-content:flex-end}
+    .home-formula-wrap .tool-btn{min-width:190px}
+    @media(max-width:820px){
+      .home-top-grid{grid-template-columns:1fr;gap:20px;margin-bottom:24px}
+      .home-middle-row{grid-template-columns:1fr;gap:14px}
+      .home-formula-wrap{justify-content:flex-start}
+    }
+    @media(max-width:560px){
+      .home-login{padding:18px}
+      .home-login-controls{align-items:stretch;flex-direction:column}
+      .home-name-input{width:100%;box-sizing:border-box}
+      .home-login-controls button{width:100%}
+    }
+  `;
+  document.head.appendChild(style);
+}
 function renderHome(){
-  cancelHelpTimer();state.view='home';state.openHelp=null;
+  cancelHelpTimer();state.view='home';state.openHelp=null;ensureHomeLayoutStyle();
   const nickname=getNickname();
   const cards=FIGURES.map(([id,label,shape])=>{const available=familyKeysFor(id).length>0;return `<button class="home-card" data-figure="${id}" ${available?'':'disabled'} title="${available?'Scegli '+label:'In arrivo'}"><svg viewBox="0 0 150 110" aria-hidden="true">${shape}</svg><div>${label}</div>${available?'':'<div class="status">in arrivo</div>'}</button>`}).join('');
-  const nickBox=`<section class="card" style="margin-bottom:16px"><b>Vuoi salvare i tuoi progressi?</b><p class="status">Inserisci un nickname. È facoltativo: senza nickname GEØ non registra il tuo utilizzo.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="nickname" maxlength="40" autocomplete="off" placeholder="Nickname" value="${escapeHtml(nickname)}" style="flex:1;min-width:180px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px"><button id="saveNickname" class="secondary">Salva</button>${nickname?'<button id="removeNickname" class="secondary">Rimuovi</button>':''}</div></section>`;
-  app.innerHTML=shell(`${nickBox}<p class="home-intro">Scegli una figura. GEØ ti proporrà un problema senza anticiparti quale strategia servirà per risolverlo.</p><section class="figure-grid">${cards}</section>`,'<button id="form" class="tool-btn">📐 Formulario</button>');
+  const loginBox=nickname
+    ? `<section class="home-login"><div class="home-saved-row"><div><div class="home-saved-name">Ciao, ${escapeHtml(nickname)}!</div><div class="home-saved-note">I tuoi progressi vengono salvati.</div></div><div class="home-saved-actions"><button id="changeName" class="secondary">Cambia nome</button><button id="removeNickname" class="secondary">Rimuovi nome</button></div></div></section>`
+    : `<section class="home-login"><div class="home-login-line"><span class="home-login-title">Vuoi salvare i tuoi progressi?</span><span class="home-login-copy">Inserisci il tuo nome. È facoltativo.</span></div><div class="home-login-controls"><input id="nickname" class="home-name-input" maxlength="40" autocomplete="off" placeholder="Il tuo nome"><button id="saveNickname" class="secondary">Salva</button></div></section>`;
+  app.innerHTML=`<div class="wrap"><div class="accent-rule"></div><div class="home-top-grid"><div class="home-brand-block"><h1 class="brand">GE<span>Ø</span></h1><p class="tagline">Dentro il problema</p></div>${loginBox}</div><div class="home-middle-row"><p class="home-intro">Scegli una figura. GEØ ti proporrà un problema senza anticiparti quale strategia servirà per risolverlo.</p><div class="home-formula-wrap"><button id="form" class="tool-btn">📐 Formulario</button></div></div><section class="figure-grid">${cards}</section></div>`;
   app.querySelector('#form').onclick=()=>renderFormula('home');
-  app.querySelector('#saveNickname').onclick=()=>{const v=app.querySelector('#nickname').value.trim().slice(0,40);saveNickname(v);renderHome();};
-  app.querySelector('#nickname').addEventListener('keydown',e=>{if(e.key==='Enter')app.querySelector('#saveNickname').click();});
+  const save=app.querySelector('#saveNickname');
+  if(save){
+    save.onclick=()=>{const v=app.querySelector('#nickname').value.trim().slice(0,40);saveNickname(v);renderHome();};
+    app.querySelector('#nickname').addEventListener('keydown',e=>{if(e.key==='Enter')save.click();});
+  }
+  const change=app.querySelector('#changeName');
+  if(change)change.onclick=()=>{
+    const current=getNickname();
+    saveNickname('');
+    renderHome();
+    const input=app.querySelector('#nickname');if(input){input.value=current;input.focus();input.select();}
+  };
   const remove=app.querySelector('#removeNickname');if(remove)remove.onclick=()=>{saveNickname('');renderHome();};
   app.querySelectorAll('[data-figure]:not([disabled])').forEach(b=>b.onclick=()=>startFromFigure(b.dataset.figure));
 }

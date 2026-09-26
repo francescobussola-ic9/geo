@@ -1,6 +1,6 @@
 # GEØ — Dentro il problema
 
-**Versione 0.11.0 — Beta**
+**Versione 0.11.1 — Beta**
 
 GEØ è una web app open source per esercitarsi nella risoluzione di problemi di geometria piana nella scuola secondaria di primo grado.
 
@@ -111,7 +111,7 @@ approvazione o affiliazione con il progetto GEØ originale.
 
 # GEØ — Inside the Problem
 
-**Version 0.10.5 — Beta**
+**Version 0.11.1 — Beta**
 
 GEØ is an open-source web app designed to support the learning and practice of plane geometry problem solving in lower secondary education.
 

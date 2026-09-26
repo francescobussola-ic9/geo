@@ -61,3 +61,14 @@ button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.25);transform:n
 .diagram svg .linked-arrow,.diagram svg .linked-arrowhead{stroke:#37977d!important}
 .diagram svg .linked-bridge-label{fill:#37977d!important}
 .diagram svg .linked-equal-perimeter path,.diagram svg .linked-equal-perimeter rect,.diagram svg .linked-correspondence line{stroke:var(--orange)!important}
+
+/ v0.10.5 - footer
+.site-footer {
+  margin: 40px auto 16px;
+  padding: 12px 20px;
+  max-width: 900px;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  opacity: 0.55;
+}

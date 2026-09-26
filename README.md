@@ -93,9 +93,19 @@ Il progetto è stato sviluppato con un ampio utilizzo di strumenti di **intellig
 
 ## Licenza
 
-Il progetto è distribuito con **licenza MIT**.
+Il codice sorgente di GEØ è distribuito con licenza MIT.
+Per i dettagli, consulta il file [LICENSE](LICENSE).
 
-Consulta [`LICENSE`](LICENSE) per i termini completi.
+### Nome e identità del progetto
+
+La licenza MIT si applica esclusivamente al codice sorgente.
+
+Il nome GEØ, il logo, l'identità visiva e gli elementi di branding
+associati non sono concessi in licenza ai sensi della MIT License.
+Il loro eventuale utilizzo in progetti derivati non implica
+approvazione o affiliazione con il progetto GEØ originale.
+
+© 2026 Francesco Bussola
 
 ---
 
@@ -196,6 +206,15 @@ The software has been developed with extensive use of **generative AI tools as p
 
 ## License
 
-GEØ is released under the **MIT License**.
+The source code of GEØ is released under the MIT License.
+See the [LICENSE](LICENSE) file for details.
 
-See [`LICENSE`](LICENSE) for the full license text.
+### Name and branding
+
+The MIT License applies to the source code only.
+
+The GEØ name, logo, visual identity, and associated branding are not
+licensed under the MIT License. Their use in derivative projects does
+not imply endorsement by or affiliation with the original GEØ project.
+
+© 2026 Francesco Bussola

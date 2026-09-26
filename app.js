@@ -989,12 +989,27 @@ const HELP_LOG_DELAY=10000;
 function makeId(){
   return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
-function getNickname(){return (localStorage.getItem(NICKNAME_KEY)||'').trim();}
-function getSessionId(){
-  let id=sessionStorage.getItem(SESSION_KEY);
-  if(!id){id=makeId();sessionStorage.setItem(SESSION_KEY,id);}
-  return id;
+let volatileNickname='';
+let volatileSessionId='';
+function getNickname(){
+  try{return (localStorage.getItem(NICKNAME_KEY)||volatileNickname||'').trim();}
+  catch(_){return volatileNickname.trim();}
 }
+function saveNickname(value){
+  volatileNickname=(value||'').trim();
+  try{if(volatileNickname)localStorage.setItem(NICKNAME_KEY,volatileNickname);else localStorage.removeItem(NICKNAME_KEY);}catch(_){}
+}
+function getSessionId(){
+  try{
+    let id=sessionStorage.getItem(SESSION_KEY);
+    if(!id){id=makeId();sessionStorage.setItem(SESSION_KEY,id);}
+    return id;
+  }catch(_){
+    if(!volatileSessionId)volatileSessionId=makeId();
+    return volatileSessionId;
+  }
+}
+
 function logEvent(evento,extra={}){
   const nickname=getNickname();
   if(!nickname)return;
@@ -1040,9 +1055,9 @@ function renderHome(){
   const nickBox=`<section class="card" style="margin-bottom:16px"><b>Vuoi salvare i tuoi progressi?</b><p class="status">Inserisci un nickname. È facoltativo: senza nickname GEØ non registra il tuo utilizzo.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="nickname" maxlength="40" autocomplete="off" placeholder="Nickname" value="${escapeHtml(nickname)}" style="flex:1;min-width:180px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px"><button id="saveNickname" class="secondary">Salva</button>${nickname?'<button id="removeNickname" class="secondary">Rimuovi</button>':''}</div></section>`;
   app.innerHTML=shell(`${nickBox}<p class="home-intro">Scegli una figura. GEØ ti proporrà un problema senza anticiparti quale strategia servirà per risolverlo.</p><section class="figure-grid">${cards}</section>`,'<button id="form" class="tool-btn">📐 Formulario</button>');
   app.querySelector('#form').onclick=()=>renderFormula('home');
-  app.querySelector('#saveNickname').onclick=()=>{const v=app.querySelector('#nickname').value.trim().slice(0,40);if(v)localStorage.setItem(NICKNAME_KEY,v);else localStorage.removeItem(NICKNAME_KEY);renderHome();};
+  app.querySelector('#saveNickname').onclick=()=>{const v=app.querySelector('#nickname').value.trim().slice(0,40);saveNickname(v);renderHome();};
   app.querySelector('#nickname').addEventListener('keydown',e=>{if(e.key==='Enter')app.querySelector('#saveNickname').click();});
-  const remove=app.querySelector('#removeNickname');if(remove)remove.onclick=()=>{localStorage.removeItem(NICKNAME_KEY);renderHome();};
+  const remove=app.querySelector('#removeNickname');if(remove)remove.onclick=()=>{saveNickname('');renderHome();};
   app.querySelectorAll('[data-figure]:not([disabled])').forEach(b=>b.onclick=()=>startFromFigure(b.dataset.figure));
 }
 function startFromFigure(fig){const keys=familyKeysFor(fig);if(!keys.length)return;state.entryFigure=fig;logEvent('ARGOMENTO',{argomento:fig,problema:''});state.family=rand(keys);newInstance();}

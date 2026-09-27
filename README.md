@@ -17,6 +17,7 @@ GEØ è sviluppato in **HTML, CSS e JavaScript vanilla**, senza framework. L'app
 - disegni geometrici dinamici;
 - aiuti progressivi;
 - formulario integrato;
+- tavola numerica dinamica;
 - generazione di problemi simili o di tipologia diversa;
 - identificazione della sessione tramite nickname;
 - logging delle interazioni per l'analisi didattica;
@@ -128,6 +129,7 @@ GEØ is built with **HTML, CSS and vanilla JavaScript**, without frameworks. The
 - dynamically generated geometric diagrams;
 - progressive hints and scaffolding;
 - integrated formula reference;
+- dynamic numeric table;
 - generation of similar problems or problems of a different type;
 - session identification through a nickname;
 - interaction logging for educational analysis;

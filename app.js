@@ -1321,4 +1321,5 @@ function renderFormula(returnTo){
     `;
     document.head.appendChild(style);
   }
+}
 renderHome();

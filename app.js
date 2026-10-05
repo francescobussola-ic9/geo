@@ -1025,6 +1025,24 @@ const frac=(num,den)=>`<span class="mfrac"><span>${num}</span><span>${den}</span
 const root=x=>`<span class="mroot"><span class="radical">√</span><span class="radicand">${x}</span></span>`;
 const formulas=(...items)=>items.map(x=>`<div class="formula-row">${x}</div>`).join('');
 
+function frac(top, bottom){
+  return `<span class="mfrac">
+    <span>${top}</span>
+    <span>${bottom}</span>
+  </span>`;
+}
+
+function root(value){
+  return `<span class="mroot">
+    <span class="radical">√</span>
+    <span class="radicand">${value}</span>
+  </span>`;
+}
+
+function formulas(...items){
+  return items.map(x => `<div class="formula-row">${x}</div>`).join('');
+}
+
 const FORMULAS=[
   ['Triangolo',
     formulas(
@@ -1271,14 +1289,16 @@ function renderFormula(returnTo){
   if(!document.querySelector('#formula-math-style')){
     const style=document.createElement('style');
     style.id='formula-math-style';
+
     style.textContent=`
       .formula{
-        font-family:"Times New Roman", "STIX Two Text", serif;
+        font-family:"Times New Roman","STIX Two Text",serif;
         font-size:1.35rem;
         line-height:1.5;
         font-style:italic;
         padding:14px 10px;
       }
+
       .formula-row{
         display:flex;
         align-items:center;
@@ -1287,6 +1307,7 @@ function renderFormula(returnTo){
         margin:5px 0;
         white-space:nowrap;
       }
+
       .mfrac{
         display:inline-flex;
         flex-direction:column;
@@ -1295,31 +1316,98 @@ function renderFormula(returnTo){
         line-height:1.1;
         margin:0 .18em;
       }
+
       .mfrac > span:first-child{
         padding:0 .25em .12em;
         border-bottom:1.5px solid currentColor;
       }
+
       .mfrac > span:last-child{
         padding:.12em .25em 0;
       }
+
       .mroot{
         display:inline-flex;
         align-items:flex-start;
         vertical-align:middle;
         margin:0 .08em;
       }
+
       .mroot .radical{
         font-size:1.2em;
         line-height:1em;
         font-style:normal;
       }
+
       .mroot .radicand{
         border-top:1.5px solid currentColor;
         padding:0 .16em .05em .1em;
         line-height:1.05;
       }
     `;
+
     document.head.appendChild(style);
   }
+
+  // QUESTA È LA PARTE CHE MANCAVA
+  app.innerHTML=shell(`
+    <div class="backline">
+      <button id="back" class="secondary">
+        ← ${returnTo==='home'?'Torna alla home':'Torna al problema'}
+      </button>
+
+      <span class="status">
+        Le formule restano nascoste finché non scegli di visualizzarle.
+      </span>
+    </div>
+
+    <div
+      class="formula-grid"
+      style="margin-top:16px"
+    >
+      ${FORMULAS.map((f,i)=>`
+        <article class="formula-card">
+
+          <h3>${f[0]}</h3>
+
+          <div class="formula-actions">
+            <button data-reveal="d${i}">
+              Mostra formule dirette
+            </button>
+
+            <button data-reveal="i${i}">
+              Mostra formule inverse
+            </button>
+          </div>
+
+          <div id="d${i}" class="formula hidden">
+            ${f[1]}
+          </div>
+
+          <div id="i${i}" class="formula hidden">
+            ${f[2]}
+          </div>
+
+        </article>
+      `).join('')}
+    </div>
+  `);
+
+  app.querySelector('#back').onclick=()=>{
+    returnTo==='home'
+      ? renderHome()
+      : renderProblem();
+  };
+
+  app.querySelectorAll('[data-reveal]').forEach(b=>{
+    b.onclick=()=>{
+      const el=app.querySelector('#'+b.dataset.reveal);
+      const hidden=el.classList.toggle('hidden');
+
+      b.textContent=hidden
+        ? b.textContent.replace('Nascondi','Mostra')
+        : b.textContent.replace('Mostra','Nascondi');
+    };
+  });
 }
 renderHome();

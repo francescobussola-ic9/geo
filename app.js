@@ -1021,10 +1021,6 @@ const FIGURES=[
  ['collegate','Figure collegate','<path d="M18 34 H62 V78 H18 Z M88 34 H132 V78 H88 Z M64 56 H84 M78 50 L86 56 L78 62"/>']
 ];
 
-const frac=(num,den)=>`<span class="mfrac"><span>${num}</span><span>${den}</span></span>`;
-const root=x=>`<span class="mroot"><span class="radical">√</span><span class="radicand">${x}</span></span>`;
-const formulas=(...items)=>items.map(x=>`<div class="formula-row">${x}</div>`).join('');
-
 function frac(top, bottom){
   return `<span class="mfrac">
     <span>${top}</span>

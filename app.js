@@ -1116,15 +1116,6 @@ const FORMULAS=[
   ]
 ];
 
-
-  app.innerHTML=shell(`<div class="backline"><button id="back" class="secondary">← ${returnTo==='home'?'Torna alla home':'Torna al problema'}</button><span class="status">Le formule restano nascoste finché non scegli di visualizzarle.</span></div><div class="formula-grid" style="margin-top:16px">${FORMULAS.map((f,i)=>`<article class="formula-card"><h3>${f[0]}</h3><div class="formula-actions"><button data-reveal="d${i}">Mostra formule dirette</button><button data-reveal="i${i}">Mostra formule inverse</button></div><div id="d${i}" class="formula hidden">${f[1]}</div><div id="i${i}" class="formula hidden">${f[2]}</div></article>`).join('')}</div>`);
-
-  app.querySelector('#back').onclick=()=>returnTo==='home'?renderHome():renderProblem();
-  app.querySelectorAll('[data-reveal]').forEach(b=>b.onclick=()=>{
-    const el=app.querySelector('#'+b.dataset.reveal),hidden=el.classList.toggle('hidden');
-    b.textContent=hidden?b.textContent.replace('Nascondi','Mostra'):b.textContent.replace('Mostra','Nascondi');
-  });
-}
 const app=document.querySelector('#app');
 
 // --- Telemetria GEØ ---------------------------------------------------------

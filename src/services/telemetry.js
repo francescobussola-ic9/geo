@@ -13,8 +13,36 @@ export function isAuthorized(){return OFFLINE || Boolean(auth?.token && auth.exp
 export function getGroup(){return isAuthorized()&&!OFFLINE?auth.gruppo:'';}
 export function clearAuthorization(){auth=null;try{sessionStorage.removeItem(AUTH_KEY);}catch(_){} saveNickname('');}
 export function setAuthorization(result){if(!result?.ok||!result.token||!result.expires)throw Error('Autorizzazione non valida');auth={token:result.token,expires:Number(result.expires),gruppo:result.gruppo,categoria:result.categoria};try{sessionStorage.setItem(AUTH_KEY,JSON.stringify(auth));}catch(_){};}
-// Apps Script ContentService non espone CORS affidabile: risposta HTML tramite iframe temporaneo.
-export function verifyCode(code){return new Promise((resolve,reject)=>{const nonce=makeId();const iframe=document.createElement('iframe');iframe.name='geo-auth-'+nonce;iframe.style.display='none';iframe.setAttribute('title','Verifica codice GEØ');const form=document.createElement('form');form.method='POST';form.action=LOG_ENDPOINT;form.target=iframe.name;form.style.display='none';for(const [key,value] of Object.entries({action:'auth',code,nonce})){const input=document.createElement('input');input.name=key;input.value=value;form.append(input);}let done=false;const finish=(err,value)=>{if(done)return;done=true;clearTimeout(timer);window.removeEventListener('message',receive);form.remove();iframe.remove();err?reject(err):resolve(value);};const receive=e=>{if(e.data?.geoAuthNonce!==nonce)return;const data=e.data.result;if(!data?.ok)return finish(Error(data?.error||'Codice non valido'));finish(null,data);};window.addEventListener('message',receive);document.body.append(iframe,form);const timer=setTimeout(()=>finish(Error('Verifica non disponibile. Riprova.')),15000);form.submit();});}
+// Verifica tramite JSONP: GitHub Pages non può leggere direttamente le risposte
+// di Apps Script con fetch (CORS), né caricare script.google.com in un iframe.
+// I codici sono codici condivisi di gruppo, NON password personali.
+export function verifyCode(code){
+  return new Promise((resolve,reject)=>{
+    const callback='geoAuth_'+makeId().replace(/[^a-zA-Z0-9_]/g,'_');
+    const script=document.createElement('script');
+    let done=false;
+    const finish=(err,value)=>{
+      if(done)return;
+      done=true;
+      clearTimeout(timer);
+      delete window[callback];
+      script.remove();
+      err?reject(err):resolve(value);
+    };
+    window[callback]=(result)=>{
+      if(!result?.ok)return finish(Error(result?.error||'Codice non valido'));
+      finish(null,result);
+    };
+    script.onerror=()=>finish(Error('Verifica non disponibile. Riprova.'));
+    const url=new URL(LOG_ENDPOINT);
+    url.searchParams.set('action','auth');
+    url.searchParams.set('code',code);
+    url.searchParams.set('callback',callback);
+    script.src=url.toString();
+    const timer=setTimeout(()=>finish(Error('Verifica non disponibile. Riprova.')),15000);
+    document.head.append(script);
+  });
+}
 
 const SESSION_KEY='geo_session';
 const SEQUENCE_KEY='geo_sequence';

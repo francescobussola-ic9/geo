@@ -11,7 +11,7 @@ const TTL_MS=6*60*60*1000;
 function doPost(e){
   try {
     const p=e.parameter||{};
-    if(p.action==='auth') return authResponse_(p);
+    // Le verifiche dei codici passano da doGet (JSONP).
     const data=JSON.parse(e.postData.contents||'{}');
     if(data.action!=='log') throw Error('Azione non riconosciuta');
     const claims=validateToken_(data.token);
@@ -30,6 +30,14 @@ function doPost(e){
     try {sheet.appendRow(row);} finally {lock.releaseLock();}
     return ContentService.createTextOutput('OK');
   }catch(err){return ContentService.createTextOutput('ERRORE: '+err.message);}
+}
+
+// La verifica JSONP usa GET e restituisce JavaScript eseguibile da un tag <script>.
+function doGet(e){
+  const p=e.parameter||{};
+  if(p.action==='auth')return authResponse_(p);
+  return ContentService.createTextOutput('/* azione non riconosciuta */')
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
 
 function authResponse_(p){
@@ -51,9 +59,13 @@ function authResponse_(p){
     const token=signToken_({categoria,gruppo,expires});
     result={ok:true,categoria,gruppo,expires,token};
   }catch(err){result={ok:false,error:err.message};}
-  const nonce=String(p.nonce||'').slice(0,100);
-  const message=JSON.stringify({geoAuthNonce:nonce,result}).replace(/</g,'\\u003c');
-  return HtmlService.createHtmlOutput('<!doctype html><html><body><script>top.postMessage('+message+',"*");<\/script></body></html>');
+  const callback=String(p.callback||'');
+  if(!/^geoAuth_[A-Za-z0-9_]{1,120}$/.test(callback))
+    return ContentService.createTextOutput('/* callback non valido */')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  const payload=JSON.stringify(result).replace(/</g,'\\u003c');
+  return ContentService.createTextOutput(callback+'('+payload+');')
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
 function secret_(){const v=PropertiesService.getScriptProperties().getProperty('SCRIPT_SECRET');if(!v||v.length<32)throw Error('SCRIPT_SECRET non configurato');return v;}
 function b64_(s){return Utilities.base64EncodeWebSafe(s,Utilities.Charset.UTF_8).replace(/=+$/,'');}

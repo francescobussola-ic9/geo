@@ -34,9 +34,9 @@ L'apertura di un aiuto chiude automaticamente quello precedente. Questo mantiene
 
 ## Codici di accesso, nickname e logging
 
-**GEØ rimane liberamente utilizzabile senza identificarsi.** Per abilitare il nickname e la registrazione delle attività è invece necessario inserire un codice di accesso valido nell'apposito riquadro della home. Dopo la verifica si può indicare il proprio nome o nickname.
+**GEØ rimane liberamente utilizzabile senza identificarsi.** Per abilitare il nickname e la registrazione delle attività è invece necessario inserire un codice di accesso valido fornito dall'autore nell'apposito riquadro della home. Dopo la verifica si può indicare il proprio nome o nickname.
 
-I codici sono condivisibili e identificano una **categoria** (`Studente` o `Esterno`) e un **gruppo** configurabile, non una specifica persona. Il nickname non costituisce un account personale.
+I codici sono condivisibili e identificano una **categoria** (`Studente` o `Esterno`) e permettono di confiugurare un **gruppo** , non una specifica persona. Il nickname invece identifica un utente, ma non costituisce un account personale.
 
 I codici vengono gestiti nella scheda `ACCESSI` del Google Foglio collegato al backend, con le colonne `Codice`, `Categoria`, `Gruppo` e `Attivo`. È possibile aggiungere o disattivare codici senza modificare il sito.
 
@@ -84,9 +84,7 @@ La struttura principale del progetto comprende:
 ```text
 /
 ├── index.html                 # versione online
-├── index-offline.html         # versione offline
 ├── app.js                     # avvio della versione online
-├── app-offline.js             # bundle offline generato
 ├── style.css                  # interfaccia e responsive design
 ├── src/
 │   ├── main.js               # inizializzazione
@@ -94,7 +92,6 @@ La struttura principale del progetto comprende:
 │   ├── ui/app-ui.js          # interfaccia, aiuti e segnalazioni
 │   └── services/             # accesso e telemetria
 ├── server/Code.gs            # backend Google Apps Script
-├── tools/build.mjs           # generazione del bundle offline
 ├── README.md
 └── LICENSE
 ```
@@ -103,17 +100,11 @@ La struttura principale del progetto comprende:
 
 ## Esecuzione e distribuzione
 
-La versione online può essere pubblicata come sito statico, per esempio tramite GitHub Pages, mantenendo la struttura dei file. I problemi sono accessibili anche senza configurare il backend di logging.
+L'app può essere pubblicata come sito statico, per esempio tramite GitHub Pages, mantenendo la struttura dei file. I problemi sono accessibili anche senza configurare il backend di logging.
 
 Per abilitare l'accesso con codice e il logging occorre configurare il Google Foglio con le schede `ACCESSI` e `Log`, pubblicare `server/Code.gs` come applicazione web Google Apps Script e configurare una proprietà dello script privata denominata `SCRIPT_SECRET`. **Il valore di questa proprietà non deve essere pubblicato nel repository.** L'URL del deployment va configurato nel servizio di telemetria del frontend.
 
 La verifica dei codici nella versione online utilizza una richiesta compatibile con GitHub Pages e Apps Script; i codici condivisi non devono essere considerati password personali. Il backend deve mantenere la verifica server-side degli eventi registrati.
-
-La versione offline si apre tramite `index-offline.html` e non richiede un codice per utilizzare gli esercizi; non invia log a Google. Dopo modifiche ai sorgenti, rigenerare `app-offline.js` con:
-
-```bash
-node tools/build.mjs
-```
 
 ## Privacy
 
@@ -171,7 +162,7 @@ Hints are organized in progressive levels and opened on request. **A hint should
 
 **All exercises remain available without signing in.** Users who want to enable a nickname and activity logging enter a valid access code on the home screen, then provide a name or nickname.
 
-Codes identify a configurable **category** (`Studente` or `Esterno`) and **group**, rather than a particular individual. A nickname is not a personal account.
+Codes identify a configurable **category** (`Studente` or `Esterno`) and allow to configure a specific **group**, not a particular individual. A nickname identifies a single user, but it is not a personal account.
 
 Codes are managed in the `ACCESSI` tab of the connected Google spreadsheet, with columns `Codice`, `Categoria`, `Gruppo` and `Attivo`. Codes can be added or disabled without editing the website.
 
@@ -206,9 +197,7 @@ The main project structure is:
 ```text
 /
 ├── index.html                 # online entry point
-├── index-offline.html         # offline entry point
 ├── app.js                     # online bootstrap
-├── app-offline.js             # generated offline bundle
 ├── style.css                  # UI and responsive design
 ├── src/
 │   ├── main.js               # initialization
@@ -216,7 +205,6 @@ The main project structure is:
 │   ├── ui/app-ui.js          # interface, hints and reporting
 │   └── services/             # access and telemetry
 ├── server/Code.gs            # Google Apps Script backend
-├── tools/build.mjs           # offline build
 ├── README.md
 └── LICENSE
 ```
@@ -225,17 +213,11 @@ The main project structure is:
 
 ## Running and deployment
 
-The online version can be deployed as a static site, for example on GitHub Pages, while preserving the directory structure. Geometry exercises remain available even when logging is not configured.
+The app can be deployed as a static site, for example on GitHub Pages, while preserving the directory structure. Geometry exercises remain available even when logging is not configured.
 
 To enable access-code verification and logging, configure the `ACCESSI` and `Log` sheets, deploy `server/Code.gs` as a Google Apps Script web app, and set a private script property named `SCRIPT_SECRET`. **Never commit its value to the public repository.** Configure the deployment URL in the frontend telemetry service.
 
 Online code verification uses a mechanism compatible with GitHub Pages and Apps Script. Shared codes should not be treated as personal passwords. Logged events must still be validated server-side.
-
-The offline version is opened through `index-offline.html`, does not require access codes to use exercises, and does not send logs to Google. Rebuild `app-offline.js` after source changes with:
-
-```bash
-node tools/build.mjs
-```
 
 ## Privacy
 

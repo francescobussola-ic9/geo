@@ -36,7 +36,7 @@ L'apertura di un aiuto chiude automaticamente quello precedente. Questo mantiene
 
 **GEØ rimane liberamente utilizzabile senza identificarsi.** Per abilitare il nickname e la registrazione delle attività è invece necessario inserire un codice di accesso valido fornito dall'autore nell'apposito riquadro della home. Dopo la verifica si può indicare il proprio nome o nickname.
 
-I codici sono condivisibili e identificano una **categoria** (`Studente` o `Esterno`) e permettono di confiugurare un **gruppo** , non una specifica persona. Il nickname invece identifica un utente, ma non costituisce un account personale.
+I codici sono condivisibili e identificano una **categoria** (`Studente` o `Esterno`) e permettono di confiugurare un **gruppo** , non una specifica persona. Il nickname invece identifica un utente durante una sessione, ma non costituisce un account personale.
 
 I codici vengono gestiti nella scheda `ACCESSI` del Google Foglio collegato al backend, con le colonne `Codice`, `Categoria`, `Gruppo` e `Attivo`. È possibile aggiungere o disattivare codici senza modificare il sito.
 
@@ -160,9 +160,9 @@ Hints are organized in progressive levels and opened on request. **A hint should
 
 ## Access codes, nicknames and logging
 
-**All exercises remain available without signing in.** Users who want to enable a nickname and activity logging enter a valid access code on the home screen, then provide a name or nickname.
+**All exercises remain available without signing in.** Users who want to enable a nickname and activity logging enter on the home screen a valid access code provided by the author, then provide a name or nickname.
 
-Codes identify a configurable **category** (`Studente` or `Esterno`) and allow to configure a specific **group**, not a particular individual. A nickname identifies a single user, but it is not a personal account.
+Codes identify a configurable **category** (`Studente` or `Esterno`) and allow to identify a specific **group**, not a particular individual. A nickname identifies a single user during a single session, but it is not a personal account.
 
 Codes are managed in the `ACCESSI` tab of the connected Google spreadsheet, with columns `Codice`, `Categoria`, `Gruppo` and `Attivo`. Codes can be added or disabled without editing the website.
 

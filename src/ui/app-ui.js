@@ -16,8 +16,62 @@ function startFromFigure(fig){const keys=familyKeysFor(fig);if(!keys.length)retu
 function newInstance(){cancelHelpTimer();state.instance=FAMILIES[state.family].generate();state.openHelp=null;state.attemptId=makeId();state.loggedHelps=new Set();logEvent('PROBLEMA');renderProblem();}
 function differentProblem(){const keys=familyKeysFor(state.entryFigure),alternatives=keys.filter(k=>k!==state.family);state.family=rand(alternatives.length?alternatives:keys);newInstance();}
 function goHome(){cancelHelpTimer();if(state.view==='problem')logEvent('HOME');renderHome();}
-function renderProblem(){state.view='problem';const x=state.instance;const label=FIGURES.find(f=>f[0]===state.entryFigure)?.[1]||'';app.innerHTML=shell(`<div class="problem-head"><div><div class="eyebrow">${label}</div><div class="status">Il tipo di strategia resta nascosto: scegli tu come procedere.</div></div><button id="homeTop" class="secondary">← Home</button></div><section class="card"><b>Problema</b><p>${x.debugNew?'<span style="display:inline-block;margin-right:8px;padding:2px 7px;border:1px solid currentColor;border-radius:999px;font-size:.72em;font-weight:700">NUOVO</span> ':''}${x.text}</p></section><section class="grid"><div class="diagram">${x.svg}<div class="note">${state.openHelp===null?(x.notes?.[0]||'Osserva la figura e prova a decidere da dove partire.'):(x.notes?.[x.helps[state.openHelp].scene]||x.helps[state.openHelp].text)}</div></div><div class="helps">${x.helps.map((h,i)=>`<div><button class="help-btn ${state.openHelp===i?'open':''}" data-help="${i}"><span>${i+1} — ${h.title}</span><span class="chev">▾</span></button><div class="help-text ${state.openHelp===i?'':'hidden'}" data-text="${i}">${h.text}</div></div>`).join('')}</div></section><div class="end-actions">${x.noSimilar?'':`<button id="similar" class="primary">Provane uno simile</button>`}<button id="different" class="secondary" ${(familyKeysFor(state.entryFigure).length<2&&!x.noSimilar)?'disabled title="Non ci sono ancora altri tipi di problema per questa figura"':''}>Provane uno diverso</button><button id="home" class="secondary">Torna alla home</button></div>`,'<div style="display:flex;gap:8px;flex-wrap:wrap"><button id="form" class="tool-btn">📐 Formulario</button><button id="tables" class="tool-btn">▦ Tavole</button></div>');bindProblem();applyVisual();}
-function bindProblem(){app.querySelector('#form').onclick=()=>{cancelHelpTimer();renderFormula('problem');};app.querySelector('#tables').onclick=()=>{cancelHelpTimer();renderTables('problem');};app.querySelector('#homeTop').onclick=goHome;app.querySelector('#home').onclick=goHome;const similar=app.querySelector('#similar');if(similar)similar.onclick=newInstance;const different=app.querySelector('#different');if(!different.disabled)different.onclick=state.instance.noSimilar?newInstance:differentProblem;app.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>{const i=+b.dataset.help;cancelHelpTimer();state.openHelp=state.openHelp===i?null:i;renderProblem();if(state.openHelp!==null)startHelpTimer(state.openHelp);});}
+function renderProblem(){state.view='problem';const x=state.instance;const label=FIGURES.find(f=>f[0]===state.entryFigure)?.[1]||'';app.innerHTML=shell(`<div class="problem-head"><div><div class="eyebrow">${label}</div><div class="status">Il tipo di strategia resta nascosto: scegli tu come procedere.</div></div><button id="homeTop" class="secondary">← Home</button></div><section class="card"><b>Problema</b><p>${x.debugNew?'<span style="display:inline-block;margin-right:8px;padding:2px 7px;border:1px solid currentColor;border-radius:999px;font-size:.72em;font-weight:700">NUOVO</span> ':''}${x.text}</p></section><section class="grid"><div class="diagram">${x.svg}<div class="note">${state.openHelp===null?(x.notes?.[0]||'Osserva la figura e prova a decidere da dove partire.'):(x.notes?.[x.helps[state.openHelp].scene]||x.helps[state.openHelp].text)}</div></div><div class="helps">${x.helps.map((h,i)=>`<div><button class="help-btn ${state.openHelp===i?'open':''}" data-help="${i}"><span>${i+1} — ${h.title}</span><span class="chev">▾</span></button><div class="help-text ${state.openHelp===i?'':'hidden'}" data-text="${i}">${h.text}</div></div>`).join('')}</div></section><div class="end-actions">${x.noSimilar?'':`<button id="similar" class="primary">Provane uno simile</button>`}<button id="different" class="secondary" ${(familyKeysFor(state.entryFigure).length<2&&!x.noSimilar)?'disabled title="Non ci sono ancora altri tipi di problema per questa figura"':''}>Provane uno diverso</button><button id="home" class="secondary">Torna alla home</button><button id="reportIssue" class="secondary">⚑ Segnala un errore</button></div>`,'<div style="display:flex;gap:8px;flex-wrap:wrap"><button id="form" class="tool-btn">📐 Formulario</button><button id="tables" class="tool-btn">▦ Tavole</button></div>');bindProblem();applyVisual();}
+function bindProblem(){app.querySelector('#reportIssue').onclick=openIssueReport;app.querySelector('#form').onclick=()=>{cancelHelpTimer();renderFormula('problem');};app.querySelector('#tables').onclick=()=>{cancelHelpTimer();renderTables('problem');};app.querySelector('#homeTop').onclick=goHome;app.querySelector('#home').onclick=goHome;const similar=app.querySelector('#similar');if(similar)similar.onclick=newInstance;const different=app.querySelector('#different');if(!different.disabled)different.onclick=state.instance.noSimilar?newInstance:differentProblem;app.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>{const i=+b.dataset.help;cancelHelpTimer();state.openHelp=state.openHelp===i?null:i;renderProblem();if(state.openHelp!==null)startHelpTimer(state.openHelp);});}
+// Feedback via Formspree: nessuna modifica ai log e nessun dato identificativo automatico.
+const REPORT_ENDPOINT='https://formspree.io/f/xoejwdag';
+function openIssueReport(){
+  if(document.querySelector('#geo-report-overlay'))return;
+  const x=state.instance;
+  const overlay=document.createElement('div');
+  overlay.id='geo-report-overlay';
+  overlay.className='geo-report-overlay';
+  overlay.innerHTML=`<div class="geo-report-dialog" role="dialog" aria-modal="true" aria-labelledby="geo-report-title">
+    <div class="geo-report-heading"><h2 id="geo-report-title">Segnala un errore</h2><button type="button" id="geo-report-close" class="secondary" aria-label="Chiudi">✕</button></div>
+    <p>Hai notato un problema nel testo, nel disegno o negli aiuti? Descrivilo qui.</p>
+    <form id="geo-report-form">
+      <label for="geo-report-type">Che cosa non funziona?</label>
+      <select id="geo-report-type" name="tipo" required><option>Testo o dati</option><option>Disegno</option><option>Aiuti</option><option>Altro</option></select>
+      <label for="geo-report-description">Descrizione dell'errore</label>
+      <textarea id="geo-report-description" name="descrizione" maxlength="2000" minlength="8" rows="5" required placeholder="Che cosa hai osservato? Che cosa ti aspettavi?"></textarea>
+      <div class="geo-report-honeypot" aria-hidden="true"><label for="geo-report-website">Lascia vuoto</label><input id="geo-report-website" name="_gotcha" tabindex="-1" autocomplete="off"></div>
+      <p class="geo-report-note">Saranno allegati il testo dell'esercizio, la famiglia, la versione dell'app e l'indirizzo della pagina. Non viene allegato il tuo nickname.</p>
+      <div id="geo-report-status" role="status" aria-live="polite"></div>
+      <div class="geo-report-actions"><button type="button" id="geo-report-cancel" class="secondary">Annulla</button><button type="submit" id="geo-report-submit" class="primary">Invia segnalazione</button></div>
+    </form>
+  </div>`;
+  document.body.appendChild(overlay);
+  const close=()=>{document.removeEventListener('keydown',onKey);overlay.remove();};
+  const onKey=e=>{if(e.key==='Escape')close();};
+  document.addEventListener('keydown',onKey);
+  overlay.querySelector('#geo-report-close').onclick=close;
+  overlay.querySelector('#geo-report-cancel').onclick=close;
+  overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+  overlay.querySelector('#geo-report-form').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const submit=overlay.querySelector('#geo-report-submit');
+    const status=overlay.querySelector('#geo-report-status');
+    const last=Number(sessionStorage.getItem('geo-report-last')||0);
+    if(Date.now()-last<60000){status.textContent='Attendi un minuto prima di inviare un’altra segnalazione.';return;}
+    const form=e.currentTarget;
+    const data={tipo:form.elements.tipo.value,descrizione:form.elements.descrizione.value.trim(),
+      _gotcha:form.elements._gotcha.value,
+      _subject:'GEØ — Segnalazione errore — '+state.family,
+      versione:'v0.6',famiglia:state.family,figura:state.entryFigure,
+      testo_problema:x.text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').slice(0,3500),
+      pagina:location.href};
+    if(data.descrizione.length<8){status.textContent='Descrivi il problema con almeno 8 caratteri.';return;}
+    submit.disabled=true;status.textContent='Invio in corso…';
+    try{
+      const response=await fetch(REPORT_ENDPOINT,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify(data)});
+      if(!response.ok)throw new Error('Invio non riuscito');
+      sessionStorage.setItem('geo-report-last',String(Date.now()));
+      const message=document.createElement('p');message.textContent='Segnalazione inviata. Grazie per il contributo!';form.replaceWith(message);
+      overlay.querySelector('#geo-report-close').focus();
+    }catch(err){status.textContent='Non è stato possibile inviare la segnalazione. Riprova più tardi.';submit.disabled=false;}
+  });
+  overlay.querySelector('#geo-report-description').focus();
+}
 function applyVisual(){
   const svg=app.querySelector('.diagram svg');
   if(!svg)return;

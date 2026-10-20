@@ -101,7 +101,7 @@ function diagram(m, task, steps){
   let labels=g.measure.filter(p=>!p[2].startsWith('h ='))
     .map(([x,y,s])=>txt(Math.max(17,Math.min(503,X(x))),Math.max(19,Math.min(317,Y(y))),s)).join('');
   const hLabel=g.measure.find(p=>p[2].startsWith('h ='));
-  const heightLabel=hLabel?txt(Math.max(30,Math.min(490,X(hLabel[0]))),Y(hLabel[1]),unknown?'h = ?':hLabel[2],'label-focus'):'';
+  const heightLabel=hLabel ? txt( Math.max(48, X(loX)-55), Y(hLabel[1]), unknown ? 'h = ?' : hLabel[2], 'label-aux' ) : '';
   let heightSVG='';
   if(g.alt){
     const [a,b]=g.alt;

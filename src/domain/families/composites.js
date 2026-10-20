@@ -98,8 +98,17 @@ function diagram(m, task, steps){
   const txt=(x,y,s,cls='')=>`<text x="${x}" y="${y}" text-anchor="middle" class="${cls}">${s}</text>`;
   const unknown=task==='inverse';
   // Posizioniamo le etichette delle altezze solo quando i relativi segmenti sono visibili.
-  let labels=g.measure.filter(p=>!p[2].startsWith('h ='))
-    .map(([x,y,s])=>txt(Math.max(17,Math.min(503,X(x))),Math.max(19,Math.min(317,Y(y))),s)).join('');
+  let labels=g.measure
+  .filter(p=>!p[2].startsWith('h ='))
+  .map(([x,y,s])=>{
+    const left=x<loX;
+    const right=x>hiX;
+    const px=left?X(loX)-12:right?X(hiX)+12:X(x);
+    const py=Math.max(19,Math.min(317,Y(y)));
+    const anchor=left?'end':right?'start':'middle';
+    return `<text x="${px}" y="${py}"
+      text-anchor="${anchor}">${s}</text>`;
+  }).join('');
   const hLabel=g.measure.find(p=>p[2].startsWith('h ='));
   const heightLabel=hLabel ? txt( Math.max(48, X(loX)-55), Y(hLabel[1]), unknown ? 'h = ?' : hLabel[2], 'label-aux' ) : '';
   let heightSVG='';
